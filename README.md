@@ -8,3 +8,17 @@ Mohammed Mozammil Ezzaldiin
 Priscilla Widjaja
 Caroline Guzylak
 Qi Liu
+
+
+Steps to Begin 
+1, make sure to clone the repo:
+    open your terminal 
+    Navigate to the Directory Where You Want to Clone the Repository:
+    clone the Repository: git clone [https://github.com/username/repository.git](https://github.com/mezzaldi/ZOTSUPPORT.git)https://github.com/mezzaldi/ZOTSUPPORT.git
+    Navigate into the Cloned Repository: cd ZOTSUPPORT
+2,while in the terminal
+    run : npm start 
+    
+  
+
+    
