@@ -135,7 +135,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const sequelize = new Sequelize({
     dialect: 'mysql',
     username: 'root',
-    password: 'MacBook Pro1',
+    password: '########',
     database: 'cs122a',
     host: 'localhost',
   });
