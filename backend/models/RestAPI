@@ -1,0 +1,45 @@
+
+
+
+//GET Programs
+//curl http://localhost:5003/api/programs
+//------------------------------------------
+
+/*curl -X POST -H "Content-Type: application/json" -d '{
+    "programName": "Sample Program",
+    "adminEmail": "admin@example.com",
+    "headerImage": "path/to/image.jpg",
+    "description": "A description of the program",
+    "tags": ["tag1", "tag2"]
+  }' http://localhost:5003/api/programs
+*/
+
+/*
+curl -X POST -H "Content-Type: application/json" -d '{
+    "programName": "Sample Program",
+    "adminEmail": "admin@example.com",
+    "headerImage": "path/to/image.jpg",
+    "description": "A description of the program",
+    "tags": "tag1, tag2"
+  }' http://localhost:5003/api/programs
+*/
+
+/*
+curl -X POST -H "Content-Type: application/json" -d '{
+  "eventName": "Sample Event",
+  "eventLocation": "Event Venue",
+  "eventDate": "2023-12-31",
+  "startTime": "18:00:00",
+  "endTime": "22:00:00",
+  "recurring": false,
+  "administrators": "admin@example.com",
+  "eventHeaderImage": "path/to/event-image.jpg",
+  "eventDescription": "A description of the event",
+  "tags": ["tag1", "tag2"]
+}' http://localhost:5002/api/event
+
+*/
+
+//GET Events
+//curl http://localhost:5002/api/events
+

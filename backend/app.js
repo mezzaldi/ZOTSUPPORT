@@ -7,7 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 5002;
+const port = 5003;
 
 // Define Swagger options
 const swaggerOptions = {
@@ -135,7 +135,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const sequelize = new Sequelize({
     dialect: 'mysql',
     username: 'root',
-    password: '###### ## ###', 
+    password: 'MacBook Pro1',
     database: 'cs122a',
     host: 'localhost',
   });
@@ -221,6 +221,35 @@ app.post('/api/event', async (req, res) => {
     }
   });
   
+
+  // Sample route for retrieving programs
+app.get('/api/programs', async (req, res) => {
+  try {
+    // Retrieve all programs from the database
+    const programs = await Program.findAll();
+
+    // Respond with the list of programs
+    res.status(200).json({ programs });
+  } catch (error) {
+    console.error('Error retrieving programs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/events
+app.get('/api/events', async (req, res) => {
+  try {
+    // Retrieve all events from the database
+    const events = await Event.findAll();
+
+    // Respond with the list of events
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error('Error retrieving events:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
   
 
   // Start the Express server

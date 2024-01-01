@@ -18,7 +18,15 @@ Steps to Begin
     Navigate into the Cloned Repository: cd ZOTSUPPORT
 2,while in the terminal
     run : npm start 
-    
-  
+
+//Run local host 
+    npm run dev  
+ //Connect to Mysql
+    npm install mysql2
+     mysql -u root -p  
+//Kill Server
+    lsof -i :5003 
+    kill -9  PID
+
 
     
