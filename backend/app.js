@@ -7,7 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 5009;
+const port = 5100;
 
 // Define Swagger options
 const swaggerOptions = {
@@ -35,25 +35,31 @@ app.get('/', (req, res) => {
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const sequelize = new Sequelize({
-    dialect: 'mysql',
-    username: 'root',
-    password: 'MacBook Pro1',
-    database: 'ZOTSUPPORT',
-    host: 'localhost',
+    dialect: 'mysql', //Specifies the dialect of the database you are connecting to (MySQL in this case)
+    username: 'root',  // Specifies the username for connecting to the database
+    password: '### #### ####',  // Specifies the password for connecting to the database
+    database: 'ZOTSUPPORT', // Specifies the name of the database
+    host: 'localhost', // Specifies the host where the database server is running
   });
   
-  // Define the Program model
+  // These lines of code import Sequelize models for "Program" and "Event" entities, 
+  //and the models are configured using the Sequelize instance (sequelize) and data types (DataTypes)
   const Program = require('./models/program.js')(sequelize, DataTypes);
   const Event = require('./models/event.js')(sequelize, DataTypes);
   
-  // Sync the model with the database
+  // his code ensures that the Sequelize models (representing database tables) are synchronized with the actual database.
+  // If the tables do not exist, Sequelize will create them based on the model definitions. If the tables already exist, 
+  //Sequelize will update them according to any changes in the model definitions
   sequelize.sync({ force: false }).then(() => {
     console.log('Database synchronized.');
   });
   
   app.use(express.json());
 
+
+  // Handle POST requests to '/api/program'
   app.post('/api/program', async (req, res) => {
+    //// Destructure values from the request body
     const { programName, adminEmail, headerImage, description, tags } = req.body;
   
     // Validate the request
@@ -72,15 +78,17 @@ const sequelize = new Sequelize({
         tags,
       });
   
-      // Respond with the created program
+      // Respond with a 201 Created status and the created program data
       res.status(201).json({ program });
     } catch (error) {
+      //// If an error occurs during the database operation, log the error
       console.error('Error creating program:', error);
+      //// Respond with a 500 Internal Server Error status and an error message
       res.status(500).json({ error: 'Internal server error' });
     }
   });
 
-  // POST /api/events
+  // Handle POST requests to '/api/event'
 app.post('/api/event', async (req, res) => {
     const {
       eventName,
@@ -97,11 +105,12 @@ app.post('/api/event', async (req, res) => {
   
     // Validate the request
     if (!eventName || !eventLocation || !eventDate || !startTime || !endTime || !administrators) {
+      //// If validation fails, respond with a 400 Bad Request status and an error message
       return res.status(400).json({ error: 'Event name, location, date, start time, end time, and administrators are required' });
     }
   
     try {
-      // Save event data to the database
+       // Save event data to the database using Sequelize's 'create' method
       const event = await Event.create({
         eventName,
         eventLocation,
@@ -115,10 +124,12 @@ app.post('/api/event', async (req, res) => {
         tags,
       });
   
-      // Respond with the created event
+      // Respond with a 201 Created status and the created event data
       res.status(201).json({ event });
     } catch (error) {
+      // If an error occurs during the database operation, log the error
       console.error('Error creating event:', error);
+      // Respond with a 500 Internal Server Error status and an error message
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -127,7 +138,7 @@ app.post('/api/event', async (req, res) => {
   // Sample route for retrieving programs
 app.get('/api/program', async (req, res) => {
   try {
-    // Retrieve all programs from the database
+    // Retrieve all programs from the database using findall
     const programs = await Program.findAll();
 
     // Respond with the list of programs
@@ -138,7 +149,68 @@ app.get('/api/program', async (req, res) => {
   }
 });
 
-// GET /api/events
+//get program base on tag is general
+app.get('/api/program/general', async (req, res) => {
+  try {
+    // Use Sequelize's 'findAll' method to retrieve programs
+    const generalPrograms = await Program.findAll({
+      where: {
+        tags: {
+          [Sequelize.Op.like]: '%general%', // Adjust the tag value based on your criteria
+        },
+      },
+    });
+
+    // Respond with a 200 OK status and the retrieved general programs
+    res.status(200).json({ generalPrograms });
+  } catch (error) {
+    console.error('Error retrieving general programs:', error);
+    // Respond with a 500 Internal Server Error status and an error message
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+//get program base on tag is math
+app.get('/api/program/math', async (req, res) => {
+  try {
+    // Use Sequelize's 'findAll' method to retrieve programs
+    const generalPrograms = await Program.findAll({
+      where: {
+        tags: {
+          [Sequelize.Op.like]: '%math%', // Adjust the tag value based on your criteria
+        },
+      },
+    });
+
+    res.status(200).json({ generalPrograms });
+  } catch (error) {
+    console.error('Error retrieving math programs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+//get program base on tag is math
+app.get('/api/program/Science', async (req, res) => {
+  try {
+    // Use Sequelize's 'findAll' method to retrieve programs
+    const generalPrograms = await Program.findAll({
+      where: {
+        tags: {
+          [Sequelize.Op.like]: '%science%', // Adjust the tag value based on your criteria
+        },
+      },
+    });
+
+    res.status(200).json({ generalPrograms });
+  } catch (error) {
+    console.error('Error retrieving science programs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// GET /api/events 
+//retrieve all events from the database
 app.get('/api/event', async (req, res) => {
   try {
     // Retrieve all events from the database

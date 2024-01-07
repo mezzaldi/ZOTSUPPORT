@@ -1,15 +1,5 @@
 
-POST http://localhost:5008/api/program
-Content-Type: application/json
-
-{
-    "programName": "UCI LARC",
-    "adminEmail": "james@uci.edu",
-    "headerImage": "path/to/image.jpg",
-    "description": "This is a tutoring program",
-    "tags": "tag1, tag2"
-}
-
+GET http://localhost:5100/api/program/general
 
 //GET http://localhost:5005/api/programs
 

@@ -1,4 +1,6 @@
 // models/event.js
+//This model definition represents the structure of the 'Event' table in the database, 
+//and it can be used to interact with and perform operations on event data in the application.
 module.exports = (sequelize, DataTypes) => {
     const Event = sequelize.define('Event', {
       eventName: {
