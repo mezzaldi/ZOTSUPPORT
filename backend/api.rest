@@ -1,0 +1,33 @@
+
+POST http://localhost:5008/api/program
+Content-Type: application/json
+
+{
+    "programName": "UCI LARC",
+    "adminEmail": "james@uci.edu",
+    "headerImage": "path/to/image.jpg",
+    "description": "This is a tutoring program",
+    "tags": "tag1, tag2"
+}
+
+
+//GET http://localhost:5005/api/programs
+
+# POST /api/events
+# POST /api/events
+
+// POST http://localhost:5008/api/event
+// Content-Type: application/json
+
+// {
+//   "eventName": "Sample Event",
+//   "eventLocation": "Sample Location",
+//   "eventDate": "2023-01-01",
+//   "startTime": "12:00:00",
+//   "endTime": "11:00:00",
+//   "recurring": false,
+//   "administrators": "admin@example.com",
+//   "eventHeaderImage": "url/to/event-image.jpg",
+//   "eventDescription": "Sample event description",
+//   "tags": "tag1, tag2"
+// }

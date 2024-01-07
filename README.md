@@ -18,15 +18,21 @@ Steps to Begin
     Navigate into the Cloned Repository: cd ZOTSUPPORT
 2,while in the terminal
     run : npm start 
+//Installing firebase
+    npm install -g firebase-tools
 
 //Run local host 
     npm run dev  
  //Connect to Mysql
     npm install mysql2
-     mysql -u root -p  
+     mysql -u root -p
+     USE cs122a;
+ //CREATE TABLE program (   id INT PRIMARY KEY AUTO_INCREMENT,   programName VARCHAR(255) NOT NULL,   adminEmail VARCHAR(255) NOT NULL,   headerImage VARCHAR(255),   description TEXT,   tags VARCHAR(255) );
+ 
 //Kill Server
     lsof -i :5003 
     kill -9  PID
 
 
-    
+//Deploy
+    firebase deploy --only hosting
