@@ -1,5 +1,16 @@
 
-GET http://localhost:5122/api/program/history
+POST http://localhost:5122/api/program
+Content-Type: application/json
+
+{
+    "programName": "trig",
+    "adminEmail": "james@uci.edu",
+    "headerImage": "path/to/image.jpg",
+    "description": "This is a tutoring program",
+    "tags": "math"
+}
+
+//GET http://localhost:5122/api/program/general
 
 //GET http://localhost:5100/api/programs
 

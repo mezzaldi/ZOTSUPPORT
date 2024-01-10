@@ -8,8 +8,13 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-//localhost:5100
-const port = 5122;
+//to remove strict access "strict-origin-when-cross-origin"
+const cors = require('cors');
+app.use(cors());
+
+
+//localhost:5124
+const port = 5125;
 
 // Define Swagger options
 const swaggerOptions = {
