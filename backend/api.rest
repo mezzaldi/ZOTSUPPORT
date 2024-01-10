@@ -1,12 +1,12 @@
 
-GET http://localhost:5100/api/program/general
+GET http://localhost:5122/api/program/history
 
-//GET http://localhost:5005/api/programs
+//GET http://localhost:5100/api/programs
 
 # POST /api/events
 # POST /api/events
 
-// POST http://localhost:5008/api/event
+// POST http://localhost:5100/api/event
 // Content-Type: application/json
 
 // {
@@ -19,5 +19,4 @@ GET http://localhost:5100/api/program/general
 //   "administrators": "admin@example.com",
 //   "eventHeaderImage": "url/to/event-image.jpg",
 //   "eventDescription": "Sample event description",
-//   "tags": "tag1, tag2"
-// }
+//   "tags": "tag1"
