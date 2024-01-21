@@ -11,7 +11,7 @@ const ProgramCard = (props) => {
   return (
     <div>
 
-        <Card sx={{ maxWidth: 345 }}>
+        <Card sx={{ maxWidth: 300 }}>
 
             {/* The program header image */}
             <CardMedia
@@ -21,18 +21,13 @@ const ProgramCard = (props) => {
             />
 
             <CardContent>
-                {/*gutterBottom gives the text a bottom margin*/}
-                <Typography gutterBottom variant="h2">
+                <Typography variant="h2">
                 {props.programName}
-                </Typography>
-
-                <Typography variant="subtitle1" color="text.secondary">
-                Brief program description
                 </Typography>
             </CardContent>
 
             <CardActions>
-                <Button size="small" variant="contained" color="primary">
+                <Button size="small" variant="outlined" color="primary">
                     Unfollow
                 </Button>
             </CardActions>

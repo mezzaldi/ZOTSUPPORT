@@ -33,34 +33,34 @@ let globalTheme = createTheme({
   // setting font standards for our app
   typography: {
     h1: {
-      fontSize: '32px',
+      fontSize: 32,
       fontFamily: 'Raleway',
       color: primaryTextColor
     },
     h2: {
-      fontSize: '26px',
+      fontSize: 26,
       fontFamily: 'Lato',
       color: primaryTextColor
     },
     h3: {
-      fontSize: '20px',
+      fontSize: 20,
       fontFamily: 'Open Sans',
       color: primaryTextColor
     },
     body1: {
-      fontSize: '16px',
+      fontSize: 16,
       fontFamily: 'Open Sans',
       color: primaryTextColor
     },
     subtitle1: {
-      fontSize: '14px',
+      fontSize: 14,
       fontFamily: 'Open Sans',
       color: primaryTextColor
     },
     button: {
       textTransform: 'none',
       fontFamily: 'Open Sans',
-      fontSize: '16px',
+      fontSize: 16,
     }
   }
 
