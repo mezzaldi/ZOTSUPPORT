@@ -1,13 +1,32 @@
 // App.js
 import React from 'react';
-import Program from './CreateProgram';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+// pages
+import CreateNewProgramPage from './routes/CreateNewProgramPage';
+import LandingPage from './routes/LandingPage';
+import AboutUsPage from './routes/AboutUsPage';
+import SignInPage from './routes/SignInPage';
+import StudentDashboardPage from './routes/StudentDashboard';
+
+// components
+import Navbar from './components/Navbar';
+
+// global stylesheet
+import './styles.scss';
 
 const App = () => {
   return (
-    <div>
-      <h1>Create a new learning support program</h1>
-      <Program/>
-    </div>
+    <Router>
+      <Navbar/>
+      <Routes>
+        <Route path="/" element={<LandingPage/>} />
+        <Route path="/SignIn" element={<SignInPage/>} />
+        <Route path="/AboutUs" element={<AboutUsPage/>} />
+        <Route path="/CreateNewProgram" element={<CreateNewProgramPage/>} />
+        <Route path="/StudentDashboard" element={<StudentDashboardPage/>} />
+      </Routes>
+    </Router>
   );
 };
 
