@@ -3,7 +3,7 @@ import Program from '../CreateProgram';
 
 const CreateNewProgramPage = () => {
   return (
-    <div>
+    <div class='pageContent'>
       <h1>Create a new learning support program</h1>
       <Program/>
     </div>

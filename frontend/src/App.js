@@ -12,6 +12,9 @@ import StudentDashboardPage from './routes/StudentDashboard';
 // components
 import Navbar from './components/Navbar';
 
+// global stylesheet
+import './styles.scss';
+
 // MUI 
 import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
 
@@ -40,12 +43,12 @@ let globalTheme = createTheme({
     h2: {
       fontSize: 26,
       fontFamily: 'Lato',
-      color: primaryTextColor
+      color: primaryTextColor,
     },
     h3: {
       fontSize: 20,
       fontFamily: 'Open Sans',
-      color: primaryTextColor
+      color: primaryTextColor,
     },
     body1: {
       fontSize: 16,
