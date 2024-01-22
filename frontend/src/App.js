@@ -46,7 +46,7 @@ let globalTheme = createTheme({
       color: primaryTextColor,
     },
     h3: {
-      fontSize: 20,
+      fontSize: 18,
       fontFamily: 'Open Sans',
       color: primaryTextColor,
     },
