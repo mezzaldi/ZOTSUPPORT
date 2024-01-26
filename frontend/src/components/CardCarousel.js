@@ -13,6 +13,9 @@ function determineCardType(cardType) {
 }
 
 
+// https://www.npmjs.com/package/react-multi-carousel
+// ^^^^^^ USE THIS REACT MULTI CAROUSEL INSTEAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 // props will contain a string representing what kind of card the carousel should contain
 const CardCarousel = (props) => {

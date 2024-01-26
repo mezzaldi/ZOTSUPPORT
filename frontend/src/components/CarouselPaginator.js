@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
@@ -11,8 +10,7 @@ export default function CarouselPaginator() {
 
   return (
     <Stack spacing={2}>
-      <Typography>Page: {page}</Typography>
-      <Pagination count={10} page={page} onChange={handleChange} />
+      <Pagination count={5} boundaryCount={1} page={page} onChange={handleChange} />
     </Stack>
   );
 }
