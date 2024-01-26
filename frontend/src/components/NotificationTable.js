@@ -86,9 +86,9 @@ function createData(title, learningProgram, preview) {
     return { title, learningProgram, preview };
 }
   
-const rows = NotificationData.map((content) => {
+const rows = NotificationData.map((value) => {
 	return(
-		createData(content.title, content.learningProgram, content.preview)
+		createData(value.title, value.learningProgram, value.preview)
 	)
 });
 
@@ -119,14 +119,20 @@ export default function NotificationTable() {
             : rows
           ).map((row) => (
             <TableRow key={row.name}>
-              <TableCell style={{ width: 200 }} component="th" scope="row">
-                {row.title}
+              <TableCell style={{ width: 200}} component="th" scope="row">
+                <div className="tableCellTextContainer">
+                    {row.title}
+                </div>
               </TableCell>
               <TableCell style={{ width: 200 }} align="right">
-                {row.learningProgram}
+                <div className="tableCellTextContainer">
+                    {row.learningProgram}
+                </div>
               </TableCell>
-              <TableCell style={{ width: 1200 }} align="right">
-                {row.preview}
+              <TableCell style={{ width: 1200}} align="right">
+                <div className="tableCellTextContainer">
+                    {row.preview}
+                </div>
               </TableCell>
             </TableRow>
           ))}

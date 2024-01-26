@@ -25,7 +25,8 @@
 }
 
 .card {
-    margin-right:1.3rem;
+    margin-right: 3rem;
+    min-width: 15rem;
 }
 
 .navbarTitle {
@@ -37,4 +38,10 @@
     height: 23px;
     margin-right: 10px;
     border-radius: 50%;
+}
+
+.tableCellTextContainer {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

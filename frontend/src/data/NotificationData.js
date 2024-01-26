@@ -4,7 +4,7 @@ const NotificationData = [
     {
         "title": "Event cancellation",
         "learningProgram": "UCI LARC",
-        "preview": "Your event with UCI LARC has been cancelled. We apologize for the cancellation of event X, please register for"
+        "preview": "Your event with UCI LARC has been cancelled. We apologize for the cancellation of event X, please register for another event on UCI LARC's program page."
     },
     {
         "title": "New event annouced",

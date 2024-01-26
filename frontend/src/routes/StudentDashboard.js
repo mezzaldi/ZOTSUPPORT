@@ -1,11 +1,11 @@
 import React from 'react';
-import ProgramCard from '../components/ProgramCard';
 import Typography from '@mui/material/Typography';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 import NotificationTable from '../components/NotificationTable';
+import CardCarousel from '../components/CardCarousel';
 
 
 const StudentDashboardPage = () => {
@@ -44,13 +44,7 @@ const StudentDashboardPage = () => {
             </Typography>
         </div>
 
-        <div className='cardContainer'>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-        </div>
-
+        <CardCarousel cardType='followedPrograms'/>
         
     </div>
   );

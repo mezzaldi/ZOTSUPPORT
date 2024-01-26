@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 
 const ProgramCard = (props) => {
   return (
-    <div className="programCard">
+    <div className="card">
         <Card sx={{ maxWidth: 350 }}>
 
             {/* The program header image */}
