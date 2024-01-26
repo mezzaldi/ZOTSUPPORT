@@ -8,6 +8,8 @@ import LandingPage from './routes/LandingPage';
 import AboutUsPage from './routes/AboutUsPage';
 import SignInPage from './routes/SignInPage';
 import StudentDashboardPage from './routes/StudentDashboard';
+import DiscoverPage from './routes/DiscoverPage';
+import NotificationsPage from './routes/NotificationsPage';
 
 // components
 import Navbar from './components/Navbar';
@@ -82,6 +84,8 @@ const App = () => {
           <Route path="/AboutUs" element={<AboutUsPage/>} />
           <Route path="/CreateNewProgram" element={<CreateNewProgramPage/>} />
           <Route path="/StudentDashboard" element={<StudentDashboardPage/>} />
+          <Route path="/Discover" element={<DiscoverPage/>} />
+          <Route path="/Notifications" element={<NotificationsPage/>} />
         </Routes>
       </Router>
     </ThemeProvider>

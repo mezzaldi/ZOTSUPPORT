@@ -20,26 +20,26 @@ const Navbar = () => {
 			</div>
 
 			<Stack direction="row" spacing={4}>
-				<Button startIcon={<SearchIcon/>} sx={{color: 'white'}}>
+				<Button href="/Discover" startIcon={<SearchIcon/>} sx={{color: 'white'}}>
 					<Typography variant="h3" color="inherit">
 					Discover
 					</Typography>
 				</Button>
 
-				<Button startIcon={<NotificationsIcon/>} sx={{color: 'white'}}>
+				<Button href="/Notifications" startIcon={<NotificationsIcon/>} sx={{color: 'white'}}>
 					<Typography variant="h3" color="inherit">
 					Notifications
 					</Typography>
 				</Button>
 
-				<Button startIcon={<DashboardIcon/>} sx={{color: 'white'}}>
+				<Button href="/StudentDashboard" startIcon={<DashboardIcon/>} sx={{color: 'white'}}>
 					<Typography variant="h3" color="inherit">
 					Your dashboard
 					</Typography>
 				</Button>
 
 				<Button endIcon={<ArrowDropDownIcon/>} sx={{color: 'white'}}>
-					<img src="/images/placeholder.jpg" className="profileImg"></img>
+					<img src="/images/placeholder.jpg" className="profileImg" alt="student profile"></img>
 					<Typography variant="h3" color="inherit">
 					Student Name
 					</Typography>
