@@ -19,8 +19,14 @@
     flex-direction: row;
 }
 
-.programCard {
-    padding-right:1.3rem;
+.tableContainer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.card {
+    margin-right: 3rem;
+    min-width: 15rem;
 }
 
 .navbarTitle {
@@ -32,4 +38,10 @@
     height: 23px;
     margin-right: 10px;
     border-radius: 50%;
+}
+
+.tableCellTextContainer {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

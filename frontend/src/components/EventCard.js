@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
-const ProgramCard = (props) => {
+const EventCard = (props) => {
   return (
     <div className="card">
         <Card sx={{ maxWidth: 350 }}>
@@ -21,7 +21,7 @@ const ProgramCard = (props) => {
 
             <CardContent>
                 <Typography variant="h2">
-                {props.programName}
+                {props.eventName}
                 </Typography>
             </CardContent>
 
@@ -36,4 +36,4 @@ const ProgramCard = (props) => {
   );
 };
 
-export default ProgramCard;
+export default EventCard;
