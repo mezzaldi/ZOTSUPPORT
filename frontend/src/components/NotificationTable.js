@@ -15,6 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import { Typography } from '@mui/material';
 
 // dummy notification data
 import NotificationData from '../data/NotificationData';
@@ -122,17 +123,23 @@ export default function NotificationTable(props) {
             <TableRow key={row.name}>
               <TableCell style={{ width: 200}} component="th" scope="row">
                 <div className="tableCellTextContainer">
+                  <Typography variant="body1">
                     {row.title}
+                  </Typography>
                 </div>
               </TableCell>
               <TableCell style={{ width: 200 }} align="right">
                 <div className="tableCellTextContainer">
+                  <Typography variant="body1">
                     {row.learningProgram}
+                  </Typography>
                 </div>
               </TableCell>
               <TableCell style={{ width: 1200}} align="right">
                 <div className="tableCellTextContainer">
+                  <Typography variant="body1">
                     {row.preview}
+                  </Typography>
                 </div>
               </TableCell>
             </TableRow>
