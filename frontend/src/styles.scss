@@ -24,11 +24,6 @@
     padding-bottom: 2rem;
 }
 
-.card {
-    margin-right: 3rem;
-    min-width: 15rem;
-}
-
 .navbarTitle {
     flex-grow:1;
 }
@@ -44,4 +39,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.card {
+    max-width: 17rem;
+    display:block;
+}
+
+.cardText {
+    display:block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-carousel .react-multi-carousel-track {
+    margin-bottom: 25px;
 }

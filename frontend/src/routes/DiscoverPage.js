@@ -1,7 +1,6 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import ProgramCard from '../components/ProgramCard';
-import EventCard from '../components/EventCard';
+import CardCarousel from '../components/CardCarousel';
 
 const DiscoverPage = () => {
   return (
@@ -13,13 +12,7 @@ const DiscoverPage = () => {
             </Typography>
         </div>
 
-		<div className='cardContainer'>
-            <EventCard eventName="Event nameeeeeeeeeee"/>
-            <EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-        </div>
+        <CardCarousel cardType='upcomingEvents'/>
 
 		<div className='h2Container'>
             <Typography variant="h2">
@@ -27,13 +20,7 @@ const DiscoverPage = () => {
             </Typography>
         </div>
 
-		<div className='cardContainer'>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-			<EventCard eventName="Event name"/>
-        </div>
+		<CardCarousel cardType='popularEvents'/>
 
 		<div className='h2Container'>
             <Typography variant="h2">
@@ -41,13 +28,7 @@ const DiscoverPage = () => {
             </Typography>
         </div>
 
-		<div className='cardContainer'>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-            <ProgramCard programName="Program name"/>
-			<ProgramCard programName="Program name"/>
-        </div>
+		<CardCarousel cardType='popularPrograms'/>
 
     </div>
   );

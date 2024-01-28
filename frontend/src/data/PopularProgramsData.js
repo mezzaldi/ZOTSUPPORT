@@ -1,17 +1,17 @@
 
 
-const FollowedProgramsData = [
+const PopularProgramsData = [
+    {
+        "title": "Mathemetics Tutoring",
+    },
     {
         "title": "UCI LARC",
     },
     {
-        "title": "Writing center",
+        "title": "Chemistry Club",
     },
     {
-        "title": "Biosci tutoring",
-    },
-    {
-        "title": "Soar Center",
+        "title": "Career pathways",
     },
     {
         "title": "UCI LARC",
@@ -27,4 +27,4 @@ const FollowedProgramsData = [
     },
 ];
 
-export default FollowedProgramsData;
+export default PopularProgramsData;
