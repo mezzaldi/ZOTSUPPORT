@@ -93,13 +93,14 @@ const rows = NotificationData.map((value) => {
 });
 
 
-export default function NotificationTable() {
+export default function NotificationTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  console.log(rowsPerPage) 
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * props.rowsPerPage - rows.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -114,8 +115,8 @@ export default function NotificationTable() {
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          {(props.rowsPerPage > 0
+            ? rows.slice(page * props.rowsPerPage, page * props.rowsPerPage + props.rowsPerPage)
             : rows
           ).map((row) => (
             <TableRow key={row.name}>
@@ -145,10 +146,10 @@ export default function NotificationTable() {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              rowsPerPageOptions={[]}
               colSpan={3}
               count={rows.length}
-              rowsPerPage={rowsPerPage}
+              rowsPerPage={props.rowsPerPage}
               page={page}
               SelectProps={{
                 inputProps: {

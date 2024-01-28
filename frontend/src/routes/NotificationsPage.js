@@ -1,12 +1,14 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
+import NotificationTable from '../components/NotificationTable';
 
 const NotificationsPage = () => {
   return (
     <div className='pageContent'>
-      <Typography variant="h1">
-      Notifications
-      </Typography>
+
+    	<div className="tableContainer">
+    		<NotificationTable rowsPerPage={10}/>
+    	</div>
+
     </div>
   );
 };
