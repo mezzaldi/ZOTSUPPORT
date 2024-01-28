@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import CardCarousel from '../components/CardCarousel';
+import CardCarousel from '../../components/CardCarousel';
 
 const DiscoverPage = () => {
   return (

@@ -20,7 +20,7 @@ const Navbar = () => {
 			</div>
 
 			<Stack direction="row" spacing={4}>
-				<Button href="/Discover/student" startIcon={<SearchIcon/>} sx={{color: 'white'}}>
+				<Button href="/Discover" startIcon={<SearchIcon/>} sx={{color: 'white'}}>
 					<Typography variant="h3" color="inherit">
 					Discover
 					</Typography>
