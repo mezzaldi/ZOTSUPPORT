@@ -35,7 +35,7 @@ const StudentDashboardPage = () => {
         </div>
 
         <div className="tableContainer">
-            <NotificationTable/>
+            <NotificationTable rowsPerPage={4}/>
         </div>
 
         <div className='h2Container'>

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 const EventCard = (props) => {
   return (
     <div className="card">
-        <Card sx={{ maxWidth: 350 }}>
+        <Card>
 
             {/* The program header image */}
             <CardMedia
@@ -20,9 +20,11 @@ const EventCard = (props) => {
             />
 
             <CardContent>
-                <Typography variant="h2">
-                {props.eventName}
-                </Typography>
+                <div className="cardText">
+                    <Typography variant="h3">
+                    {props.title}
+                    </Typography>
+                </div>
             </CardContent>
 
             <CardActions>
