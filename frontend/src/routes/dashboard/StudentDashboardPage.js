@@ -6,6 +6,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 import NotificationTable from '../../components/NotificationTable';
 import CardCarousel from '../../components/CardCarousel';
+import EventBar from '../../components/EventBar';
 
 
 const StudentDashboardPage = () => {
@@ -17,16 +18,28 @@ const StudentDashboardPage = () => {
             </Typography>
         </div>
 
-        {/* calendar widget */}
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar />
-        </LocalizationProvider>
+        <div className="eventBarsAndCalendar">
+            <div>
+                <div className='h2Container'>
+                    <Typography variant="h2">
+                    Your upcoming events
+                    </Typography>
+                </div>
+                <div>
+                    <EventBar/>
+                    <EventBar/>
+                    <EventBar/>
+                    <EventBar/>
+                    <EventBar/>
+                </div>
+            </div>
 
-        <div className='h2Container'>
-            <Typography variant="h2">
-            Your upcoming events
-            </Typography>
+            {/* calendar widget */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar />
+            </LocalizationProvider>
         </div>
+
 
         <div className='h2Container'>
             <Typography variant="h2">
