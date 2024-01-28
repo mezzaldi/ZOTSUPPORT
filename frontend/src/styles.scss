@@ -56,3 +56,27 @@
 .card-carousel .react-multi-carousel-track {
     margin-bottom: 25px;
 }
+
+.upcomingEventBar {
+    background-color: #DADEFF;
+    width: 40rem;
+    padding: 1rem;
+    border-left: 0.2rem solid #11007B;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:0.5rem;
+}
+
+.dateChip {
+    background-color: #11007B;
+    display:inline-block;
+    padding:0.2rem;
+    border-radius:4px;
+}
+
+.eventBarsAndCalendar {
+    display: flex;
+    flex-direction: row;
+}
