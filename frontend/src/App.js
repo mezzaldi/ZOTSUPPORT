@@ -5,14 +5,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // pages
 import CreateNewProgramPage from './routes/CreateNewProgramPage';
 import LandingPage from './routes/LandingPage';
-import AboutUsPage from './about/AboutUsPage';
+import AboutUsPage from './routes/about/AboutUsPage';
 import SignInPage from './routes/SignInPage';
-import StudentDashboardPage from './dashboard/StudentDashboard';
-import AdminDashboardPage from './dashboard/AdminDashboard';
-import StudentDiscoverPage from './discover/StudentDiscoverPage';
-import AdminDiscoverPage from './discover/AdminDiscoverPage';
-import NotificationsPage from './notifications/NotificationsPage';
-import AdminNotificationsPage from './notifications/AdminNotificationsPage';
+import StudentDashboardPage from './routes/dashboard/StudentDashboardPage';
+import AdminDashboardPage from './routes/dashboard/AdminDashboardPage';
+import NotificationsPage from './routes/notifications/NotificationsPage';
+import DiscoverPage from './routes/discover/DiscoverPage';
 
 // components
 import Navbar from './components/Navbar';
@@ -89,12 +87,10 @@ const App = () => {
           <Route path="/SignIn/dashboard/student" element={<StudentDashboardPage />} />
           <Route path="/AboutUs" element={<AboutUsPage />} />
           <Route path="/CreateNewProgram" element={<CreateNewProgramPage />} />
-          <Route path="/Discover/student" element={<StudentDiscoverPage />} />
+          <Route path="/Discover" element={<DiscoverPage />} />
           <Route path="/Dashboard/student" element={<StudentDashboardPage />} />
-          <Route path="/Discover/admin" element={<AdminDiscoverPage />} />
           <Route path="/Dashboard/admin" element={<AdminDashboardPage />} />
           <Route path="/Notifications" element={<NotificationsPage />} />
-          <Route path="/Notification/admin" element={<AdminNotificationsPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

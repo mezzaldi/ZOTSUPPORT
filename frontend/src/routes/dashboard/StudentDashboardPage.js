@@ -4,8 +4,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
-import NotificationTable from '../components/NotificationTable';
-import CardCarousel from '../components/CardCarousel';
+import NotificationTable from '../../components/NotificationTable';
+import CardCarousel from '../../components/CardCarousel';
 
 
 const StudentDashboardPage = () => {
@@ -35,7 +35,7 @@ const StudentDashboardPage = () => {
         </div>
 
         <div className="tableContainer">
-            <NotificationTable/>
+            <NotificationTable rowsPerPage={4}/>
         </div>
 
         <div className='h2Container'>
