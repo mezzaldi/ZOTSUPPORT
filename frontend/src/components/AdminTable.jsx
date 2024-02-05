@@ -18,7 +18,7 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import { Typography } from "@mui/material";
 
 // dummy notification data
-import NotificationData from "../data/NotificationData";
+import AdminData from "../data/AdminData";
 
 function TablePaginationActions(props) {
   // change this later, currently using material default styling
@@ -90,15 +90,28 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(title, learningProgram, preview) {
-  return { title, learningProgram, preview };
+function createData(profileImg, name, isSuperAdmin, email) {
+  return { profileImg, name, isSuperAdmin, email };
 }
 
-const rows = NotificationData.map((value) => {
-  return createData(value.title, value.learningProgram, value.preview);
+const rows = AdminData.map((value) => {
+  return createData(
+    value.profileImg,
+    value.name,
+    value.isSuperAdmin,
+    value.email
+  );
 });
 
-export default function NotificationTable(props) {
+function isSuperAdmin(isSA) {
+  if (isSA === "True") {
+    return <i>Super Admin</i>;
+  } else {
+    return <p></p>;
+  }
+}
+
+export default function AdminTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   console.log(rowsPerPage);
@@ -128,19 +141,26 @@ export default function NotificationTable(props) {
             : rows
           ).map((row) => (
             <TableRow key={row.name}>
-              <TableCell style={{ width: 300 }} component="th" scope="row">
+              <TableCell style={{ width: 10 }} align="left">
                 <div className="tableCellTextContainer">
-                  <Typography variant="body1">{row.title}</Typography>
+                  <Typography variant="body1">{row.profileImg}</Typography>
                 </div>
               </TableCell>
-              <TableCell style={{ width: 300 }} align="right">
+              <TableCell style={{ width: 300 }} align="left">
                 <div className="tableCellTextContainer">
-                  <Typography variant="body1">{row.learningProgram}</Typography>
+                  <Typography variant="body1">{row.name}</Typography>
                 </div>
               </TableCell>
-              <TableCell style={{ width: 1200 }} align="left">
+              <TableCell style={{ width: 200 }} align="left">
                 <div className="tableCellTextContainer">
-                  <Typography variant="body1">{row.preview}</Typography>
+                  <Typography variant="body1">
+                    {isSuperAdmin(row.isSuperAdmin)}
+                  </Typography>
+                </div>
+              </TableCell>
+              <TableCell style={{ width: 200 }} align="right">
+                <div className="tableCellTextContainer">
+                  <Typography variant="body1">{row.email}</Typography>
                 </div>
               </TableCell>
             </TableRow>
