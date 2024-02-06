@@ -12,6 +12,9 @@ require("dotenv").config();
 const pool = require("./server/db"); // Import the pool object for database connection
 
 const app = express();
+app.use(express.json());
+
+
 
 const PORT = process.env.PORT || 3001;
 
@@ -29,6 +32,31 @@ app.get("/test", async (req, res) => {
     res.json(data.rows);
   } catch (error) {
     console.error(error.message);
+  }
+});
+
+app.get("/programs", async (req, res) => {
+  try {
+    const data = await pool.query("SELECT * FROM programs");
+    res.json(data.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/programs", async (req, res) => {
+  const { name, description, headerImage, color } = req.body;
+
+  try {
+    const newProgram = await pool.query(
+      "INSERT INTO programs (program_name, description, headerimage, color) VALUES($1, $2, $3, $4) RETURNING *",
+      [name, description, headerImage, color]
+    );
+
+    res.status(201).json(newProgram.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
