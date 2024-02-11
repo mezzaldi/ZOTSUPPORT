@@ -76,7 +76,7 @@ const ProgramEventsPage = () => {
 
             <Box>
                 {currentTab === 1 && (
-                    <Box sx={{}}>
+                    <Box>
                         <LongEventCard title={"Upcoming Event name"} />
                         <LongEventCard title={"Upcoming Event name"} />
                         <LongEventCard title={"Upcoming Event name"} />
@@ -84,7 +84,7 @@ const ProgramEventsPage = () => {
                 )}
 
                 {currentTab === 2 && (
-                    <Box sx={{}}>
+                    <Box>
                         <LongEventCard title={"Previous Event name"} />
                         <LongEventCard title={"Previous Event name"} />
                         <LongEventCard title={"Previous Event name"} />
