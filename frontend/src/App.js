@@ -11,6 +11,7 @@ import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
 import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
+import ProgramEventsPage from "./routes/programEvents/ProgramEventsPage";
 
 // global stylesheet
 import "./styles.scss";
@@ -100,6 +101,7 @@ const App = () => {
             <Route path="/Discover" element={<DiscoverPage />} />
             <Route path="/Dashboard" element={<DashboardPage />} />
             <Route path="/Notifications" element={<NotificationsPage />} />
+            <Route path="/ProgramEvents" element={<ProgramEventsPage />} />
           </Routes>
         </Router>
       </ThemeProvider>
