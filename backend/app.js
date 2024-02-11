@@ -63,88 +63,137 @@ app.post("/programs", async (req, res) => {
 });
 */
 
+// POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
-  const { name, description, headerImage, color, tags, email } = req.body;
+  const { name, description, headerImage, color, tags, adminemail } = req.body;
+
+  // Validate input data
+  if (!name || !description || !adminemail) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   try {
-    // Retrieve admin ID based on admin email
-    const adminResult = await pool.query(
-      "SELECT admin_id FROM admins WHERE email = $1",
-      [email]
-    );
+    // Start a transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
 
-    if (adminResult.rows.length === 0) {
-      return res.status(404).json({ error: "Admin not found" });
-    }
+      // 1. Create a new program entry
+      const programInsertQuery = 'INSERT INTO programs (program_name, description, headerimage, color) VALUES ($1, $2, $3, $4) RETURNING program_id';
+      const programInsertValues = [name, description, headerImage, color];
+      const programInsertResult = await client.query(programInsertQuery, programInsertValues);
+      const programId = programInsertResult.rows[0].program_id;
 
-    const adminId = adminResult.rows[0].admin_id;
+      // 2. Add tags associated with the program
+      if (tags && Array.isArray(tags) && tags.length > 0) {
+        for (const tagName of tags) {
+          // Fetch tag_id for the current tag name
+          const tagQuery = 'SELECT tag_id FROM tags WHERE tag_name = $1';
+          const tagResult = await client.query(tagQuery, [tagName]);
+          const tagId = tagResult.rows[0].tag_id;
 
-    // Insert data into the programs table with the retrieved admin ID
-    const newProgram = await pool.query(
-      "INSERT INTO programs (program_name, description, headerimage, color, admin_id) VALUES($1, $2, $3, $4, $5) RETURNING program_id",
-      [name, description, headerImage, color, adminId]
-    );
-    const programId = newProgram.rows[0].program_id;
-
-    // Insert a record into program_admins to associate the program with the admin
-    await pool.query(
-      "INSERT INTO program_admins (program_id, admin_id) VALUES ($1, $2)",
-      [programId, adminId]
-    );
-
-    // Handle dynamic tags
-    for (const tag_name of tags) {
-      // Check if the tag already exists
-      const tagResult = await pool.query(
-        "SELECT tag_id FROM tags WHERE tag_name = $1",
-        [tag_name]
-      );
-      let tagId;
-      if (tagResult.rows.length > 0) {
-        // Tag exists, get its ID
-        tagId = tagResult.rows[0].tag_id;
-      } else {
-        // Tag does not exist, create it
-        const newTagResult = await pool.query(
-          "INSERT INTO tags (tag_name) VALUES ($1) RETURNING tag_id",
-          [tag_name]
-        );
-        tagId = newTagResult.rows[0].tag_id;
+          // Insert into program_tags
+          const programTagInsertQuery = 'INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)';
+          await client.query(programTagInsertQuery, [programId, tagId]);
+        }
       }
 
-      // Associate tag with the program
-      await pool.query(
-        "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)",
-        [programId, tagId]
-      );
+      // 3. Add the user specified as admin for the program
+      const adminUserQuery = 'SELECT ucinetid FROM users WHERE user_emailaddress = $1';
+      const adminUserValues = [adminemail];
+      const adminUserResult = await client.query(adminUserQuery, adminUserValues);
+      const adminUcinetid = adminUserResult.rows[0].ucinetid;
+
+      const adminInsertQuery = 'INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)';
+      await client.query(adminInsertQuery, [programId, adminUcinetid]);
+
+      // Commit the transaction
+      await client.query('COMMIT');
+
+      res.status(201).json({ message: "Program created successfully" });
+    } catch (error) {
+      // Rollback transaction if any error occurs
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      // Release the client back to the pool
+      client.release();
     }
-
-    res.status(201).json({ message: "Program created successfully" });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error creating program:', error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 
-app.get("/programs_tag_admin", async (req, res) => {
+
+// Assuming you have already set up your express app and database connection
+
+// GET endpoint to retrieve program details by ID
+// GET endpoint to retrieve program details by ID
+app.get("/programs/:programId", async (req, res) => {
+  const programId = req.params.programId;
+
   try {
-    const programsWithTagsAndAdmin = await pool.query(`
-      SELECT p.*, ARRAY_AGG(DISTINCT t.tag_name) AS tags, a.admin_name, a.email
-      FROM programs p
-      LEFT JOIN program_tags pt ON p.program_id = pt.program_id
-      LEFT JOIN tags t ON pt.tag_id = t.tag_id
-      LEFT JOIN program_admins pa ON p.program_id = pa.program_id
-      LEFT JOIN admins a ON pa.admin_id = a.admin_id
-      GROUP BY p.program_id, a.admin_id, a.admin_name, a.email
-    `);
+    // Start a transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
 
-    res.status(200).json(programsWithTagsAndAdmin.rows);
+      // Query to fetch program details including its tags and admin email
+      const query = `
+        SELECT 
+          p.program_id, 
+          p.program_name, 
+          p.description, 
+          p.headerimage, 
+          p.color, 
+          array_agg(t.tag_name) AS tags, 
+          u.user_emailaddress AS admin_email
+        FROM 
+          programs p
+        LEFT JOIN 
+          program_tags pt ON p.program_id = pt.program_id
+        LEFT JOIN 
+          tags t ON pt.tag_id = t.tag_id
+        LEFT JOIN 
+          programadmins pa ON p.program_id = pa.program_id
+        LEFT JOIN 
+          users u ON pa.ucinetid = u.ucinetid
+        WHERE 
+          p.program_id = $1
+        GROUP BY 
+          p.program_id, 
+          u.user_emailaddress;
+      `;
+      const { rows } = await client.query(query, [programId]);
+
+      // Commit the transaction
+      await client.query('COMMIT');
+
+      // Check if program exists
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+
+      // Extract program details from the first row
+      const programDetails = rows[0];
+
+      res.status(200).json(programDetails);
+    } catch (error) {
+      // Rollback transaction if any error occurs
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching program details:', error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 // app.use('/send', emailRouter);
