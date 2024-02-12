@@ -1,5 +1,11 @@
 // ProgramForm.js
 import React, { useState } from 'react';
+import { Typography } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Button } from '@mui/material';
+import { MenuItem } from '@mui/base';
+import { InputLabel } from '@mui/material';
+
 import axios from 'axios';
 
 const Program = () => {
@@ -8,7 +14,7 @@ const Program = () => {
     adminEmail: '',
     headerImage: '',
     description: '',
-    tags: 'general', // Set a default value
+    //tags: null , // Set a default value
   });
 
   const handleInputChange = (e) => {
@@ -19,7 +25,7 @@ const Program = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5125/api/program', formData);
+      const response = await axios.post('http://localhost:3001/programs', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
@@ -29,52 +35,46 @@ const Program = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '1400px', margin: 'auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <label>
+    <div className='h2Container'>
+    <form onSubmit={handleSubmit}>
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
           Program Name:
-          <input type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
-        </label>
+        </Typography>
+        <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Admin Email(UCI email):
-          <input type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
-        </label>
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
+            Admins:
+        </Typography>
+        <TextField fullWidth label="UCI Email" type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Program Header Image:
-          <input type="text" name="headerImage" value={formData.headerImage} onChange={handleInputChange} />
-        </label>
+
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
+            Description:
+        </Typography>          
+        <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange}/>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Description:
-          <textarea name="description" value={formData.description} onChange={handleInputChange}></textarea>
-        </label>
+      <div className='formQuestion'>
+        <Typography variant="h2">  
+            Header Image:
+        </Typography>  
+        <Button variant="outlined" component='label'> 
+          Upload Image  
+          <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
+        </Button>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Tags:
-          <select name="tags" value={formData.tags} onChange={handleInputChange}>
-            <option value="general">General</option>
-            <option value="english">English</option>
-            <option value="history">History</option>
-            <option value="math">Math</option>
-            <option value="biology">Biology</option>
-          </select>
-        </label>
-      </div>
 
       <div>
-        <button type="submit">Publish new program page</button>
+        <Button variant="contained" type="submit">Publish new program page</Button>
       </div>
     </form>
+    </div>
   );
 };
 
