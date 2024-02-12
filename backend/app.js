@@ -195,6 +195,65 @@ app.get("/programs/:programId", async (req, res) => {
 });
 
 
+app.post("/events", async (req, res) => {
+  const { name, location, date, start_time, end_time, recurring, recurring_ends, user_emailaddress, description, headerimage, tags } = req.body;
+
+  try {
+    // Start a transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Insert into events table
+      const eventInsertQuery = `
+        INSERT INTO events (event_name, description, headerimage, location, starttime, endtime, recurring, recurringends, requireregistration, receiveregistreenotifications)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING event_id`;
+      const eventInsertValues = [name, description, headerimage, location, date + ' ' + start_time, date + ' ' + end_time, recurring, recurring_ends, 'false', 'false'];
+      const eventInsertResult = await client.query(eventInsertQuery, eventInsertValues);
+      const eventId = eventInsertResult.rows[0].event_id;
+
+      // Fetch ucinetid for the specified user_emailaddress
+      const userQuery = 'SELECT ucinetid FROM users WHERE user_emailaddress = $1';
+      const userResult = await client.query(userQuery, [user_emailaddress]);
+      const ucinetid = userResult.rows[0].ucinetid;
+
+      // Insert into eventadmins table
+      const eventAdminsInsertQuery = 'INSERT INTO eventadmins (event_id, ucinetid) VALUES ($1, $2)';
+      await client.query(eventAdminsInsertQuery, [eventId, ucinetid]);
+
+      // Insert tags into eventtags table
+      if (tags && Array.isArray(tags) && tags.length > 0) {
+        for (const tagName of tags) {
+          // Fetch tag_id for the current tag name
+          const tagQuery = 'SELECT tag_id FROM tags WHERE tag_name = $1';
+          const tagResult = await client.query(tagQuery, [tagName]);
+          const tagId = tagResult.rows[0].tag_id;
+
+          // Insert into eventtags table
+          const eventTagInsertQuery = 'INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)';
+          await client.query(eventTagInsertQuery, [eventId, tagId]);
+        }
+      }
+
+      // Commit the transaction
+      await client.query('COMMIT');
+
+      res.status(201).json({ message: "Event created successfully" });
+    } catch (error) {
+      // Rollback transaction if any error occurs
+      await client.query('ROLLBACK');
+      console.error('Error creating event:', error);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error connecting to database:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // app.use('/send', emailRouter);
 // app.use('/data', dataRouter);
