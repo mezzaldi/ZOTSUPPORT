@@ -1,33 +1,22 @@
 
-POST http://localhost:5122/api/program
+
+
+
+POST http://localhost:3001/events
 Content-Type: application/json
 
 {
-    "programName": "trig",
-    "adminEmail": "james@uci.edu",
-    "headerImage": "path/to/image.jpg",
-    "description": "This is a tutoring program",
-    "tags": "math"
+    "name": "Event",
+    "location": "Sample Location",
+    "date": "2024-02-11",
+    "start_time": "14:30",
+    "end_time": "15:30",
+    "recurring": ["Monthly"],
+    "recurring_ends": "2024-02-25",
+    "user_emailaddress": "mario@uci",
+    "description": "Sample description",
+    "headerimage": "URL_to_header_image",
+    "tags": ["Undergraduate"]
 }
 
-//GET http://localhost:5122/api/program/general
 
-//GET http://localhost:5100/api/programs
-
-# POST /api/events
-# POST /api/events
-
-// POST http://localhost:5100/api/event
-// Content-Type: application/json
-
-// {
-//   "eventName": "Sample Event",
-//   "eventLocation": "Sample Location",
-//   "eventDate": "2023-01-01",
-//   "startTime": "12:00:00",
-//   "endTime": "11:00:00",
-//   "recurring": false,
-//   "administrators": "admin@example.com",
-//   "eventHeaderImage": "url/to/event-image.jpg",
-//   "eventDescription": "Sample event description",
-//   "tags": "tag1"
