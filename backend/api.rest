@@ -2,6 +2,19 @@
 
 
 
+POST http://localhost:3001/programs
+Content-Type: application/json
+
+{
+  "name": "program",
+  "description": "This is a science program",
+  "headerImage": "URL_to_header_image",
+  "color": "#FFFFFF",
+  "tags": ["Undergraduate", "Graduate"],
+  "adminemail" : "mario@uci"
+}
+
+###
 POST http://localhost:3001/events
 Content-Type: application/json
 
