@@ -1,11 +1,16 @@
 import React from 'react';
 import Program from '../CreateProgram';
+import { Typography } from '@mui/material';
 
 const CreateNewProgramPage = () => {
   return (
-    <div class='pageContent'>
-      <h1>Create a new learning support program</h1>
-      <Program/>
+    <div className='pageContent'>
+        <div className='h1Container'>
+            <Typography variant="h1">
+                Create a New Program
+            </Typography>
+        </div>      
+        <Program/>
     </div>
   );
 };
