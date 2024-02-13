@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import { MenuItem } from '@mui/base';
-import { InputLabel } from '@mui/material';
+import { SyntheticEvent } from 'react';
+import { BaseSyntheticEvent } from 'react';
+import Select from 'react-select';
 
 import axios from 'axios';
+import { instanceOf } from 'prop-types';
 
 const Program = () => {
   const [formData, setFormData] = useState({
@@ -17,22 +19,43 @@ const Program = () => {
     //tags: null , // Set a default value
   });
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [tagData, setTagData] = useState('');
 
+  //This will update the input of program name, admin email, header image, and description on change
+  const handleInputChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  //This will update the input of tags on change 
+  const handleTagInputChange = (e) => {
+    setTagData({tags: e})
+  }
+
+  //Input information from tags is concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
+    formData.tags = tagData.tags.push ( {value: 21, label: "Program" }) //Program tag added automatically here.
+    console.log(formData)
+    //note: need to remove 'program' and event' tag from tag options when loading it in.
+    
 
-    try {
+   /* try {
       const response = await axios.post('http://localhost:3001/programs', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
-    }
-  };
+    }*/
+  }; 
+
+  const tags = [
+
+    {value:'1', label:"Undergraduate"},
+    {value:'2', label:"Graduate"},
+  ]
+
+  
 
   return (
     <div className='h2Container'>
@@ -67,6 +90,13 @@ const Program = () => {
           Upload Image  
           <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
         </Button>
+      </div>
+
+      <div className="formQuestion">
+      <Typography variant="h2">
+            Tags:
+      </Typography>
+      <Select isMulti value={formData.tags} onChange={handleTagInputChange} options={tags}></Select>
       </div>
 
 
