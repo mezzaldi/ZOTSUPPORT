@@ -3,12 +3,8 @@ import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import { SyntheticEvent } from 'react';
-import { BaseSyntheticEvent } from 'react';
 import Select from 'react-select';
-
 import axios from 'axios';
-import { instanceOf } from 'prop-types';
 
 const Program = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +15,9 @@ const Program = () => {
     //tags: null , // Set a default value
   });
 
-  const [tagData, setTagData] = useState('');
+  const [tagData, setTagData] = useState({
+    tags: []
+  });
 
   //This will update the input of program name, admin email, header image, and description on change
   const handleInputChange = (e) => {
@@ -34,8 +32,10 @@ const Program = () => {
   //Input information from tags is concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
-    formData.tags = tagData.tags.push ( {value: 21, label: "Program" }) //Program tag added automatically here.
+    tagData.tags.push({value: '21', label: 'Program'})
+    formData.tags = tagData.tags  //Program tag added automatically here.
     console.log(formData)
+    
     //note: need to remove 'program' and event' tag from tag options when loading it in.
     
 
@@ -49,11 +49,43 @@ const Program = () => {
     }*/
   }; 
 
-  const tags = [
+  const levelTags = [ 
+  //load in only tags with the level category
+  //note: must add new column for color (?)
+    {value:'1', label:"Undergraduate", color: "#11007B"},
+    {value:'2', label:"Graduate", color: "#11007B"},
 
-    {value:'1', label:"Undergraduate"},
-    {value:'2', label:"Graduate"},
   ]
+
+  const subjectTags = [ 
+
+    {value:'3', label:"Art", color: "#80CEAC"},
+    {value:'4', label:"Biology", color: "#80CEAC"},
+
+  ]
+
+  const allTags = [
+    { 
+      label: "Level",
+      options: levelTags
+    },
+
+    { 
+      label: "Subject",
+      options: subjectTags
+    }
+
+  ]
+
+  const tagStyles = {
+    option: (styles, { data }) => {
+      return {
+        ...styles,
+        color: data.color
+
+      };
+    }
+  };
 
   
 
@@ -92,11 +124,14 @@ const Program = () => {
         </Button>
       </div>
 
-      <div className="formQuestion">
+      <div>
       <Typography variant="h2">
             Tags:
       </Typography>
-      <Select isMulti value={formData.tags} onChange={handleTagInputChange} options={tags}></Select>
+      </div>
+
+      <div className='h2container'>
+      <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
       </div>
 
 
