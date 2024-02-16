@@ -2,7 +2,7 @@ import React from 'react';
 import Event from '../CreateEvent';
 import { Typography } from '@mui/material';
 
-const CreateNewProgramPage = () => {
+const CreateNewEventPage = () => {
   return (
     <div className='pageContent'>
         <div className='h1Container'>
@@ -10,9 +10,9 @@ const CreateNewProgramPage = () => {
                 Create a New Program
             </Typography>
         </div>      
-        <Program/>
+        <Event/>
     </div>
   );
 };
 
-export default CreateNewProgramPage;
+export default CreateNewEventPage;
