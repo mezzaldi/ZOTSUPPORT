@@ -78,3 +78,19 @@
     display: flex;
     flex-direction: row;
 }
+
+
+.formQuestion {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 3rem;
+}
+
+.tagContainer {
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+    font-family: "Open Sans"
+}
+
