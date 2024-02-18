@@ -1,5 +1,5 @@
 import React from "react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -17,6 +17,8 @@ import EventBar from "../../components/EventBar";
 import AdminTable from "../../components/AdminTable";
 
 import UserContext from "../../user/UserContext";
+import axios from "axios";
+import { useState } from "react";
 
 // Used to style pop-up modals
 const modalStyle = {
@@ -155,6 +157,20 @@ function RemoveAdminModal() {
 const DashboardPage = () => {
     const userData = useContext(UserContext);
 
+    // Get the user's followed programs.
+    const [followedPrograms, setFollowedPrograms] = useState();
+    useEffect(() => {
+        const getFollowedPrograms = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/followedPrograms/:${userData.ucinetid}`
+                )
+                .catch((err) => console.log(err));
+            setFollowedPrograms(res.data);
+        };
+        getFollowedPrograms();
+    }, []);
+
     return (
         <div className="pageContent">
             <Box
@@ -236,14 +252,23 @@ const DashboardPage = () => {
             )}
 
             {/* Only show followed programs to admins and super admins */}
-            {(userData.role === "admin" || userData.role === "student") && (
-                <div>
-                    <div className="h2Container">
-                        <Typography variant="h2">Followed programs</Typography>
+            {(userData.role === "admin" || userData.role === "student") &&
+                // Make sure followedPrograms is loaded in
+                followedPrograms && (
+                    <div>
+                        <div className="h2Container">
+                            <Typography variant="h2">
+                                Followed programs
+                            </Typography>
+                        </div>
+                        <CardCarousel
+                            cardType="program"
+                            data={followedPrograms.map(
+                                (item) => item.program_id
+                            )}
+                        />
                     </div>
-                    <CardCarousel cardType="followedPrograms" />
-                </div>
-            )}
+                )}
         </div>
     );
 };

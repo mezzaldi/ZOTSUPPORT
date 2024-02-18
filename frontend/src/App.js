@@ -82,7 +82,8 @@ const App = () => {
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {
         role: "student",
-        name: "Carly",
+        name: "Peter Anteater",
+        ucinetid: "12345",
     };
 
     return (
