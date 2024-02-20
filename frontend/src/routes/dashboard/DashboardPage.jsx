@@ -37,11 +37,17 @@ const modalStyle = {
     gap: "20px",
 };
 
+function AddAdminToDatabase(adminEmail) {
+    console.log(adminEmail);
+}
+
 // pop-up for when superadmin clicks 'add admin'
 function AddAdminModal() {
     const [open, setOpen] = React.useState(false);
     const handleOpenAddAdmin = () => setOpen(true);
     const handleCloseAddAdmin = () => setOpen(false);
+
+    const [email, setEmail] = useState();
 
     return (
         <React.Fragment>
@@ -81,9 +87,19 @@ function AddAdminModal() {
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
+                        value={email}
+                        onChange={(input) => {
+                            setEmail(input.target.value);
+                        }}
                         sx={{ width: "100%" }}
                     />
-                    <Button variant="contained" sx={{ width: "25%" }}>
+                    <Button
+                        onClick={() => {
+                            AddAdminToDatabase(email);
+                        }}
+                        variant="contained"
+                        sx={{ width: "25%" }}
+                    >
                         Add new admin
                     </Button>
                 </Box>
@@ -92,11 +108,17 @@ function AddAdminModal() {
     );
 }
 
+function RemoveAdminFromDatabase(adminEmail) {
+    console.log(adminEmail);
+}
+
 // pop-up for when superadmin clicks 'remove admin'
 function RemoveAdminModal() {
     const [open, setOpen] = React.useState(false);
     const handleOpenRemoveAdmin = () => setOpen(true);
     const handleCloseRemoveAdmin = () => setOpen(false);
+
+    const [email, setEmail] = useState();
 
     return (
         <React.Fragment>
@@ -139,9 +161,16 @@ function RemoveAdminModal() {
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
+                        value={email}
+                        onChange={(input) => {
+                            setEmail(input.target.value);
+                        }}
                         sx={{ width: "100%" }}
                     />
                     <Button
+                        onClick={() => {
+                            AddAdminToDatabase(email);
+                        }}
                         variant="contained"
                         color="error"
                         sx={{ width: "25%" }}
