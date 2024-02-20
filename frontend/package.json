@@ -20,7 +20,12 @@
     "react-dom": "^18.2.0",
     "react-multi-carousel": "^2.8.4",
     "react-router-dom": "^6.21.3",
+<<<<<<< HEAD
     "react-scripts": "^5.0.1",
+=======
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+>>>>>>> ba5b46e72cab1c0fb3d4ebc4ef7018fde1d5aa3c
     "web-vitals": "^2.1.4"
   },
   "scripts": {

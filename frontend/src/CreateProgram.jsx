@@ -1,5 +1,9 @@
 // ProgramForm.js
 import React, { useState } from 'react';
+import { Typography } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Button } from '@mui/material';
+import Select from 'react-select';
 import axios from 'axios';
 
 const Program = () => {
@@ -8,73 +12,134 @@ const Program = () => {
     adminEmail: '',
     headerImage: '',
     description: '',
-    tags: 'general', // Set a default value
+    //tags: null , // Set a default value
   });
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [tagData, setTagData] = useState({
+    tags: []
+  });
 
+  //This will update the input of program name, admin email, header image, and description on change
+  const handleInputChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  //This will update the input of tags on change 
+  const handleTagInputChange = (e) => {
+    setTagData({tags: e})
+  }
+
+  //Input information from tags is concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
+    tagData.tags.push({value: '21', label: 'Program'})
+    formData.tags = tagData.tags  //Program tag added automatically here.
+    console.log(formData)
+    
+    //note: need to remove 'program' and event' tag from tag options when loading it in.
+    
 
-    try {
-      const response = await axios.post('http://localhost:5125/api/program', formData);
+   /* try {
+      const response = await axios.post('http://localhost:3001/programs', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
+    }*/
+  }; 
+
+  const levelTags = [ 
+  //load in only tags with the level category
+  //note: must add new column for color (?)
+    {value:'1', label:"Undergraduate", color: "#11007B"},
+    {value:'2', label:"Graduate", color: "#11007B"},
+
+  ]
+
+  const subjectTags = [ 
+
+    {value:'3', label:"Art", color: "#80CEAC"},
+    {value:'4', label:"Biology", color: "#80CEAC"},
+
+  ]
+
+  const allTags = [
+    { 
+      label: "Level",
+      options: levelTags
+    },
+
+    { 
+      label: "Subject",
+      options: subjectTags
+    }
+
+  ]
+
+  const tagStyles = {
+    option: (styles, { data }) => {
+      return {
+        ...styles,
+        color: data.color
+
+      };
     }
   };
 
+  
+
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '1400px', margin: 'auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <label>
+    <div className='h2Container'>
+    <form onSubmit={handleSubmit}>
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
           Program Name:
-          <input type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
-        </label>
+        </Typography>
+        <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Admin Email(UCI email):
-          <input type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
-        </label>
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
+            Admins:
+        </Typography>
+        <TextField fullWidth label="UCI Email" type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Program Header Image:
-          <input type="text" name="headerImage" value={formData.headerImage} onChange={handleInputChange} />
-        </label>
+
+      <div className='formQuestion'>
+        <Typography width='40%' variant="h2">  
+            Description:
+        </Typography>          
+        <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange}/>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Description:
-          <textarea name="description" value={formData.description} onChange={handleInputChange}></textarea>
-        </label>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          Tags:
-          <select name="tags" value={formData.tags} onChange={handleInputChange}>
-            <option value="general">General</option>
-            <option value="english">English</option>
-            <option value="history">History</option>
-            <option value="math">Math</option>
-            <option value="biology">Biology</option>
-          </select>
-        </label>
+      <div className='formQuestion'>
+        <Typography variant="h2">  
+            Header Image:
+        </Typography>  
+        <Button variant="outlined" component='label'> 
+          Upload Image  
+          <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
+        </Button>
       </div>
 
       <div>
-        <button type="submit">Publish new program page</button>
+      <Typography variant="h2">
+            Tags:
+      </Typography>
+      </div>
+
+      <div className='h2container'>
+      <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
+      </div>
+
+
+      <div>
+        <Button variant="contained" type="submit">Publish new program page</Button>
       </div>
     </form>
+    </div>
   );
 };
 
