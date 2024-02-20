@@ -43,3 +43,70 @@ GET http://localhost:3001/programs
 
 ###
 GET http://localhost:3001/events/upcoming
+
+###
+GET http://localhost:3001/search?tags=Undergraduate
+
+###
+POST http://localhost:3001/events/register
+Content-Type: application/json
+
+{
+    "eventId": "1",
+    "ucinetid": "12345"
+}
+
+###
+GET http://localhost:3001/events/1/registrees
+
+###
+GET http://localhost:3001/students/12345/events
+
+###
+GET http://localhost:3001/users/3/programs
+
+###
+GET http://localhost:3001/users/12345/events/attended
+
+###
+GET http://localhost:3001/programs/2/events/past
+
+###
+GET http://localhost:3001/popular-program
+
+###
+GET http://localhost:3001/upcoming-events
+###
+DELETE http://localhost:3001/events/1
+###
+PUT http://localhost:3001/events/1
+Content-Type: application/json
+
+{
+  "name": "Updated Event",
+  "description": "Updated Description",
+  "date": "2024-02-11",
+  "starttime": "14:30",
+  "endtime": "15:30"
+}
+
+###
+# Edit Program
+PUT http://localhost:3001/programs/1
+Content-Type: application/json
+
+{
+  "name": "Updated Program",
+  "description": "Updated Description",
+  "headerImage": "updated-header-image.jpg",
+  "color": "#336699",
+  "tags": ["Undergraduate"],
+  "adminemail": "mario@uci"
+}
+
+
+###
+DELETE http://localhost:3001/admins/3
+###
+GET http://localhost:3001/programs/1
+

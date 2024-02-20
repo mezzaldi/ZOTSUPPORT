@@ -123,6 +123,80 @@ app.post("/programs", async (req, res) => {
   }
 });
 
+// edit/ PUT endpoint for updating programs
+app.put("/programs/:programId", async (req, res) => {
+  const programId = req.params.programId;
+  const { name, description, headerImage, color, tags, adminemail } = req.body;
+
+  // Validate input data
+  if (!name || !description || !adminemail) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    // Start a transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // 1. Update the program entry
+      const programUpdateQuery = `
+        UPDATE programs
+        SET
+          program_name = $1,
+          description = $2,
+          headerimage = $3,
+          color = $4
+        WHERE
+          program_id = $5
+      `;
+      const programUpdateValues = [name, description, headerImage, color, programId];
+      await client.query(programUpdateQuery, programUpdateValues);
+
+      // 2. Remove existing tags associated with the program
+      const removeTagsQuery = 'DELETE FROM program_tags WHERE program_id = $1';
+      await client.query(removeTagsQuery, [programId]);
+
+      // 3. Add new tags associated with the program
+      if (tags && Array.isArray(tags) && tags.length > 0) {
+        for (const tagName of tags) {
+          // Fetch tag_id for the current tag name
+          const tagQuery = 'SELECT tag_id FROM tags WHERE tag_name = $1';
+          const tagResult = await client.query(tagQuery, [tagName]);
+          const tagId = tagResult.rows[0].tag_id;
+
+          // Insert into program_tags
+          const programTagInsertQuery = 'INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)';
+          await client.query(programTagInsertQuery, [programId, tagId]);
+        }
+      }
+
+      // 4. Update the admin for the program
+      const adminUserQuery = 'SELECT ucinetid FROM users WHERE user_emailaddress = $1';
+      const adminUserValues = [adminemail];
+      const adminUserResult = await client.query(adminUserQuery, adminUserValues);
+      const adminUcinetid = adminUserResult.rows[0].ucinetid;
+
+      const adminUpdateQuery = 'UPDATE programadmins SET ucinetid = $1 WHERE program_id = $2';
+      await client.query(adminUpdateQuery, [adminUcinetid, programId]);
+
+      // Commit the transaction
+      await client.query('COMMIT');
+
+      res.status(200).json({ message: "Program updated successfully" });
+    } catch (error) {
+      // Rollback transaction if any error occurs
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error updating program:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 // Assuming you have already set up your express app and database connection
@@ -401,53 +475,82 @@ app.get("/events", async (req, res) => {
   }
 });
 
-// GET endpoint for retrieving upcoming events
-app.get("/events/upcoming", async (req, res) => {
+// Define the route for the search endpoint
+//Query to fetch programs based on tags
+// Query to fetch events based on tags
+app.get('/search', async (req, res) => {
+  const { tags } = req.query;
+
   try {
     // Start a transaction
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
 
-      // Query to fetch upcoming events
-      const query = `
+      // Query to fetch programs based on tags
+      const programQuery = `
         SELECT 
-            e.event_id,
-            e.event_name,
-            e.description,
-            e.headerimage,
-            e.location,
-            e.starttime,
-            e.endtime,
-            e.recurring,
-            e.recurringends,
-            array_agg(t.tag_name) AS tags,
-            ua.user_emailaddress AS admin_email
+          p.program_id, 
+          p.program_name, 
+          p.description, 
+          p.headerimage, 
+          p.color, 
+          array_agg(t.tag_name) AS tags, 
+          u.user_emailaddress AS admin_email
         FROM 
-            events e
+          programs p
         LEFT JOIN 
-            eventtags et ON e.event_id = et.event_id
+          program_tags pt ON p.program_id = pt.program_id
         LEFT JOIN 
-            tags t ON et.tag_id = t.tag_id
+          tags t ON pt.tag_id = t.tag_id
         LEFT JOIN 
-            eventadmins ea ON e.event_id = ea.event_id
+          programadmins pa ON p.program_id = pa.program_id
         LEFT JOIN 
-            users ua ON ea.ucinetid = ua.ucinetid
+          users u ON pa.ucinetid = u.ucinetid
         WHERE 
-            CAST(CURRENT_DATE || ' ' || e.starttime AS timestamp) >= NOW()
+          t.tag_name = ANY($1::text[])
         GROUP BY 
-            e.event_id, ua.user_emailaddress;
+          p.program_id, 
+          u.user_emailaddress;
       `;
-      const { rows } = await client.query(query);
+      const programResult = await client.query(programQuery, [tags.split(',')]);
+
+      // Query to fetch events based on tags
+      const eventQuery = `
+        SELECT 
+          e.event_id,
+          e.event_name,
+          e.description,
+          e.headerimage,
+          e.location,
+          e.starttime,
+          e.endtime,
+          e.recurring,
+          e.recurringends,
+          ua.user_emailaddress AS admin_email
+        FROM 
+          events e
+        LEFT JOIN 
+          eventtags et ON e.event_id = et.event_id
+        LEFT JOIN 
+          eventadmins ea ON e.event_id = ea.event_id
+        LEFT JOIN 
+          users ua ON ea.ucinetid = ua.ucinetid
+        WHERE 
+          et.tag_id IN (SELECT tag_id FROM tags WHERE tag_name = ANY($1::text[]))
+        GROUP BY 
+          e.event_id, ua.user_emailaddress;
+      `;
+      const eventResult = await client.query(eventQuery, [tags.split(',')]);
 
       // Commit the transaction
       await client.query('COMMIT');
 
-      res.status(200).json(rows);
+      res.status(200).json({ programs: programResult.rows, events: eventResult.rows });
     } catch (error) {
       // Rollback transaction if any error occurs
       await client.query('ROLLBACK');
-      console.error('Error fetching upcoming events:', error);
+      console.error('Error fetching programs and events:', error);
       res.status(500).json({ error: "Internal server error" });
     } finally {
       // Release the client back to the pool
@@ -455,6 +558,395 @@ app.get("/events/upcoming", async (req, res) => {
     }
   } catch (error) {
     console.error('Error connecting to database:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Assuming you have an endpoint for adding a student to an event's list of registrees
+app.post("/events/register", async (req, res) => {
+  const { eventId, ucinetid } = req.body;
+
+  try {
+    // Verify that the student exists in the users table
+    const studentExistsQuery = 'SELECT * FROM users WHERE ucinetid = $1';
+    const studentExistsResult = await pool.query(studentExistsQuery, [ucinetid]);
+    if (studentExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Verify that the event exists in the events table
+    const eventExistsQuery = 'SELECT * FROM events WHERE event_id = $1';
+    const eventExistsResult = await pool.query(eventExistsQuery, [eventId]);
+    if (eventExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Insert a new record into the eventregistree table
+    const insertQuery = 'INSERT INTO eventregistrees (event_id, ucinetid) VALUES ($1, $2)';
+    await pool.query(insertQuery, [eventId, ucinetid]);
+
+    res.status(200).json({ message: "Student added to event's list of registrees successfully" });
+  } catch (error) {
+    console.error("Error adding student to event's list of registrees:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/events/:eventId/registrees", async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    // Query the database to get the list of registrees for the specified event
+    const eventRegistreesQuery = `
+      SELECT 
+        u.user_emailaddress,
+        u.profileimage,
+        u.firstname,
+        u.lastname
+      FROM 
+        eventregistrees er
+      INNER JOIN 
+        users u ON er.ucinetid = u.ucinetid
+      WHERE 
+        er.event_id = $1;
+    `;
+    const { rows } = await pool.query(eventRegistreesQuery, [eventId]);
+
+    res.status(200).json({ registrees: rows });
+  } catch (error) {
+    console.error('Error fetching event registrees:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/students/:ucinetid/events", async (req, res) => {
+  const { ucinetid } = req.params;
+
+  try {
+    // Query the database to get the list of events the student is registered for
+    const studentEventsQuery = `
+      SELECT 
+        e.event_id,
+        e.event_name,
+        e.description,
+        e.location,
+        e.starttime,
+        e.endtime,
+        e.recurring,
+        e.recurringends
+      FROM 
+        events e
+      INNER JOIN 
+        eventregistrees er ON e.event_id = er.event_id
+      WHERE 
+        er.ucinetid = $1;
+    `;
+    const { rows } = await pool.query(studentEventsQuery, [ucinetid]);
+
+    res.status(200).json({ events: rows });
+  } catch (error) {
+    console.error('Error fetching student events:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/users/:ucinetid/programs", async (req, res) => {
+  const { ucinetid } = req.params;
+
+  try {
+    // Query the database to get the list of programs the user is an administrator for
+    const userProgramsQuery = `
+      SELECT 
+        p.program_id,
+        p.program_name,
+        p.description,
+        p.headerimage,
+        p.color,
+        u.user_emailaddress AS admin_name
+      FROM 
+        programs p
+      INNER JOIN 
+        programadmins pa ON p.program_id = pa.program_id
+      INNER JOIN 
+        users u ON pa.ucinetid = u.ucinetid
+      WHERE 
+        pa.ucinetid = $1;
+    `;
+    const { rows } = await pool.query(userProgramsQuery, [ucinetid]);
+
+    res.status(200).json({ programs: rows });
+  } catch (error) {
+    console.error('Error fetching user programs:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.get("/users/:ucinetid/events/attended", async (req, res) => {
+  const { ucinetid } = req.params;
+
+  try {
+    // Query the database to get the list of events the user has attended
+    const attendedEventsQuery = `
+      SELECT 
+        e.event_id,
+        e.event_name,
+        e.description,
+        e.headerimage,
+        e.location,
+        e.starttime,
+        e.endtime,
+        e.recurring,
+        e.recurringends
+      FROM 
+        events e
+      INNER JOIN 
+        eventregistrees er ON e.event_id = er.event_id
+      WHERE 
+        er.ucinetid = $1;
+    `;
+    const { rows } = await pool.query(attendedEventsQuery, [ucinetid]);
+
+    res.status(200).json({ attended_events: rows });
+  } catch (error) {
+    console.error('Error fetching attended events:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/programs/:programId/events/past", async (req, res) => {
+  const { programId } = req.params;
+
+  try {
+    // Write your database query to retrieve past events for the specified program
+    const pastEventsQuery = `
+      SELECT e.*
+      FROM events e
+      JOIN programevents pe ON e.event_id = pe.event_id
+      WHERE pe.program_id = $1
+      AND e.date < CURRENT_DATE
+    `;
+    const pastEventsResult = await pool.query(pastEventsQuery, [programId]);
+    const pastEvents = pastEventsResult.rows;
+
+    res.status(200).json({ pastEvents });
+  } catch (error) {
+    console.error('Error fetching past events:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+//need more clarification
+
+app.get("/popular-program", async (req, res) => {
+  try {
+    // Query the database to get the program with the most followers
+    const query = `
+      SELECT
+        p.program_id,
+        p.program_name,
+        COUNT(pf.ucinetid) AS num_followers
+      FROM
+        programs p
+      LEFT JOIN
+        programfollowers pf ON p.program_id = pf.program_id
+      GROUP BY
+        p.program_id
+      ORDER BY
+        num_followers DESC
+      LIMIT 1;
+    `;
+    const result = await pool.query(query);
+
+    // Check if any program was found
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No popular program found" });
+    }
+
+    // Return the most popular program
+    const popularProgram = result.rows[0];
+    res.status(200).json(popularProgram);
+  } catch (error) {
+    console.error('Error fetching popular program:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/upcoming-events/sooner", async (req, res) => {
+  try {
+    // Calculate the date for one week from today
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+    // Query the database to get upcoming events within the next week
+    const query = `
+      SELECT *
+      FROM events
+      WHERE date >= NOW() AND date <= $1
+      ORDER BY date ASC;
+    `;
+    const result = await pool.query(query, [oneWeekFromNow]);
+
+    // Return the upcoming events
+    const upcomingEvents = result.rows;
+    res.status(200).json(upcomingEvents);
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/upcoming-events", async (req, res) => {
+  try {
+    // Query the database to get upcoming events
+    const query = `
+      SELECT *
+      FROM events
+      WHERE date >= CURRENT_DATE
+      ORDER BY date ASC;
+    `;
+    const result = await pool.query(query);
+
+    // Return the upcoming events
+    const upcomingEvents = result.rows;
+    res.status(200).json(upcomingEvents);
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//Need more clarification
+// Cancel Event API
+app.delete("/events/:eventId", async (req, res) => {
+  const eventId = req.params.eventId;
+
+  try {
+    // Delete the event from the database
+    const deleteEventQuery = `
+      DELETE FROM events
+      WHERE event_id = $1
+    `;
+    await pool.query(deleteEventQuery, [eventId]);
+
+    res.status(200).json({ message: "Event canceled successfully" });
+  } catch (error) {
+    console.error('Error canceling event:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// Update Event API
+app.put("/events/:eventId", async (req, res) => {
+  const eventId = req.params.eventId;
+  const { name, location, date, start_time, end_time, recurring, recurring_ends, description, headerimage, tags } = req.body;
+
+  try {
+    // Update the event in the database
+    const updateEventQuery = `
+      UPDATE events
+      SET
+        event_name = $1,
+        location = $2,
+        starttime = $3,
+        endtime = $4,
+        recurring = $5,
+        recurringends = $6,
+        description = $7,
+        headerimage = $8
+      WHERE
+        event_id = $9
+    `;
+    await pool.query(updateEventQuery, [name, location, date + ' ' + start_time, date + ' ' + end_time, recurring, recurring_ends, description, headerimage, eventId]);
+
+    // Remove existing tags associated with the event
+    const removeTagsQuery = `
+      DELETE FROM eventtags
+      WHERE event_id = $1
+    `;
+    await pool.query(removeTagsQuery, [eventId]);
+
+    // Insert new tags for the event
+    if (tags && Array.isArray(tags) && tags.length > 0) {
+      for (const tagName of tags) {
+        // Fetch tag_id for the current tag name
+        const tagQuery = 'SELECT tag_id FROM tags WHERE tag_name = $1';
+        const tagResult = await pool.query(tagQuery, [tagName]);
+        const tagId = tagResult.rows[0].tag_id;
+
+        // Insert into eventtags table
+        const eventTagInsertQuery = 'INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)';
+        await pool.query(eventTagInsertQuery, [eventId, tagId]);
+      }
+    }
+
+    res.status(200).json({ message: "Event updated successfully" });
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Cancel Event API
+app.delete("/events/:eventId", async (req, res) => {
+  const eventId = req.params.eventId;
+
+  try {
+    // Delete the event from the database
+    const deleteEventQuery = `
+      DELETE FROM events
+      WHERE event_id = $1
+    `;
+    await pool.query(deleteEventQuery, [eventId]);
+
+    res.status(200).json({ message: "Event canceled successfully" });
+  } catch (error) {
+    console.error('Error canceling event:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Remove Admin Endpoint
+// Remove Admin Endpoint
+app.delete("/admins/:ucinetid", async (req, res) => {
+  const ucinetid = req.params.ucinetid;
+
+  try {
+    // Check if the user with the provided ucinetid exists in the database and is an admin
+    const adminExistsQuery = 'SELECT * FROM users WHERE ucinetid = $1 AND isadmin = $2';
+    const adminExistsResult = await pool.query(adminExistsQuery, [ucinetid, true]);
+    if (adminExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    // Update the user's status to remove admin
+    const updateUserAdminStatusQuery = 'UPDATE users SET isadmin = $1 WHERE ucinetid = $2';
+    await pool.query(updateUserAdminStatusQuery, [false, ucinetid]);
+
+    res.status(200).json({ message: "User demoted from admin successfully" });
+  } catch (error) {
+    console.error('Error demoting user from admin:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Add Admin Endpoint
+app.post("/admins", async (req, res) => {
+  const { ucinetid } = req.body;
+
+  try {
+    // Check if the user with the provided ucinetid exists in the database
+    const userExistsQuery = 'SELECT * FROM users WHERE ucinetid = $1';
+    const userExistsResult = await pool.query(userExistsQuery, [ucinetid]);
+    if (userExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user's status to indicate admin (assuming is_admin column)
+    const updateUserAdminStatusQuery = 'UPDATE users SET isadmin = $1 WHERE ucinetid = $2';
+    await pool.query(updateUserAdminStatusQuery, [true, ucinetid]);
+
+    res.status(201).json({ message: "User promoted to admin successfully" });
+  } catch (error) {
+    console.error('Error promoting user to admin:', error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
