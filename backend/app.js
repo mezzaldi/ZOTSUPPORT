@@ -9,8 +9,8 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  next();
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    next();
 });
 
 // Other middleware and routes
@@ -25,7 +25,6 @@ app.use(
         credentials: true,
     })
 );
-
 
 // EXAMPLE
 app.get("/test", async (req, res) => {
@@ -150,12 +149,27 @@ app.post("/programs", async (req, res) => {
     }
 });
 
-// Assuming you have already set up your express app and database connection
+// CARLY Get programs by ID
+// app.get("/programs/:programid", async (req, res) => {
+//     const programid = req.params.programid.replace(":", "");
+//     const client = await pool.connect();
+//     try {
+//         await client.query("BEGIN");
+//         const query =
+//             "SELECT program_name, description, headerImage, color FROM programs WHERE program_id = $1";
+//         const data = await client.query(query, [programid]);
+//         res.json(data.rows);
+//     } catch (error) {
+//         console.error(error.message);
+//     } finally {
+//         // Release the client back to the pool
+//         client.release();
+//     }
+// });
 
 // GET endpoint to retrieve program details by ID
-// GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
-    const programId = req.params.programId;
+    const programId = req.params.programId.replace(":", "");
 
     try {
         // Start a transaction
@@ -217,15 +231,14 @@ app.get("/programs/:programId", async (req, res) => {
     }
 });
 
-
 // GET endpoint for retrieving all programs
 app.get("/programs", async (req, res) => {
-  try {
-    // Connect to the database
-    const client = await pool.connect();
     try {
-      // Retrieve all programs from the database
-      const query = `
+        // Connect to the database
+        const client = await pool.connect();
+        try {
+            // Retrieve all programs from the database
+            const query = `
         SELECT 
           p.program_id, 
           p.program_name, 
@@ -248,23 +261,23 @@ app.get("/programs", async (req, res) => {
           p.program_id, 
           u.user_emailaddress;
       `;
-      const { rows } = await client.query(query);
+            const { rows } = await client.query(query);
 
-      // Return all programs with tags and admin email in the response
-      res.status(200).json(rows);
+            // Return all programs with tags and admin email in the response
+            res.status(200).json(rows);
+        } catch (error) {
+            // Handle database query errors
+            console.error("Error fetching programs:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-      // Handle database query errors
-      console.error('Error fetching programs:', error);
-      res.status(500).json({ error: "Internal server error" });
-    } finally {
-      // Release the client back to the pool
-      client.release();
+        // Handle database connection errors
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-  } catch (error) {
-    // Handle database connection errors
-    console.error('Error connecting to database:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
 });
 
 app.post("/events", async (req, res) => {
@@ -361,114 +374,122 @@ app.post("/events", async (req, res) => {
 
 // GET endpoint for retrieving specific events
 app.get("/events/:eventId", async (req, res) => {
-  const eventId = req.params.eventId;
+    const eventId = req.params.eventId;
 
-  try {
-    // Connect to the database
-    const client = await pool.connect();
     try {
-      // Retrieve the event details from the database based on the event ID
-      const eventQuery = 'SELECT * FROM events WHERE event_id = $1';
-      const eventResult = await client.query(eventQuery, [eventId]);
-      const event = eventResult.rows[0];
+        // Connect to the database
+        const client = await pool.connect();
+        try {
+            // Retrieve the event details from the database based on the event ID
+            const eventQuery = "SELECT * FROM events WHERE event_id = $1";
+            const eventResult = await client.query(eventQuery, [eventId]);
+            const event = eventResult.rows[0];
 
-      if (!event) {
-        // If no event is found with the specified ID, return a 404 Not Found response
-        return res.status(404).json({ error: "Event not found" });
-      }
+            if (!event) {
+                // If no event is found with the specified ID, return a 404 Not Found response
+                return res.status(404).json({ error: "Event not found" });
+            }
 
-      // Retrieve admin email associated with the event
-      const adminQuery = 'SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1';
-      const adminResult = await client.query(adminQuery, [eventId]);
-      const adminEmail = adminResult.rows[0]?.user_emailaddress;
+            // Retrieve admin email associated with the event
+            const adminQuery =
+                "SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1";
+            const adminResult = await client.query(adminQuery, [eventId]);
+            const adminEmail = adminResult.rows[0]?.user_emailaddress;
 
-      // Retrieve tags associated with the event
-      const tagsQuery = 'SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1';
-      const tagsResult = await client.query(tagsQuery, [eventId]);
-      const tags = tagsResult.rows.map(row => row.tag_name);
+            // Retrieve tags associated with the event
+            const tagsQuery =
+                "SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1";
+            const tagsResult = await client.query(tagsQuery, [eventId]);
+            const tags = tagsResult.rows.map((row) => row.tag_name);
 
-      // Combine event details, admin email, and tags into a single object
-      const eventData = { ...event, adminemail: adminEmail, tags: tags };
+            // Combine event details, admin email, and tags into a single object
+            const eventData = { ...event, adminemail: adminEmail, tags: tags };
 
-      // Return the event details in the response
-      res.status(200).json(eventData);
+            // Return the event details in the response
+            res.status(200).json(eventData);
+        } catch (error) {
+            // Handle database query errors
+            console.error("Error fetching event:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-      // Handle database query errors
-      console.error('Error fetching event:', error);
-      res.status(500).json({ error: "Internal server error" });
-    } finally {
-      // Release the client back to the pool
-      client.release();
+        // Handle database connection errors
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-  } catch (error) {
-    // Handle database connection errors
-    console.error('Error connecting to database:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
 });
 
 // GET endpoint for retrieving all events
 app.get("/events", async (req, res) => {
-  try {
-    // Connect to the database
-    const client = await pool.connect();
     try {
-      // Retrieve all events from the database
-      const eventsQuery = 'SELECT * FROM events';
-      const eventsResult = await client.query(eventsQuery);
-      const events = eventsResult.rows;
+        // Connect to the database
+        const client = await pool.connect();
+        try {
+            // Retrieve all events from the database
+            const eventsQuery = "SELECT * FROM events";
+            const eventsResult = await client.query(eventsQuery);
+            const events = eventsResult.rows;
 
-      // Initialize an array to store all events with admin emails and tags
-      const eventsWithData = [];
+            // Initialize an array to store all events with admin emails and tags
+            const eventsWithData = [];
 
-      // Loop through each event to fetch admin email and tags
-      for (const event of events) {
-        const eventId = event.event_id;
+            // Loop through each event to fetch admin email and tags
+            for (const event of events) {
+                const eventId = event.event_id;
 
-        // Retrieve admin email associated with the event
-        const adminQuery = 'SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1';
-        const adminResult = await client.query(adminQuery, [eventId]);
-        const adminEmail = adminResult.rows[0]?.user_emailaddress;
+                // Retrieve admin email associated with the event
+                const adminQuery =
+                    "SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1";
+                const adminResult = await client.query(adminQuery, [eventId]);
+                const adminEmail = adminResult.rows[0]?.user_emailaddress;
 
-        // Retrieve tags associated with the event
-        const tagsQuery = 'SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1';
-        const tagsResult = await client.query(tagsQuery, [eventId]);
-        const tags = tagsResult.rows.map(row => row.tag_name);
+                // Retrieve tags associated with the event
+                const tagsQuery =
+                    "SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1";
+                const tagsResult = await client.query(tagsQuery, [eventId]);
+                const tags = tagsResult.rows.map((row) => row.tag_name);
 
-        // Combine event details, admin email, and tags into a single object
-        const eventData = { ...event, adminemail: adminEmail, tags: tags };
+                // Combine event details, admin email, and tags into a single object
+                const eventData = {
+                    ...event,
+                    adminemail: adminEmail,
+                    tags: tags,
+                };
 
-        // Push the event data into the array
-        eventsWithData.push(eventData);
-      }
+                // Push the event data into the array
+                eventsWithData.push(eventData);
+            }
 
-      // Return all events with admin emails and tags in the response
-      res.status(200).json(eventsWithData);
+            // Return all events with admin emails and tags in the response
+            res.status(200).json(eventsWithData);
+        } catch (error) {
+            // Handle database query errors
+            console.error("Error fetching events:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-      // Handle database query errors
-      console.error('Error fetching events:', error);
-      res.status(500).json({ error: "Internal server error" });
-    } finally {
-      // Release the client back to the pool
-      client.release();
+        // Handle database connection errors
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-  } catch (error) {
-    // Handle database connection errors
-    console.error('Error connecting to database:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
 });
 
 // GET endpoint for retrieving upcoming events
 app.get("/events/upcoming", async (req, res) => {
-  try {
-    // Start a transaction
-    const client = await pool.connect();
     try {
-      await client.query('BEGIN');
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
 
-      // Query to fetch upcoming events
-      const query = `
+            // Query to fetch upcoming events
+            const query = `
         SELECT 
             e.event_id,
             e.event_name,
@@ -496,25 +517,25 @@ app.get("/events/upcoming", async (req, res) => {
         GROUP BY 
             e.event_id, ua.user_emailaddress;
       `;
-      const { rows } = await client.query(query);
+            const { rows } = await client.query(query);
 
-      // Commit the transaction
-      await client.query('COMMIT');
+            // Commit the transaction
+            await client.query("COMMIT");
 
-      res.status(200).json(rows);
+            res.status(200).json(rows);
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            console.error("Error fetching upcoming events:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-      // Rollback transaction if any error occurs
-      await client.query('ROLLBACK');
-      console.error('Error fetching upcoming events:', error);
-      res.status(500).json({ error: "Internal server error" });
-    } finally {
-      // Release the client back to the pool
-      client.release();
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-  } catch (error) {
-    console.error('Error connecting to database:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
 });
 
 // app.use('/send', emailRouter);
