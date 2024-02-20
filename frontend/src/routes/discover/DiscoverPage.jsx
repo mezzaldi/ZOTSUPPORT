@@ -9,13 +9,13 @@ const DiscoverPage = () => {
                 <Typography variant="h2">Upcoming events</Typography>
             </div>
 
-            <CardCarousel cardType="event" />
+            {/* <CardCarousel cardType="event" /> */}
 
             <div className="h2Container">
                 <Typography variant="h2">Popular events</Typography>
             </div>
 
-            <CardCarousel cardType="event" />
+            {/* <CardCarousel cardType="event" /> */}
 
             <div className="h2Container">
                 <Typography variant="h2">
@@ -23,7 +23,7 @@ const DiscoverPage = () => {
                 </Typography>
             </div>
 
-            <CardCarousel cardType="program" />
+            {/* <CardCarousel cardType="program" /> */}
         </div>
     );
 };

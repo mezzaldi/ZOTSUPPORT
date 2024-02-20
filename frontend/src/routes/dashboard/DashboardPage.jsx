@@ -169,7 +169,7 @@ const DashboardPage = () => {
             setFollowedPrograms(res.data);
         };
         getFollowedPrograms();
-    }, []);
+    }, [userData]);
 
     return (
         <div className="pageContent">
@@ -251,24 +251,18 @@ const DashboardPage = () => {
                 </div>
             )}
 
-            {/* Only show followed programs to admins and super admins */}
-            {(userData.role === "admin" || userData.role === "student") &&
-                // Make sure followedPrograms is loaded in
-                followedPrograms && (
-                    <div>
-                        <div className="h2Container">
-                            <Typography variant="h2">
-                                Followed programs
-                            </Typography>
-                        </div>
-                        <CardCarousel
-                            cardType="program"
-                            data={followedPrograms.map(
-                                (item) => item.program_id
-                            )}
-                        />
+            {/* Make sure followedPrograms is loaded in */}
+            {followedPrograms && (
+                <div>
+                    <div className="h2Container">
+                        <Typography variant="h2">Followed programs</Typography>
                     </div>
-                )}
+                    <CardCarousel
+                        cardType="program"
+                        data={followedPrograms.map((item) => item.program_id)}
+                    />
+                </div>
+            )}
         </div>
     );
 };

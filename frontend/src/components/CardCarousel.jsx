@@ -5,37 +5,12 @@ import EventCard from "./EventCard";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import { useEffect } from "react";
 import axios from "axios";
-import { useState } from "react";
-
-// Data file imports
-import FollowedProgramsData from "../data/FollowedProgramsData";
-import PopularEventsData from "../data/PopularEventsData";
-import PopularProgramsData from "../data/PopularProgramsData";
-import UpcomingEventsData from "../data/UpcomingEventsData";
 
 // Determines the type of cards that will be displayed in the carousel.
 // Will then reference the appropriate json data file to load in the user's
 // followed programs, currently popular events, current upcoming events,
 // and currently popular programs.
-
-function determineCardType(cardType, data) {
-    // PROGRAM CARDS
-    if (cardType === "program") {
-        return FollowedProgramsData.map((value) => (
-            // key prop is needed for the carousel component to work, ignore
-            <ProgramCard key={value.title} title={value.title} />
-        ));
-    }
-
-    // EVENT CARDS
-    if (cardType === "event") {
-        return UpcomingEventsData.map((value) => (
-            <EventCard key={value.title} title={value.title} />
-        ));
-    }
-}
 
 const responsive = {
     superLargeDesktop: {
@@ -76,22 +51,37 @@ const CardCarousel = (props) => {
         getRequests.push(req);
     });
 
-    Promise.all(getRequests).then((responses) => {
-        responses.forEach((res) => {
-            // ASSUMING ITS A PROGRAM CARD FOR NOW
-            const programDetails = res.data[0];
-            console.log("program details", programDetails);
-            cards.push(
-                // key prop is needed for the carousel component to work, ignore
-                <ProgramCard
-                    key={programDetails.program_name}
-                    title={programDetails.program_name}
-                />
-            );
-
-            console.log("CARDS: ", cards);
+    if (props.cardType === "program") {
+        Promise.all(getRequests).then((responses) => {
+            responses.forEach((res) => {
+                // ASSUMING ITS A PROGRAM CARD FOR NOW
+                const programDetails = res.data[0];
+                cards.push(
+                    // key prop is needed for the carousel component to work, ignore
+                    <ProgramCard
+                        key={programDetails.program_name}
+                        title={programDetails.program_name}
+                    />
+                );
+            });
         });
-    });
+    }
+
+    if (props.cardType === "event") {
+        Promise.all(getRequests).then((responses) => {
+            responses.forEach((res) => {
+                // ASSUMING ITS A PROGRAM CARD FOR NOW
+                const eventDetails = res.data[0];
+                cards.push(
+                    // key prop is needed for the carousel component to work, ignore
+                    <EventCard
+                        key={eventDetails.event_name}
+                        title={eventDetails.event_name}
+                    />
+                );
+            });
+        });
+    }
 
     // const cards = determineCardType(props.cardType, props.data);
 
