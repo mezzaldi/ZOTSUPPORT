@@ -19,6 +19,8 @@ import AdminTable from "../../components/AdminTable";
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // Used to style pop-up modals
 const modalStyle = {
@@ -37,11 +39,16 @@ const modalStyle = {
     gap: "20px",
 };
 
-function AddAdminToDatabase(adminEmail) {
-    axios
-        .post(`http://localhost:3001/admins/add/:${adminEmail}`)
-        .catch((err) => console.log(err));
-    console.log("done");
+// async makes a function return a promise
+// await makes a function wait for a promise
+async function AddAdminToDatabase(adminEmail) {
+    try {
+        await axios.post(`http://localhost:3001/admins/add/:${adminEmail}`);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
 }
 
 // pop-up for when superadmin clicks 'add admin'
@@ -50,7 +57,19 @@ function AddAdminModal() {
     const handleOpenAddAdmin = () => setOpen(true);
     const handleCloseAddAdmin = () => setOpen(false);
 
-    const [email, setEmail] = useState();
+    const [email, setEmail] = useState("");
+
+    // SNACKBAR
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const handleSnackbarOpen = () => {
+        setSnackbarOpen(true);
+    };
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
     return (
         <React.Fragment>
@@ -77,7 +96,11 @@ function AddAdminModal() {
                         <Typography id="modal-modal-title" variant="h2">
                             Add administrator to program
                         </Typography>
-                        <Button variant="text" endIcon={<CloseIcon />}>
+                        <Button
+                            onClick={handleCloseAddAdmin}
+                            variant="text"
+                            endIcon={<CloseIcon />}
+                        >
                             Nevermind
                         </Button>
                     </Box>
@@ -94,11 +117,28 @@ function AddAdminModal() {
                         onChange={(input) => {
                             setEmail(input.target.value);
                         }}
+                        error={email !== "" && !email.includes("@uci.edu")}
+                        helperText={
+                            email !== "" && !email.includes("@uci.edu")
+                                ? "Please enter a valid UCI email address in order to add them as an administrator."
+                                : ""
+                        }
                         sx={{ width: "100%" }}
                     />
+                    {/* Button should close modal and give confirmation toast if email is valid,
+                    else give error */}
                     <Button
                         onClick={() => {
-                            AddAdminToDatabase(email);
+                            // using .then because addadmin to database is an async function
+                            AddAdminToDatabase(email).then((success) => {
+                                if (success) {
+                                    // pop up the success snackbar and close the modal
+                                    handleSnackbarOpen();
+                                    handleCloseAddAdmin();
+                                } else {
+                                    console.log("aw");
+                                }
+                            });
                         }}
                         variant="contained"
                         sx={{ width: "25%" }}
@@ -107,14 +147,37 @@ function AddAdminModal() {
                     </Button>
                 </Box>
             </Modal>
+
+            {/* Confirmation snack bar for when admin has been successfully added */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    Admin successfully added
+                </Alert>
+            </Snackbar>
         </React.Fragment>
     );
 }
 
-function RemoveAdminFromDatabase(adminEmail) {
-    axios
-        .delete(`http://localhost:3001/admins/remove/:${adminEmail}`)
-        .catch((err) => console.log(err));
+async function RemoveAdminFromDatabase(adminEmail) {
+    try {
+        await axios.delete(
+            `http://localhost:3001/admins/remove/:${adminEmail}`
+        );
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
 }
 
 // pop-up for when superadmin clicks 'remove admin'
@@ -123,7 +186,19 @@ function RemoveAdminModal() {
     const handleOpenRemoveAdmin = () => setOpen(true);
     const handleCloseRemoveAdmin = () => setOpen(false);
 
-    const [email, setEmail] = useState();
+    const [email, setEmail] = useState("");
+
+    // SNACKBAR
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const handleSnackbarOpen = () => {
+        setSnackbarOpen(true);
+    };
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
     return (
         <React.Fragment>
@@ -154,7 +229,11 @@ function RemoveAdminModal() {
                         <Typography id="modal-modal-title" variant="h2">
                             Remove administrator from program
                         </Typography>
-                        <Button variant="text" endIcon={<CloseIcon />}>
+                        <Button
+                            onClick={handleCloseRemoveAdmin}
+                            variant="text"
+                            endIcon={<CloseIcon />}
+                        >
                             Nevermind
                         </Button>
                     </Box>
@@ -171,10 +250,27 @@ function RemoveAdminModal() {
                             setEmail(input.target.value);
                         }}
                         sx={{ width: "100%" }}
+                        error={email !== "" && !email.includes("@uci.edu")}
+                        helperText={
+                            email !== "" && !email.includes("@uci.edu")
+                                ? "Please enter a valid UCI email address in order to add them as an administrator."
+                                : ""
+                        }
                     />
+                    {/* Button should close modal and give confirmation toast if email is valid,
+                    else give error */}
                     <Button
                         onClick={() => {
-                            RemoveAdminFromDatabase(email);
+                            // using .then because addadmin to database is an async function
+                            RemoveAdminFromDatabase(email).then((success) => {
+                                if (success) {
+                                    // pop up the success snackbar and close the modal
+                                    handleSnackbarOpen();
+                                    handleCloseRemoveAdmin();
+                                } else {
+                                    console.log("aw");
+                                }
+                            });
                         }}
                         variant="contained"
                         color="error"
@@ -184,6 +280,22 @@ function RemoveAdminModal() {
                     </Button>
                 </Box>
             </Modal>
+            {/* Confirmation snack bar for when admin has been successfully added */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    Admin successfully removed
+                </Alert>
+            </Snackbar>
         </React.Fragment>
     );
 }
