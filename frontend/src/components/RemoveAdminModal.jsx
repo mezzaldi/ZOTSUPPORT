@@ -46,6 +46,7 @@ const RemoveAdminModal = () => {
     const handleCloseRemoveAdmin = () => setOpen(false);
 
     const [email, setEmail] = useState("");
+    const [emailInvalid, setEmailInvalid] = useState(false);
 
     // SNACKBAR
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
@@ -109,9 +110,9 @@ const RemoveAdminModal = () => {
                             setEmail(input.target.value);
                         }}
                         sx={{ width: "100%" }}
-                        error={email !== "" && !email.includes("@uci.edu")}
+                        error={emailInvalid}
                         helperText={
-                            email !== "" && !email.includes("@uci.edu")
+                            emailInvalid
                                 ? "Please enter a valid UCI email address in order to add them as an administrator."
                                 : ""
                         }
@@ -127,7 +128,7 @@ const RemoveAdminModal = () => {
                                     handleSnackbarOpen();
                                     handleCloseRemoveAdmin();
                                 } else {
-                                    console.log("aw");
+                                    setEmailInvalid(true);
                                 }
                             });
                         }}
