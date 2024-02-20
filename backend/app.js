@@ -54,24 +54,6 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
     }
 });
 
-/*
-app.post("/programs", async (req, res) => {
-  const { name, description, headerImage, color, tags } = req.body;
-
-  try {
-    const newProgram = await pool.query(
-      "INSERT INTO programs (program_name, description, headerimage, color) VALUES($1, $2, $3, $4) RETURNING *",
-      [name, description, headerImage, color]
-    );
-
-    res.status(201).json(newProgram.rows[0]);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-*/
-
 // POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
     const { name, description, headerImage, color, tags, adminemail } =
@@ -148,24 +130,6 @@ app.post("/programs", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-// CARLY Get programs by ID
-// app.get("/programs/:programid", async (req, res) => {
-//     const programid = req.params.programid.replace(":", "");
-//     const client = await pool.connect();
-//     try {
-//         await client.query("BEGIN");
-//         const query =
-//             "SELECT program_name, description, headerImage, color FROM programs WHERE program_id = $1";
-//         const data = await client.query(query, [programid]);
-//         res.json(data.rows);
-//     } catch (error) {
-//         console.error(error.message);
-//     } finally {
-//         // Release the client back to the pool
-//         client.release();
-//     }
-// });
 
 // GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
