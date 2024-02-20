@@ -38,7 +38,10 @@ const modalStyle = {
 };
 
 function AddAdminToDatabase(adminEmail) {
-    console.log(adminEmail);
+    axios
+        .post(`http://localhost:3001/admins/add/:${adminEmail}`)
+        .catch((err) => console.log(err));
+    console.log("done");
 }
 
 // pop-up for when superadmin clicks 'add admin'
@@ -87,7 +90,7 @@ function AddAdminModal() {
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
-                        value={email}
+                        value={email ?? ""}
                         onChange={(input) => {
                             setEmail(input.target.value);
                         }}
@@ -109,7 +112,9 @@ function AddAdminModal() {
 }
 
 function RemoveAdminFromDatabase(adminEmail) {
-    console.log(adminEmail);
+    axios
+        .delete(`http://localhost:3001/admins/remove/:${adminEmail}`)
+        .catch((err) => console.log(err));
 }
 
 // pop-up for when superadmin clicks 'remove admin'
@@ -161,7 +166,7 @@ function RemoveAdminModal() {
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
-                        value={email}
+                        value={email ?? ""}
                         onChange={(input) => {
                             setEmail(input.target.value);
                         }}
@@ -169,7 +174,7 @@ function RemoveAdminModal() {
                     />
                     <Button
                         onClick={() => {
-                            AddAdminToDatabase(email);
+                            RemoveAdminFromDatabase(email);
                         }}
                         variant="contained"
                         color="error"
