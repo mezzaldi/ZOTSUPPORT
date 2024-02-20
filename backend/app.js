@@ -288,6 +288,35 @@ app.get("/programs/:programId", async (req, res) => {
     }
 });
 
+// GET endpoint to notifications by user ID
+app.get("/notifications/:ucinetid", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    const client = await pool.connect();
+    try {
+        await client.query("BEGIN");
+        // first get notif IDs from notifRecipients table
+        const query1 =
+            "SELECT notification_id FROM notificationrecipients WHERE ucinetid = $1";
+        const data1 = await client.query(query1, [ucinetid]);
+
+        console.log("DATA1:     ", data1);
+        const program_id = "158";
+
+        // now get the actual notifications using the notif IDs
+        const notificationIds = data1.rows.map((row) => row.notification_id);
+        // ANY means the notification_id must match ANY of the ids in notificationIds
+        const query2 =
+            "SELECT notification_id, program_id, title, contents, seen, file FROM notifications WHERE notification_id = ANY($1)";
+        const data2 = await client.query(query2, [notificationIds]);
+        res.json(data2.rows);
+    } catch (error) {
+        console.error(error.message);
+    } finally {
+        // Release the client back to the pool
+        client.release();
+    }
+});
+
 // GET endpoint for retrieving all programs
 app.get("/programs", async (req, res) => {
     try {
@@ -696,6 +725,7 @@ app.get("/events/:eventId/registrees", async (req, res) => {
     }
 });
 
+// Get events a student is registered for
 app.get("/students/:ucinetid/events", async (req, res) => {
     const { ucinetid } = req.params;
 
@@ -727,6 +757,7 @@ app.get("/students/:ucinetid/events", async (req, res) => {
     }
 });
 
+// Get programs the user is an administrator for
 app.get("/users/:ucinetid/programs", async (req, res) => {
     const { ucinetid } = req.params;
 
