@@ -225,9 +225,8 @@ app.put("/programs/:programId", async (req, res) => {
 });
 
 // GET endpoint to retrieve program details by ID
-// GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
-    const programId = req.params.programId;
+    const programId = req.params.programId.replace(":", "");
 
     try {
         // Start a transaction
@@ -1004,16 +1003,15 @@ app.delete("/events/:eventId", async (req, res) => {
 });
 
 // Remove Admin Endpoint
-// Remove Admin Endpoint
-app.delete("/admins/:ucinetid", async (req, res) => {
-    const ucinetid = req.params.ucinetid;
+app.delete("/admins/remove/:email", async (req, res) => {
+    const email = req.params.email.replace(":", "");
 
     try {
         // Check if the user with the provided ucinetid exists in the database and is an admin
         const adminExistsQuery =
-            "SELECT * FROM users WHERE ucinetid = $1 AND isadmin = $2";
+            "SELECT * FROM users WHERE user_emailaddress = $1 AND isadmin = $2";
         const adminExistsResult = await pool.query(adminExistsQuery, [
-            ucinetid,
+            email,
             true,
         ]);
         if (adminExistsResult.rows.length === 0) {
@@ -1022,8 +1020,8 @@ app.delete("/admins/:ucinetid", async (req, res) => {
 
         // Update the user's status to remove admin
         const updateUserAdminStatusQuery =
-            "UPDATE users SET isadmin = $1 WHERE ucinetid = $2";
-        await pool.query(updateUserAdminStatusQuery, [false, ucinetid]);
+            "UPDATE users SET isadmin = $1 WHERE user_emailaddress = $2";
+        await pool.query(updateUserAdminStatusQuery, [false, email]);
 
         res.status(200).json({
             message: "User demoted from admin successfully",
@@ -1035,21 +1033,22 @@ app.delete("/admins/:ucinetid", async (req, res) => {
 });
 
 // Add Admin Endpoint
-app.post("/admins", async (req, res) => {
-    const { ucinetid } = req.body;
+app.post("/admins/add/:email", async (req, res) => {
+    const email = req.params.email.replace(":", "");
 
     try {
         // Check if the user with the provided ucinetid exists in the database
-        const userExistsQuery = "SELECT * FROM users WHERE ucinetid = $1";
-        const userExistsResult = await pool.query(userExistsQuery, [ucinetid]);
+        const userExistsQuery =
+            "SELECT * FROM users WHERE user_emailaddress = $1";
+        const userExistsResult = await pool.query(userExistsQuery, [email]);
         if (userExistsResult.rows.length === 0) {
             return res.status(404).json({ error: "User not found" });
         }
 
         // Update the user's status to indicate admin (assuming is_admin column)
         const updateUserAdminStatusQuery =
-            "UPDATE users SET isadmin = $1 WHERE ucinetid = $2";
-        await pool.query(updateUserAdminStatusQuery, [true, ucinetid]);
+            "UPDATE users SET isadmin = $1 WHERE user_emailaddress = $2";
+        await pool.query(updateUserAdminStatusQuery, [true, email]);
 
         res.status(201).json({
             message: "User promoted to admin successfully",
@@ -1093,11 +1092,9 @@ app.post("/programs/:programId/followers", async (req, res) => {
             ucinetid,
         ]);
         if (isFollowingResult.rows.length > 0) {
-            return res
-                .status(400)
-                .json({
-                    error: "Student is already a follower of the program",
-                });
+            return res.status(400).json({
+                error: "Student is already a follower of the program",
+            });
         }
 
         // Add the student to the program's followers
