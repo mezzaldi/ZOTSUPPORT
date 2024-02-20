@@ -135,8 +135,8 @@ export default function NotificationTable(props) {
                               page * props.rowsPerPage + props.rowsPerPage
                           )
                         : rows
-                    ).map((row) => (
-                        <TableRow key={row.id}>
+                    ).map((row, index) => (
+                        <TableRow key={index}>
                             <TableCell
                                 style={{ width: 300 }}
                                 component="th"
