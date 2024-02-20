@@ -1013,6 +1013,66 @@ app.post("/admins", async (req, res) => {
   }
 });
 
+// Add Student to Program's Followers Endpoint
+app.post("/programs/:programId/followers", async (req, res) => {
+  const programId = req.params.programId;
+  const { ucinetid } = req.body;
+
+  try {
+    // Check if the program exists
+    const programExistsQuery = 'SELECT * FROM programs WHERE program_id = $1';
+    const programExistsResult = await pool.query(programExistsQuery, [programId]);
+    if (programExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "Program not found" });
+    }
+
+    // Check if the student exists
+    const studentExistsQuery = 'SELECT * FROM users WHERE ucinetid = $1';
+    const studentExistsResult = await pool.query(studentExistsQuery, [ucinetid]);
+    if (studentExistsResult.rows.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Check if the student is already a follower of the program
+    const isFollowingQuery = 'SELECT * FROM programfollowers WHERE program_id = $1 AND ucinetid = $2';
+    const isFollowingResult = await pool.query(isFollowingQuery, [programId, ucinetid]);
+    if (isFollowingResult.rows.length > 0) {
+      return res.status(400).json({ error: "Student is already a follower of the program" });
+    }
+
+    // Add the student to the program's followers
+    const addFollowerQuery = 'INSERT INTO programfollowers (program_id, ucinetid) VALUES ($1, $2)';
+    await pool.query(addFollowerQuery, [programId, ucinetid]);
+
+    res.status(201).json({ message: "Student added to program's followers successfully" });
+  } catch (error) {
+    console.error('Error adding student to program followers:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get Program Followers Endpoint
+app.get("/programs/:programId/followers", async (req, res) => {
+  const programId = req.params.programId;
+
+  try {
+    // Query to fetch list of followers for the specified program
+    const query = `
+      SELECT u.ucinetid, u.user_emailaddress, u.profileimage, u.firstname, u.lastname
+      FROM programfollowers pf
+      JOIN users u ON pf.ucinetid = u.ucinetid
+      WHERE pf.program_id = $1
+    `;
+    const { rows } = await pool.query(query, [programId]);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching program followers:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 // app.use('/send', emailRouter);
 // app.use('/data', dataRouter);
 // app.use('/events', eventsRouter);
