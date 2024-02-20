@@ -81,8 +81,9 @@ globalTheme = responsiveFontSizes(globalTheme);
 const App = () => {
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {
-        role: "student",
-        name: "Carly",
+        role: "superadmin",
+        name: "Peter Anteater",
+        ucinetid: "12345",
     };
 
     return (

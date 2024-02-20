@@ -25,7 +25,7 @@ const EventCard = (props) => {
 
             <CardActions>
                 <Button size="small" variant="outlined" color="primary">
-                    Unfollow
+                    Register
                 </Button>
             </CardActions>
         </Card>
