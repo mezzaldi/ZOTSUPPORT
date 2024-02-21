@@ -337,6 +337,7 @@ app.get("/programs", async (req, res) => {
     }
 });
 
+//Creates event for specific program
 app.post("/events", async (req, res) => {
     const {
         name,
@@ -461,6 +462,72 @@ app.get("/upcoming-events/:programId", async (req, res) => {
     }
 });
 
+// GET endpoint to fetch popular upcoming events from all programs
+app.get('/popular-upcoming-events', async (req, res) => {
+    try {
+        // Query to retrieve popular upcoming events
+        const query = `
+            SELECT 
+                e.event_id,
+                e.event_name,
+                e.program_id,
+                p.program_name,
+                e.date,
+                COUNT(er.ucinetid) AS num_attendees
+            FROM 
+                events e
+            JOIN 
+                programs p ON e.program_id = p.program_id
+            LEFT JOIN 
+                eventregistrees er ON e.event_id = er.event_id
+            WHERE 
+                e.date >= CURRENT_DATE
+            GROUP BY 
+                e.event_id, e.event_name, e.program_id, p.program_name, e.date
+            ORDER BY 
+                num_attendees DESC;
+        `;
+        
+        // Execute the query
+        const { rows } = await pool.query(query);
+
+        // Send the response with the fetched data
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error fetching popular upcoming events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET endpoint to fetch administrators for a specific program
+app.get("/programs/:programId/administrators", async (req, res) => {
+    const programId = req.params.programId;
+
+    try {
+        // Query to fetch administrators for the specified program
+        const query = `
+            SELECT
+                u.ucinetid,
+                u.user_emailaddress,
+                u.profileimage,
+                u.firstname,
+                u.lastname
+            FROM
+                programadmins pa
+            JOIN
+                users u ON pa.ucinetid = u.ucinetid
+            WHERE
+                pa.program_id = $1
+        `;
+        const { rows } = await pool.query(query, [programId]);
+
+        // Send the retrieved administrators as the response
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error fetching administrators:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 
 // GET endpoint for retrieving specific events
