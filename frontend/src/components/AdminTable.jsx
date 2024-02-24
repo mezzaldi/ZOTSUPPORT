@@ -121,7 +121,9 @@ function isSuperAdmin(isSA) {
 
 export default function AdminTable(props) {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
+
+    console.log(props.data);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =

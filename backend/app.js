@@ -380,7 +380,7 @@ app.post("/events", async (req, res) => {
         description,
         headerimage,
         tags,
-        program_id
+        program_id,
     } = req.body;
 
     try {
@@ -390,7 +390,7 @@ app.post("/events", async (req, res) => {
             await client.query("BEGIN");
 
             // Convert recurring array to string
-            const recurringString = recurring.join(','); // Assuming recurring is an array of strings
+            const recurringString = recurring.join(","); // Assuming recurring is an array of strings
 
             // Insert into events table
             const eventInsertQuery = `
@@ -408,7 +408,7 @@ app.post("/events", async (req, res) => {
                 recurring_ends,
                 "false",
                 "false",
-                program_id
+                program_id,
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
@@ -480,19 +480,21 @@ app.get("/upcoming-events/:programId", async (req, res) => {
 
         // Check if any upcoming events were found
         if (rows.length === 0) {
-            return res.status(404).json({ error: "No upcoming events found for the specified program" });
+            return res.status(404).json({
+                error: "No upcoming events found for the specified program",
+            });
         }
 
         // Return the upcoming events
         res.status(200).json(rows);
     } catch (error) {
-        console.error('Error fetching upcoming events:', error);
+        console.error("Error fetching upcoming events:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
 // GET endpoint to fetch popular upcoming events from all programs
-app.get('/popular-upcoming-events', async (req, res) => {
+app.get("/popular-upcoming-events", async (req, res) => {
     try {
         // Query to retrieve popular upcoming events
         const query = `
@@ -516,21 +518,38 @@ app.get('/popular-upcoming-events', async (req, res) => {
             ORDER BY 
                 num_attendees DESC;
         `;
-        
+
         // Execute the query
         const { rows } = await pool.query(query);
 
         // Send the response with the fetched data
         res.status(200).json(rows);
     } catch (error) {
-        console.error('Error fetching popular upcoming events:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error fetching popular upcoming events:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
 // GET endpoint to fetch administrators for a specific program
 app.get("/programs/:programId/administrators", async (req, res) => {
-    const programId = req.params.programId;
+    const programId = req.params.programId.replace(":", "");
+
+    // await client.query("BEGIN");
+    // // first get notif IDs from notifRecipients table
+    // const query = `SELECT
+    //     notifications.notification_id,
+    //     notifications.program_id,
+    //     notifications.title,
+    //     notifications.contents,
+    //     notifications.file,
+    //     notificationrecipients.seen,
+    //     programs.program_name
+    //     FROM notificationrecipients
+    //     LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
+    //     LEFT JOIN programs ON programs.program_id = notifications.program_id
+    //     WHERE ucinetid = $1`;
+    // const data = await client.query(query, [ucinetid]);
+    // res.json(data.rows);
 
     try {
         // Query to fetch administrators for the specified program
@@ -540,7 +559,9 @@ app.get("/programs/:programId/administrators", async (req, res) => {
                 u.user_emailaddress,
                 u.profileimage,
                 u.firstname,
-                u.lastname
+                u.lastname,
+                pa.isadmin,
+                pa.issuperadmin
             FROM
                 programadmins pa
             JOIN
@@ -557,7 +578,6 @@ app.get("/programs/:programId/administrators", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // GET endpoint for retrieving specific events
 app.get("/events/:eventId", async (req, res) => {

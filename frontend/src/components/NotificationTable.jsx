@@ -17,9 +17,6 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { Typography } from "@mui/material";
 
-// dummy notification data
-import NotificationData from "../data/NotificationData";
-
 function TablePaginationActions(props) {
     // change this later, currently using material default styling
     const theme = useTheme();
