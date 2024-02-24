@@ -137,7 +137,7 @@ const DashboardPage = () => {
                         </Typography>
                     </div>
                     <div className="tableContainer">
-                        <AdminTable rowsPerPage={5} data={admins} />
+                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
                     </div>
                 </div>
             )}

@@ -193,7 +193,7 @@ export default function NotificationTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[]}
-                            colSpan={3}
+                            colSpan={rowsPerPage}
                             count={rows.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
