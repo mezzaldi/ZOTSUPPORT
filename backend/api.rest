@@ -1,33 +1,72 @@
 
-POST http://localhost:5122/api/program
+
+
+
+POST http://localhost:3001/programs
 Content-Type: application/json
 
 {
-    "programName": "trig",
-    "adminEmail": "james@uci.edu",
-    "headerImage": "path/to/image.jpg",
-    "description": "This is a tutoring program",
-    "tags": "math"
+  "name": "MyTheprogram",
+  "description": "This is a science program",
+  "headerImage": "URL_to_header_image",
+  "color": "#FFFFFF",
+  "tags": ["Undergraduate", "Graduate"],
+  "adminemail" : "mario@uci"
 }
 
-//GET http://localhost:5122/api/program/general
+###
+POST http://localhost:3001/events
+Content-Type: application/json
 
-//GET http://localhost:5100/api/programs
+{
+    "name": "new Event",
+    "location": "Sample Location",
+    "date": "2024-02-11",
+    "start_time": "14:30",
+    "end_time": "15:30",
+    "recurring": ["Monthly"],
+    "recurring_ends": "2024-02-25",
+    "user_emailaddress": "mario@uci",
+    "description": "Sample description",
+    "headerimage": "URL_to_header_image",
+    "tags": ["Undergraduate"]
+}
 
-# POST /api/events
-# POST /api/events
+###
+GET http://localhost:3001/events/10
 
-// POST http://localhost:5100/api/event
-// Content-Type: application/json
+###
+GET http://localhost:3001/events
 
-// {
-//   "eventName": "Sample Event",
-//   "eventLocation": "Sample Location",
-//   "eventDate": "2023-01-01",
-//   "startTime": "12:00:00",
-//   "endTime": "11:00:00",
-//   "recurring": false,
-//   "administrators": "admin@example.com",
-//   "eventHeaderImage": "url/to/event-image.jpg",
-//   "eventDescription": "Sample event description",
-//   "tags": "tag1"
+###
+GET http://localhost:3001/programs
+
+###
+GET http://localhost:3001/events/upcoming
+
+###
+POST http://localhost:3001/events
+Content-Type: application/json
+
+{
+  "name": "Test Event",
+  "location": "Test Location",
+  "date": "2024-02-20",
+  "start_time": "14:00:00",
+  "end_time": "16:00:00",
+  "recurring": ["monthly"],
+  "recurring_ends": "2024-03-20",
+  "user_emailaddress": "mario@uci",
+  "description": "This is a test event",
+  "headerimage": "https://example.com/header-image.jpg",
+  "tags": ["Undergraduate", "Graduate"],
+  "program_id": 1
+}
+###
+GET http://localhost:3001/upcoming-events/1
+
+###
+GET http://localhost:3001/popular-upcoming-events
+
+###
+GET http://localhost:3001/programs/28/administrators
