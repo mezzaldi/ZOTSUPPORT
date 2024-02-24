@@ -85,35 +85,47 @@ const App = () => {
         role: "superadmin",
         name: "Peter Anteater",
         ucinetid: "12345",
+        program_id: 777,
     };
 
-  return (
-    <UserContext.Provider value={userData}>
-      <ThemeProvider theme={globalTheme}>
-        <Router>
-          {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/SignIn" element={<SignInPage />} />
-            <Route path="/About" element={<AboutUsPage />} />
-            <Route
-              path="/CreateNewProgram"
-              element={<CreateNewProgramPage />}
-            />
-            <Route 
-              path='/CreateNewEvent'
-              element={<CreateNewEventPage />}
-            />
-             
-            <Route path="/Discover" element={<DiscoverPage />} />
-            <Route path="/Dashboard" element={<DashboardPage />} />
-            <Route path="/Notifications" element={<NotificationsPage />} />
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </UserContext.Provider>
-  );
+    return (
+        <UserContext.Provider value={userData}>
+            <ThemeProvider theme={globalTheme}>
+                <Router>
+                    {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
+                    <Navbar />
+                    <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/SignIn" element={<SignInPage />} />
+                        <Route path="/About" element={<AboutUsPage />} />
+                        <Route
+                            path="/CreateNewProgram"
+                            element={<CreateNewProgramPage />}
+                        />
+                        <Route
+                            path="/CreateNewEvent"
+                            element={<CreateNewEventPage />}
+                        />
+
+                        <Route path="/Discover" element={<DiscoverPage />} />
+                        <Route path="/Dashboard" element={<DashboardPage />} />
+                        <Route
+                            path="/Notifications"
+                            element={<NotificationsPage />}
+                        />
+                        <Route
+                            path="/ProgramEvents"
+                            element={<ProgramEventsPage />}
+                        />
+                        <Route
+                            path="/ProgramHomePage"
+                            element={<ProgramHomePage />}
+                        />
+                    </Routes>
+                </Router>
+            </ThemeProvider>
+        </UserContext.Provider>
+    );
 };
 
 export default App;

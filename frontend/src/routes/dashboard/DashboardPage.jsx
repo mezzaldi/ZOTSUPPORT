@@ -50,6 +50,20 @@ const DashboardPage = () => {
         getNotifications();
     }, [userData]);
 
+    // Get the program's administrators
+    const [admins, setAdmins] = useState();
+    useEffect(() => {
+        const getAdmins = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${userData.program_id}/administrators`
+                )
+                .catch((err) => console.log(err));
+            setAdmins(res.data);
+        };
+        getAdmins();
+    }, [userData]);
+
     return (
         <div className="pageContent">
             <Box
@@ -123,7 +137,7 @@ const DashboardPage = () => {
                         </Typography>
                     </div>
                     <div className="tableContainer">
-                        <AdminTable rowsPerPage={5} />
+                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
                     </div>
                 </div>
             )}
