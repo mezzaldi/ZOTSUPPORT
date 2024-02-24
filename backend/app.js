@@ -295,20 +295,12 @@ app.get("/notifications/:ucinetid", async (req, res) => {
     try {
         await client.query("BEGIN");
         // first get notif IDs from notifRecipients table
-        const query1 =
-            "SELECT notification_id FROM notificationrecipients WHERE ucinetid = $1";
-        const data1 = await client.query(query1, [ucinetid]);
+        const query = `SELECT notifications.* FROM notificationrecipients
+            LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
+            WHERE ucinetid = $1`;
+        const data = await client.query(query, [ucinetid]);
 
-        console.log("DATA1:     ", data1);
-        const program_id = "158";
-
-        // now get the actual notifications using the notif IDs
-        const notificationIds = data1.rows.map((row) => row.notification_id);
-        // ANY means the notification_id must match ANY of the ids in notificationIds
-        const query2 =
-            "SELECT notification_id, program_id, title, contents, seen, file FROM notifications WHERE notification_id = ANY($1)";
-        const data2 = await client.query(query2, [notificationIds]);
-        res.json(data2.rows);
+        res.json(data.rows);
     } catch (error) {
         console.error(error.message);
     } finally {
@@ -1162,12 +1154,6 @@ app.get("/programs/:programId/followers", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-// app.use('/send', emailRouter);
-// app.use('/data', dataRouter);
-// app.use('/events', eventsRouter);
-// app.use('/profiles', profilesRouter);
-// app.use('/stats', statsRouter);
 
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
