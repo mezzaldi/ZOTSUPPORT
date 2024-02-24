@@ -54,7 +54,6 @@ const CardCarousel = (props) => {
     if (props.cardType === "program") {
         Promise.all(getRequests).then((responses) => {
             responses.forEach((res) => {
-                // ASSUMING ITS A PROGRAM CARD FOR NOW
                 const programDetails = res.data;
                 cards.push(
                     // key prop is needed for the carousel component to work, ignore

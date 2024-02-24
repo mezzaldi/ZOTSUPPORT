@@ -33,12 +33,6 @@
     border-radius: 50%;
 }
 
-.tableCellTextContainer {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 .card {
     max-width: 17rem;
     display: block;
@@ -79,7 +73,6 @@
     flex-direction: row;
 }
 
-
 .formQuestion {
     display: flex;
     flex-direction: row;
@@ -91,6 +84,5 @@
 .tagContainer {
     padding-top: 1rem;
     padding-bottom: 3rem;
-    font-family: "Open Sans"
+    font-family: "Open Sans";
 }
-

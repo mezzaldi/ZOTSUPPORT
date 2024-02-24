@@ -103,11 +103,11 @@ const DashboardPage = () => {
                 <div className="h2Container">
                     <Typography variant="h2">Notifications</Typography>
                 </div>
-                {/* Make sure notifications are loaded in */}
+                {/* make sure notifs are loaded in */}
                 {notifications && (
                     <div className="tableContainer">
                         <NotificationTable
-                            rowsPerPage={4}
+                            rowsPerPage={10}
                             data={notifications}
                         />
                     </div>

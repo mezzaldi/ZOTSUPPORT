@@ -98,23 +98,27 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(title, learningProgram, preview) {
-    return { title, learningProgram, preview };
-}
-
-const rows = NotificationData.map((value) => {
-    return createData(value.title, value.learningProgram, value.preview);
-});
-
 export default function NotificationTable(props) {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
+
+    function createData(title, contents, program_name, file, seen) {
+        return { title, contents, program_name, file, seen };
+    }
+
+    const rows = props.data.map((notif) => {
+        return createData(
+            notif.title,
+            notif.contents,
+            notif.program_name,
+            notif.file,
+            notif.seen
+        );
+    });
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0
-            ? Math.max(0, (1 + page) * props.rowsPerPage - rows.length)
-            : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -126,41 +130,59 @@ export default function NotificationTable(props) {
     };
 
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <TableContainer component={Paper} sx={{ width: "100%" }}>
+            <Table aria-label="custom pagination table">
                 <TableBody>
-                    {(props.rowsPerPage > 0
+                    {(rowsPerPage > 0
                         ? rows.slice(
-                              page * props.rowsPerPage,
-                              page * props.rowsPerPage + props.rowsPerPage
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
                           )
                         : rows
                     ).map((row, index) => (
                         <TableRow key={index}>
-                            <TableCell
-                                style={{ width: 300 }}
-                                component="th"
-                                scope="row"
-                            >
-                                <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {row.title}
-                                    </Typography>
-                                </div>
+                            {/* TITLE */}
+                            <TableCell component="th" scope="row" align="left">
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        fontWeight: "bold",
+                                        width: "20rem",
+                                    }}
+                                >
+                                    {row.title}
+                                </Typography>
                             </TableCell>
-                            <TableCell style={{ width: 300 }} align="right">
-                                <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {row.learningProgram}
-                                    </Typography>
-                                </div>
+                            {/* LEARNING PROGRAM NAME */}
+                            <TableCell align="left">
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        width: "10rem",
+                                    }}
+                                >
+                                    {row.program_name}
+                                </Typography>
                             </TableCell>
-                            <TableCell style={{ width: 1200 }} align="left">
-                                <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {row.preview}
-                                    </Typography>
-                                </div>
+                            {/* CONTENT PREVIEW */}
+                            <TableCell align="left">
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        width: "50rem",
+                                    }}
+                                >
+                                    {row.contents}
+                                </Typography>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -176,7 +198,7 @@ export default function NotificationTable(props) {
                             rowsPerPageOptions={[]}
                             colSpan={3}
                             count={rows.length}
-                            rowsPerPage={props.rowsPerPage}
+                            rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{
                                 inputProps: {
