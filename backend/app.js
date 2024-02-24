@@ -288,6 +288,35 @@ app.get("/programs/:programId", async (req, res) => {
     }
 });
 
+// GET endpoint to notifications by user ID
+app.get("/notifications/:ucinetid", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    const client = await pool.connect();
+    try {
+        await client.query("BEGIN");
+        // first get notif IDs from notifRecipients table
+        const query = `SELECT 
+            notifications.notification_id,
+            notifications.program_id,
+            notifications.title,
+            notifications.contents,
+            notifications.file,
+            notificationrecipients.seen,
+            programs.program_name
+            FROM notificationrecipients
+            LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
+            LEFT JOIN programs ON programs.program_id = notifications.program_id
+            WHERE ucinetid = $1`;
+        const data = await client.query(query, [ucinetid]);
+        res.json(data.rows);
+    } catch (error) {
+        console.error(error.message);
+    } finally {
+        // Release the client back to the pool
+        client.release();
+    }
+});
+
 // GET endpoint for retrieving all programs
 app.get("/programs", async (req, res) => {
     try {
@@ -797,6 +826,7 @@ app.get("/events/:eventId/registrees", async (req, res) => {
     }
 });
 
+// Get events a student is registered for
 app.get("/students/:ucinetid/events", async (req, res) => {
     const { ucinetid } = req.params;
 
@@ -828,6 +858,7 @@ app.get("/students/:ucinetid/events", async (req, res) => {
     }
 });
 
+// Get programs the user is an administrator for
 app.get("/users/:ucinetid/programs", async (req, res) => {
     const { ucinetid } = req.params;
 
@@ -1232,12 +1263,6 @@ app.get("/programs/:programId/followers", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-// app.use('/send', emailRouter);
-// app.use('/data', dataRouter);
-// app.use('/events', eventsRouter);
-// app.use('/profiles', profilesRouter);
-// app.use('/stats', statsRouter);
 
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);

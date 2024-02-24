@@ -36,6 +36,20 @@ const DashboardPage = () => {
         getFollowedPrograms();
     }, [userData]);
 
+    // Get the user's notifications
+    const [notifications, setNotifications] = useState();
+    useEffect(() => {
+        const getNotifications = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/notifications/:${userData.ucinetid}`
+                )
+                .catch((err) => console.log(err));
+            setNotifications(res.data);
+        };
+        getNotifications();
+    }, [userData]);
+
     return (
         <div className="pageContent">
             <Box
@@ -89,9 +103,15 @@ const DashboardPage = () => {
                 <div className="h2Container">
                     <Typography variant="h2">Notifications</Typography>
                 </div>
-                <div className="tableContainer">
-                    <NotificationTable rowsPerPage={4} />
-                </div>
+                {/* make sure notifs are loaded in */}
+                {notifications && (
+                    <div className="tableContainer">
+                        <NotificationTable
+                            rowsPerPage={10}
+                            data={notifications}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Program admin table only shownt to admin or superadmin */}
