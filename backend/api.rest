@@ -43,3 +43,30 @@ GET http://localhost:3001/programs
 
 ###
 GET http://localhost:3001/events/upcoming
+
+###
+POST http://localhost:3001/events
+Content-Type: application/json
+
+{
+  "name": "Test Event",
+  "location": "Test Location",
+  "date": "2024-02-20",
+  "start_time": "14:00:00",
+  "end_time": "16:00:00",
+  "recurring": ["monthly"],
+  "recurring_ends": "2024-03-20",
+  "user_emailaddress": "mario@uci",
+  "description": "This is a test event",
+  "headerimage": "https://example.com/header-image.jpg",
+  "tags": ["Undergraduate", "Graduate"],
+  "program_id": 1
+}
+###
+GET http://localhost:3001/upcoming-events/1
+
+###
+GET http://localhost:3001/popular-upcoming-events
+
+###
+GET http://localhost:3001/programs/28/administrators

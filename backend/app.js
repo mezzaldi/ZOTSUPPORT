@@ -366,6 +366,7 @@ app.get("/programs", async (req, res) => {
     }
 });
 
+//Creates event for specific program
 app.post("/events", async (req, res) => {
     const {
         name,
@@ -379,6 +380,7 @@ app.post("/events", async (req, res) => {
         description,
         headerimage,
         tags,
+        program_id
     } = req.body;
 
     try {
@@ -387,11 +389,14 @@ app.post("/events", async (req, res) => {
         try {
             await client.query("BEGIN");
 
+            // Convert recurring array to string
+            const recurringString = recurring.join(','); // Assuming recurring is an array of strings
+
             // Insert into events table
             const eventInsertQuery = `
-        INSERT INTO events (event_name, description, headerimage, location, starttime, endtime, recurring, recurringends, requireregistration, receiveregistreenotifications)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING event_id`;
+                INSERT INTO events (event_name, description, headerimage, location, starttime, endtime, recurring, recurringends, requireregistration, receiveregistreenotifications, program_id)
+                VALUES ($1, $2, $3, $4, $5, $6, ARRAY[$7], $8, $9, $10, $11)
+                RETURNING event_id`;
             const eventInsertValues = [
                 name,
                 description,
@@ -399,10 +404,11 @@ app.post("/events", async (req, res) => {
                 location,
                 date + " " + start_time,
                 date + " " + end_time,
-                recurring,
+                recurringString,
                 recurring_ends,
                 "false",
                 "false",
+                program_id
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
@@ -457,6 +463,101 @@ app.post("/events", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+// Get upcoming events for a specific program
+app.get("/upcoming-events/:programId", async (req, res) => {
+    const programId = req.params.programId;
+
+    try {
+        // Query the database to get upcoming events for the specified program
+        const query = `
+            SELECT *
+            FROM events
+            WHERE program_id = $1 AND date >= CURRENT_DATE
+            ORDER BY date ASC;
+        `;
+        const { rows } = await pool.query(query, [programId]);
+
+        // Check if any upcoming events were found
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "No upcoming events found for the specified program" });
+        }
+
+        // Return the upcoming events
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET endpoint to fetch popular upcoming events from all programs
+app.get('/popular-upcoming-events', async (req, res) => {
+    try {
+        // Query to retrieve popular upcoming events
+        const query = `
+            SELECT 
+                e.event_id,
+                e.event_name,
+                e.program_id,
+                p.program_name,
+                e.date,
+                COUNT(er.ucinetid) AS num_attendees
+            FROM 
+                events e
+            JOIN 
+                programs p ON e.program_id = p.program_id
+            LEFT JOIN 
+                eventregistrees er ON e.event_id = er.event_id
+            WHERE 
+                e.date >= CURRENT_DATE
+            GROUP BY 
+                e.event_id, e.event_name, e.program_id, p.program_name, e.date
+            ORDER BY 
+                num_attendees DESC;
+        `;
+        
+        // Execute the query
+        const { rows } = await pool.query(query);
+
+        // Send the response with the fetched data
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error fetching popular upcoming events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET endpoint to fetch administrators for a specific program
+app.get("/programs/:programId/administrators", async (req, res) => {
+    const programId = req.params.programId;
+
+    try {
+        // Query to fetch administrators for the specified program
+        const query = `
+            SELECT
+                u.ucinetid,
+                u.user_emailaddress,
+                u.profileimage,
+                u.firstname,
+                u.lastname
+            FROM
+                programadmins pa
+            JOIN
+                users u ON pa.ucinetid = u.ucinetid
+            WHERE
+                pa.program_id = $1
+        `;
+        const { rows } = await pool.query(query, [programId]);
+
+        // Send the retrieved administrators as the response
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error fetching administrators:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 // GET endpoint for retrieving specific events
 app.get("/events/:eventId", async (req, res) => {

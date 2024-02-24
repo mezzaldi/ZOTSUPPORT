@@ -81,8 +81,23 @@
     padding-bottom: 3rem;
 }
 
+.checkboxContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
 .tagContainer {
     padding-top: 1rem;
     padding-bottom: 3rem;
     font-family: "Open Sans";
 }
+
+.datePickerQuestion {
+    display: flex;
+    flex-direction: row;
+    width: 100%
+
+}
+
