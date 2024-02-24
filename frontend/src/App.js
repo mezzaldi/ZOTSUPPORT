@@ -24,6 +24,9 @@ import {
   ThemeProvider,
   responsiveFontSizes,
 } from "@mui/material/styles";
+import UserSetting from "./routes/UserSetting";
+import ViewNotification from "./routes/notifications/ViewNotification";
+import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
 
 const primaryTextColor = "#242424";
 
@@ -90,7 +93,7 @@ const App = () => {
           {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
           <Navbar />
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/LandingPage" element={<LandingPage />} />
             <Route path="/SignIn" element={<SignInPage />} />
             <Route path="/About" element={<AboutUsPage />} />
             <Route
@@ -100,6 +103,9 @@ const App = () => {
             <Route path="/Discover" element={<DiscoverPage />} />
             <Route path="/Dashboard" element={<DashboardPage />} />
             <Route path="/Notifications" element={<NotificationsPage />} />
+            <Route path="/UserSetting" element={<UserSetting />} />
+            <Route path="/ViewNotification" element={<ViewNotification/>} />
+            <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
           </Routes>
         </Router>
       </ThemeProvider>

@@ -1,0 +1,235 @@
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Arial', sans-serif; 
+}
+
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: #003366;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  color: white;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.5rem; 
+}
+
+.nav {
+  display: flex;
+}
+
+.nav-item, .sign-in {
+  text-decoration: none;
+  color: white;
+  margin-left: 2rem; 
+  padding: 0.5rem 1rem; 
+  border-radius: 0.25rem; 
+}
+
+.sign-in {
+  text-decoration: none;
+  color: white;
+  margin-left: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  transition: all 0.3s ease;
+}
+
+.sign-in:hover {
+  background-color: white;
+  color: #003366;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 10px 20px;
+  text-decoration: none;
+  background-color: #004a99;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #000000;
+}
+
+
+.main-content {
+  background-image: url('https://classrooms.uci.edu/classrooms/ics/'); 
+  background-size: cover;
+  background-position: center;
+  padding: 40px;
+  text-align: center;
+}
+.zot-support-info h2,
+.zot-support-info p,
+.who-can-use h2,
+.who-can-use p,
+.learning-programs h2 {
+  text-align: left;
+  margin: 0; 
+  padding-left: 20px; 
+}
+
+
+
+.cta-box {
+  display: inline-block;
+  border: 2px solid #004a99;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.cta-button:hover {
+  background-color: #000000;
+  color: #fff;
+}
+
+.zot-support-info, .who-can-use, .learning-programs {
+  margin: 2rem auto;
+  max-width: 1200px;
+}
+
+.info-bullets {
+  display: flex;
+  justify-content: space-around; 
+  align-items: center;
+  text-align: center; 
+  margin-top: 20px;
+}
+
+.bullet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px; 
+}
+
+.icon-circle {
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; 
+  background-color: #004aad; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px; 
+}
+
+.fa-network-wired, .fa-bell, .fa-comments {
+  font-size: 50px; 
+  color: white; 
+}
+
+.image-box {
+  width: 100%; 
+  height: 200px; 
+  background-color: #f0f0f0; 
+  border: 2px solid #004a99; 
+  margin-top: 20px; 
+}
+
+.bullet-item {
+  flex-basis: calc(33% - 2rem);
+  margin: 1rem;
+}
+
+.programs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly; 
+}
+
+.program {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 20px;
+  overflow: hidden;
+  position: relative; 
+}
+
+.program .image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #004a99;
+}
+
+
+.program-name {
+  text-align: center;
+  color: #333;
+  margin-top: 8px; 
+}
+
+.program1{
+  background-size: cover;
+  background-position: center;
+}
+
+.program1 { background-image: url('https://pbs.twimg.com/profile_images/1100149741004845057/lP63_CLQ_400x400.png'); }
+/* Responsive adjustments */
+.image-box {
+  display: flex; /* This will help center the image */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 200px; /* Set your desired height */
+  width: 100%; /* Set your desired width */
+  overflow: hidden; /* Ensures the image doesn't overflow the box */
+}
+
+
+@media (max-width: 768px) {
+  .nav-item, .sign-in {
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .bullets, .programs-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bullet-item, .program {
+    flex-basis: 100%;
+    margin: 1rem 0;
+  }
+
+  .cta-box, .cta-button {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .info-bullets {
+    flex-direction: column;
+  }
+
+  .bullet {
+    margin: 20px 0; 
+  }
+}
+

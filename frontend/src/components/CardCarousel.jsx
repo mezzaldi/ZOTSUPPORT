@@ -28,6 +28,11 @@ function determineCardType(cardType) {
             <ProgramCard title={value.title} />
         ));
     }
+    if (cardType === 'Programs'){
+        return PopularProgramsData.map((value) => (
+            <ProgramCard title={value.title} />
+        ));
+    }
 
     // EVENT CARDS
     if (cardType === 'upcomingEvents'){
