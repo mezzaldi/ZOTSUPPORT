@@ -295,11 +295,19 @@ app.get("/notifications/:ucinetid", async (req, res) => {
     try {
         await client.query("BEGIN");
         // first get notif IDs from notifRecipients table
-        const query = `SELECT notifications.* FROM notificationrecipients
+        const query = `SELECT 
+            notifications.notification_id,
+            notifications.program_id,
+            notifications.title,
+            notifications.contents,
+            notifications.file,
+            notificationrecipients.seen,
+            programs.program_name
+            FROM notificationrecipients
             LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
+            LEFT JOIN programs ON programs.program_id = notifications.program_id
             WHERE ucinetid = $1`;
         const data = await client.query(query, [ucinetid]);
-
         res.json(data.rows);
     } catch (error) {
         console.error(error.message);
