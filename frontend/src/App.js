@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 // pages
 import CreateNewProgramPage from "./routes/CreateNewProgramPage";
+import CreateNewEventPage from "./routes/CreateNewEventPage";
 import LandingPage from "./routes/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
 import SignInPage from "./routes/SignInPage";
@@ -86,39 +87,33 @@ const App = () => {
         ucinetid: "12345",
     };
 
-    return (
-        <UserContext.Provider value={userData}>
-            <ThemeProvider theme={globalTheme}>
-                <Router>
-                    {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-                    <Navbar />
-                    <Routes>
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/SignIn" element={<SignInPage />} />
-                        <Route path="/About" element={<AboutUsPage />} />
-                        <Route
-                            path="/CreateNewProgram"
-                            element={<CreateNewProgramPage />}
-                        />
-                        <Route path="/Discover" element={<DiscoverPage />} />
-                        <Route path="/Dashboard" element={<DashboardPage />} />
-                        <Route
-                            path="/Notifications"
-                            element={<NotificationsPage />}
-                        />
-                        <Route
-                            path="/ProgramEvents"
-                            element={<ProgramEventsPage />}
-                        />
-                        <Route
-                            path="/ProgramHome"
-                            element={<ProgramHomePage />}
-                        />
-                    </Routes>
-                </Router>
-            </ThemeProvider>
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={userData}>
+      <ThemeProvider theme={globalTheme}>
+        <Router>
+          {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/SignIn" element={<SignInPage />} />
+            <Route path="/About" element={<AboutUsPage />} />
+            <Route
+              path="/CreateNewProgram"
+              element={<CreateNewProgramPage />}
+            />
+            <Route 
+              path='/CreateNewEvent'
+              element={<CreateNewEventPage />}
+            />
+             
+            <Route path="/Discover" element={<DiscoverPage />} />
+            <Route path="/Dashboard" element={<DashboardPage />} />
+            <Route path="/Notifications" element={<NotificationsPage />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </UserContext.Provider>
+  );
 };
 
 export default App;

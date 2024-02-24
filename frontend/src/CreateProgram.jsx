@@ -116,7 +116,7 @@ const Program = () => {
 
       <div className='formQuestion'>
         <Typography variant="h2">  
-            Header Image:
+          Header Image:
         </Typography>  
         <Button variant="outlined" component='label'> 
           Upload Image  
