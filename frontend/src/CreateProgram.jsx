@@ -41,8 +41,11 @@ const Program = () => {
   //Input information from tags is concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
-    tagData.tags.push({value: '21', label: 'Program'})
-    formData.tags = tagData.tags  //Program tag added automatically here.
+    tagData.tags.push({value: '21', label: 'Program'})  //Program tag added automatically here.
+    //iterate through chosen tags and store just the value
+    const finalProgramTags = [] 
+    tagData.tags.forEach((tag) => finalProgramTags.push(tag.value));
+    formData.tags = finalProgramTags 
     formData.color = colorData.color.value
     console.log(formData)
     

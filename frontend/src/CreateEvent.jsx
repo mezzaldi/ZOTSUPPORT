@@ -98,9 +98,9 @@ const Event = () => {
     e.preventDefault();
     tagData.tags.push({value: '20', label: 'Event'})  //Event tag added automatically here.
     //iterate through chosen tags and store just the value
-      const finalProgramTags = []
-      tagData.tags.forEach((tag) => finalProgramTags.push(tag.value));
-      formData.tags = finalProgramTags 
+      const finalEventTags = []
+      tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
+      formData.tags = finalEventTags 
     formData.admins = adminData.admins
     formData.startDate = startData.date
     formData.endDate = endData.date
