@@ -39,17 +39,28 @@ const CardCarousel = (props) => {
     //props.data contains a list of program IDs
     // Get the program data associated with those IDs.
 
+    console.log("DATA ", props.data);
+
     const getRequests = [];
     const cards = [];
+    let data = null;
 
-    // id could be a program id or an event id
-    props.data.forEach((id) => {
-        const req = axios
-            .get(`http://localhost:3001/programs/:${id}`)
-            .catch((err) => console.log(err));
+    if (props.cardType === "program") {
+        data = props.data.map((item) => item.program_id);
 
-        getRequests.push(req);
-    });
+        // id could be a program id or an event id
+        data.forEach((id) => {
+            const req = axios
+                .get(`http://localhost:3001/programs/:${id}`)
+                .catch((err) => console.log(err));
+
+            getRequests.push(req);
+        });
+    }
+
+    if (props.cardType === "event") {
+        data = props.data;
+    }
 
     if (props.cardType === "program") {
         Promise.all(getRequests).then((responses) => {
@@ -67,18 +78,11 @@ const CardCarousel = (props) => {
     }
 
     if (props.cardType === "event") {
-        Promise.all(getRequests).then((responses) => {
-            responses.forEach((res) => {
-                // ASSUMING ITS A PROGRAM CARD FOR NOW
-                const eventDetails = res.data[0];
-                cards.push(
-                    // key prop is needed for the carousel component to work, ignore
-                    <EventCard
-                        key={eventDetails.event_name}
-                        title={eventDetails.event_name}
-                    />
-                );
-            });
+        data.map((item) => {
+            cards.push(
+                // key prop is needed for the carousel component to work, ignore
+                <EventCard key={item.event_name} title={item.event_name} />
+            );
         });
     }
 

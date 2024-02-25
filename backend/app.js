@@ -999,7 +999,7 @@ app.get("/popular-program", async (req, res) => {
     }
 });
 
-app.get("/upcoming-events/sooner", async (req, res) => {
+app.get("/upcoming-events-sooner", async (req, res) => {
     try {
         // Calculate the date for one week from today
         const oneWeekFromNow = new Date();
@@ -1018,7 +1018,7 @@ app.get("/upcoming-events/sooner", async (req, res) => {
         const upcomingEvents = result.rows;
         res.status(200).json(upcomingEvents);
     } catch (error) {
-        console.error("Error fetching upcoming events:", error);
+        console.error("Error fetching upcoming events (sooner):", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
