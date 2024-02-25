@@ -77,7 +77,7 @@ const Event = () => {
     setEndData({date: e.toDate()})
     }
 
-  //This will update the input of admin on change 
+  //This will update the input of color on change 
   const handleColorInputChange = (e) => {
     setColorData({color: e})
     }
@@ -98,13 +98,12 @@ const Event = () => {
     e.preventDefault();
     tagData.tags.push({value: '20', label: 'Event'})  //Event tag added automatically here.
     //iterate through chosen tags and store just the value
-      const finalProgramTags = []
-      tagData.tags.forEach((tag) => finalProgramTags.push(tag.value));
-      formData.tags = finalProgramTags 
+      const finalEventTags = []
+      tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
+      formData.tags = finalEventTags 
     formData.admins = adminData.admins
     formData.startDate = startData.date
     formData.endDate = endData.date
-    formData.color = colorData.color.value
     formData.recurring = recurringData.recurring.value
     formData.requireRegistration = checkboxData.requireRegistration[0]
     formData.receiveRegistrationNotification = checkboxData.receiveRegistrationNotification[0]
@@ -127,12 +126,6 @@ const Event = () => {
       {value:'None', label:"None"},
       {value:'Weekly', label:"Weekly"},
       {value:'Monthly', label:"Monthly"}  
-    ]
-
-  const programColors = [ 
-    //program color options
-      {value:'#C41E3A', label:"Red"},
-      {value:'#11007B', label:"Blue"}  
     ]
 
   const levelTags = [ 
@@ -237,7 +230,7 @@ const Event = () => {
         <Typography width='40%' variant="h2">  
             Header Image:
         </Typography>  
-        <Button fullWidth variant="outlined" component='label'> 
+        <Button variant="outlined" component='label'> 
           Upload Image  
           <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
         </Button>
@@ -261,17 +254,6 @@ const Event = () => {
 
       <div className='h2container'>
       <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
-      </div>
-
-    
-      <div display={'flex'}>
-      <Typography variant="h2">
-            Color:
-      </Typography>
-      </div>
-
-      <div className='h2container'>
-      <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
       </div>
 
       <div>

@@ -9,7 +9,6 @@ import axios from 'axios';
 const Program = () => {
   const [formData, setFormData] = useState({
     programName: '',
-    adminEmail: '',
     headerImage: '',
     description: '',
     //tags: null , // Set a default value
@@ -18,6 +17,10 @@ const Program = () => {
   const [tagData, setTagData] = useState({
     tags: []
   });
+
+  const [colorData, setColorData] = useState({
+    color: ''
+  })
 
   //This will update the input of program name, admin email, header image, and description on change
   const handleInputChange = (e) => {
@@ -29,11 +32,20 @@ const Program = () => {
     setTagData({tags: e})
   }
 
+  //This will update the input of color on change 
+  const handleColorInputChange = (e) => {
+    setColorData({color: e})
+  }
+
   //Input information from tags is concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
-    tagData.tags.push({value: '21', label: 'Program'})
-    formData.tags = tagData.tags  //Program tag added automatically here.
+    tagData.tags.push({value: '21', label: 'Program'})  //Program tag added automatically here.
+    //iterate through chosen tags and store just the value
+    const finalProgramTags = [] 
+    tagData.tags.forEach((tag) => finalProgramTags.push(tag.value));
+    formData.tags = finalProgramTags 
+    formData.color = colorData.color.value
     console.log(formData)
     
     //note: need to remove 'program' and event' tag from tag options when loading it in.
@@ -47,7 +59,12 @@ const Program = () => {
       console.error('Error creating program:', error);
       // Handle the error appropriately
     }*/
-  }; 
+  } 
+  const programColors = [ 
+    //program color options
+      {value:'#C41E3A', label:"Red"},
+      {value:'#11007B', label:"Blue"}  
+    ]
 
   const levelTags = [ 
   //load in only tags with the level category
@@ -101,14 +118,6 @@ const Program = () => {
 
       <div className='formQuestion'>
         <Typography width='40%' variant="h2">  
-            Admins:
-        </Typography>
-        <TextField fullWidth label="UCI Email" type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
-      </div>
-
-
-      <div className='formQuestion'>
-        <Typography width='40%' variant="h2">  
             Description:
         </Typography>          
         <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange}/>
@@ -124,6 +133,16 @@ const Program = () => {
         </Button>
       </div>
 
+      <div display={'flex'}>
+      <Typography variant="h2">
+            Color:
+      </Typography>
+      </div>
+
+      <div className='h2container'>
+      <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
+      </div>
+
       <div>
       <Typography variant="h2">
             Tags:
@@ -133,7 +152,6 @@ const Program = () => {
       <div className='h2container'>
       <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
       </div>
-
 
       <div>
         <Button variant="contained" type="submit">Publish new program page</Button>
