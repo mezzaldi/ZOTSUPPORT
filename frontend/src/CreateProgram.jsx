@@ -9,7 +9,6 @@ import axios from 'axios';
 const Program = () => {
   const [formData, setFormData] = useState({
     programName: '',
-    adminEmail: '',
     headerImage: '',
     description: '',
     //tags: null , // Set a default value
@@ -116,14 +115,6 @@ const Program = () => {
         </Typography>
         <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
       </div>
-
-      <div className='formQuestion'>
-        <Typography width='40%' variant="h2">  
-            Admins:
-        </Typography>
-        <TextField fullWidth label="UCI Email" type="text" name="adminEmail" value={formData.adminEmail} onChange={handleInputChange} />
-      </div>
-
 
       <div className='formQuestion'>
         <Typography width='40%' variant="h2">  
