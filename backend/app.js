@@ -56,8 +56,7 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
 
 // POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
-    const { name, description, headerImage, color, tags, adminemail } =
-        req.body;
+    const { name, description, headerImage, color, tags, adminemail } = req.body;
 
     // Validate input data
     if (!name || !description || !adminemail) {
@@ -71,8 +70,10 @@ app.post("/programs", async (req, res) => {
             await client.query("BEGIN");
 
             // 1. Create a new program entry
-            const programInsertQuery =
-                "INSERT INTO programs (program_name, description, headerimage, color) VALUES ($1, $2, $3, $4) RETURNING program_id";
+            const programInsertQuery = `
+                INSERT INTO programs (program_name, description, headerimage, color) 
+                VALUES ($1, $2, $3, $4) 
+                RETURNING program_id`;
             const programInsertValues = [name, description, headerImage, color];
             const programInsertResult = await client.query(
                 programInsertQuery,
@@ -84,33 +85,30 @@ app.post("/programs", async (req, res) => {
             if (tags && Array.isArray(tags) && tags.length > 0) {
                 for (const tagName of tags) {
                     // Fetch tag_id for the current tag name
-                    const tagQuery =
-                        "SELECT tag_id FROM tags WHERE tag_name = $1";
+                    const tagQuery = "SELECT tag_id FROM tags WHERE tag_name = $1";
                     const tagResult = await client.query(tagQuery, [tagName]);
                     const tagId = tagResult.rows[0].tag_id;
 
                     // Insert into program_tags
                     const programTagInsertQuery =
                         "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)";
-                    await client.query(programTagInsertQuery, [
-                        programId,
-                        tagId,
-                    ]);
+                    await client.query(programTagInsertQuery, [programId, tagId]);
                 }
             }
 
             // 3. Add the user specified as admin for the program
-            const adminUserQuery =
-                "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
+            const adminUserQuery = "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
             const adminUserValues = [adminemail];
-            const adminUserResult = await client.query(
-                adminUserQuery,
-                adminUserValues
-            );
+            const adminUserResult = await client.query(adminUserQuery, adminUserValues);
+
+            // Check if admin user was found
+            if (adminUserResult.rows.length === 0) {
+                return res.status(404).json({ error: "Admin user not found" });
+            }
+
             const adminUcinetid = adminUserResult.rows[0].ucinetid;
 
-            const adminInsertQuery =
-                "INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)";
+            const adminInsertQuery = "INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)";
             await client.query(adminInsertQuery, [programId, adminUcinetid]);
 
             // Commit the transaction
@@ -948,7 +946,7 @@ app.get("/popular-program", async (req, res) => {
     }
 });
 
-app.get("/upcoming-events/sooner", async (req, res) => {
+app.get("/upcoming-events", async (req, res) => {
     try {
         // Calculate the date for one week from today
         const oneWeekFromNow = new Date();
@@ -962,26 +960,6 @@ app.get("/upcoming-events/sooner", async (req, res) => {
       ORDER BY date ASC;
     `;
         const result = await pool.query(query, [oneWeekFromNow]);
-
-        // Return the upcoming events
-        const upcomingEvents = result.rows;
-        res.status(200).json(upcomingEvents);
-    } catch (error) {
-        console.error("Error fetching upcoming events:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
-app.get("/upcoming-events", async (req, res) => {
-    try {
-        // Query the database to get upcoming events
-        const query = `
-      SELECT *
-      FROM events
-      WHERE date >= CURRENT_DATE
-      ORDER BY date ASC;
-    `;
-        const result = await pool.query(query);
 
         // Return the upcoming events
         const upcomingEvents = result.rows;
