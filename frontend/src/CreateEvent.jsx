@@ -20,6 +20,7 @@ const Event = () => {
     headerImage: '',
     startDate: new Date(),
     endDate: new Date(),
+    recurringEndData: new Date()
   });
 
   const [tagData, setTagData] = useState({
@@ -46,13 +47,51 @@ const Event = () => {
     recurring: ''
   })
 
+  const [recurringEndData, setRecurringEndData] = useState({
+    recurringEnd: new Date()  
+  })
+
   const [checkboxData, setCheckboxData] = useState({
     requireRegistration: false,
     receiveRegistrationNotification: false
   })
 
+//Check if the event is recurring or not. If so, render recurringEnd question. If not
+//hide it.
+
+  let isRecurring = false
+
+  if (recurringData.recurring.value == 'Monthly' || recurringData.recurring.value == 'Weekly') {
+    isRecurring = true
+  }
+
+  else {
+    isRecurring = false
+  }
+
+  function RecurringEnd() {
+    console.log(recurringData.recurring.value)
+    console.log(isRecurring)
+    if (isRecurring) {
+      console.log('IT SHOULD BE RECUR')
+      return <div className='formQuestion'>
+      <Typography width='40%' variant="h2">  
+          Recurring Ends:
+      </Typography>
+      <div className='datePickerQuestion'>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker slotProps={{ textField: {required: true,},}} 
+          label="Recurring End Date" value={recurringEndData} onChange={handleRecurringEndInputChange} />
+          </LocalizationProvider>
+      </div>
+    </div>
+    }
+    return;
+  }
+  
+
   //This will update the input of program name, admin email, header image, description,
-  //program color, registration requirement, and registration notifications on change
+  //registration requirement, and registration notifications on change
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
@@ -77,16 +116,17 @@ const Event = () => {
     setEndData({date: e.toDate()})
     }
 
-  //This will update the input of color on change 
-  const handleColorInputChange = (e) => {
-    setColorData({color: e})
-    }
-
   //This will update the input of recurring on change 
   const handleRecurringInputChange = (e) => {
     setRecurringData({recurring: e})
     }
 
+  //This will update the input of recurring end date on change 
+  const handleRecurringEndInputChange = (e) => {
+    setRecurringEndData({recurringEnd: e})
+    }
+
+  //This will update the input of require registration and receive reg notif on change 
   const handleCheckboxInputChange = (e) => {
     setCheckboxData({...checkboxData, [e.target.name] : [e.target.checked]})
   }
@@ -105,6 +145,7 @@ const Event = () => {
     formData.startDate = startData.date
     formData.endDate = endData.date
     formData.recurring = recurringData.recurring.value
+    formData.recurringEnd = recurringEndData.date
     formData.requireRegistration = checkboxData.requireRegistration[0]
     formData.receiveRegistrationNotification = checkboxData.receiveRegistrationNotification[0]
     console.log(formData)
@@ -169,8 +210,8 @@ const Event = () => {
     }
   };
 
-  const programAdmins = [
-    //load in programAdmin data
+  const eventAdmins = [
+    //load in eventAdmins data
     {value:'1', label:"Mario", color: "#80CEAC"},
     {value:'2', label:"Trace", color: "#80CEAC"}
 
@@ -243,7 +284,7 @@ const Event = () => {
       </div>
 
       <div className='h2container'>
-      <Select isMulti className="tagContainer" value={adminData.tags} onChange={handleAdminInputChange} options={programAdmins}></Select>
+      <Select isMulti className="tagContainer" value={adminData.tags} onChange={handleAdminInputChange} options={eventAdmins}></Select>
       </div>
 
       <div>
@@ -266,6 +307,8 @@ const Event = () => {
       <Select className="tagContainer" value={recurringData.recurring} onChange={handleRecurringInputChange} options={recurringOptions}></Select>
       </div>
 
+      <RecurringEnd/>
+
       <div className='checkboxContainer'>
       <Checkbox name={"requireRegistration"} value={checkboxData.requireRegistration} onChange={handleCheckboxInputChange}/>
       <Typography variant="h3">
@@ -279,7 +322,6 @@ const Event = () => {
             Would you like to receive registration notifications?
       </Typography>
       </div>
-
 
       <div>
         <Button variant="contained" type="submit">Publish new program page</Button>
