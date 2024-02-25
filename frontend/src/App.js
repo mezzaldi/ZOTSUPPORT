@@ -12,6 +12,7 @@ import DiscoverPage from "./routes/discover/DiscoverPage";
 import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
 
+
 // global stylesheet
 import "./styles.scss";
 
@@ -27,6 +28,7 @@ import {
 import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
+import EditProgramForm from "./routes/EditProgramForm";
 
 const primaryTextColor = "#242424";
 
@@ -91,7 +93,7 @@ const App = () => {
       <ThemeProvider theme={globalTheme}>
         <Router>
           {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-          <Navbar />
+          <Navbar userData={userData}/>
           <Routes>
             <Route path="/LandingPage" element={<LandingPage />} />
             <Route path="/SignIn" element={<SignInPage />} />
@@ -100,12 +102,14 @@ const App = () => {
               path="/CreateNewProgram"
               element={<CreateNewProgramPage />}
             />
+            
             <Route path="/Discover" element={<DiscoverPage />} />
             <Route path="/Dashboard" element={<DashboardPage />} />
             <Route path="/Notifications" element={<NotificationsPage />} />
             <Route path="/UserSetting" element={<UserSetting />} />
             <Route path="/ViewNotification" element={<ViewNotification/>} />
             <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
+            <Route path="/EditProgramForm" element={<EditProgramForm/>} />
           </Routes>
         </Router>
       </ThemeProvider>

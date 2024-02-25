@@ -7,18 +7,19 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"; 
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
-const Navbar = ({ isAdmin = false }) => { // isAdmin prop to determine if the user is an admin
+const Navbar = ({ userData }) => { // Use userData prop to access user information
   const location = useLocation();
 
   const isLandingPage = location.pathname === "/LandingPage";
+  // Determine if the user is an admin or superadmin
+  const isAdmin = userData?.role === "admin" || userData?.role === "superadmin";
 
   return (
     <AppBar position="static" sx={{ backgroundColor: "#0E1C4C", minHeight: "4rem", justifyContent: "center" }}>
       <Toolbar variant="dense">
-        <Typography variant="h2" color="inherit" sx={{ flexGrow: 1 }}>Zot Support</Typography>
+        <Typography variant="h2" color="inherit" sx={{ flexGrow: 1 }}>ZOTSUPPORT</Typography>
         <Stack direction="row" spacing={2}>
           {isLandingPage ? (
-            // Render only About and Sign-in for the Landing Page
             <>
               <Button href="/About" startIcon={<SearchIcon />} sx={{ color: "white" }}>
                 <Typography variant="h3" color="inherit">About</Typography>
@@ -28,7 +29,6 @@ const Navbar = ({ isAdmin = false }) => { // isAdmin prop to determine if the us
               </Button>
             </>
           ) : (
-            // Render the General Navigation for other pages
             <>
               <Button href="/About" startIcon={<SearchIcon />} sx={{ color: "white" }}>
                 <Typography variant="h3" color="inherit">About</Typography>
@@ -43,7 +43,6 @@ const Navbar = ({ isAdmin = false }) => { // isAdmin prop to determine if the us
                 <Typography variant="h3" color="inherit">Your dashboard</Typography>
               </Button>
               {isAdmin && (
-                // Admin's Dashboard button only visible to admin users
                 <Button href="/ProgramDashboard" startIcon={<AdminPanelSettingsIcon />} sx={{ color: "white" }}>
                   <Typography variant="h3" color="inherit">Program Dashboard</Typography>
                 </Button>
@@ -51,7 +50,6 @@ const Navbar = ({ isAdmin = false }) => { // isAdmin prop to determine if the us
             </>
           )}
           {!isLandingPage && (
-            // Profile button only visible on non-Landing Pages
             <Button endIcon={<ArrowDropDownIcon />} sx={{ color: "white" }}>
               <img src="/images/placeholder.jpg" className="profileImg" alt="student profile" style={{ width: 30, height: 30, borderRadius: '50%' }}></img>
               <Typography variant="h3" color="inherit">User's Name</Typography>
