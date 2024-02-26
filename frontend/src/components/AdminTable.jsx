@@ -17,9 +17,6 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { Typography } from "@mui/material";
 
-// dummy notification data
-import AdminData from "../data/AdminData";
-
 function TablePaginationActions(props) {
     // change this later, currently using material default styling
     const theme = useTheme();
@@ -98,19 +95,6 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(profileImg, name, isSuperAdmin, email) {
-    return { profileImg, name, isSuperAdmin, email };
-}
-
-const rows = AdminData.map((value) => {
-    return createData(
-        value.profileImg,
-        value.name,
-        value.isSuperAdmin,
-        value.email
-    );
-});
-
 function isSuperAdmin(isSA) {
     if (isSA === "True") {
         return <i>Super Admin</i>;
@@ -121,13 +105,26 @@ function isSuperAdmin(isSA) {
 
 export default function AdminTable(props) {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
+
+    console.log(props.data);
+
+    function createData(profileImage, name, isSuperAdmin, email) {
+        return { profileImage, name, isSuperAdmin, email };
+    }
+
+    const rows = props.data.map((admin) => {
+        return createData(
+            admin.profileImage,
+            admin.firstname + " " + admin.lastname,
+            admin.issuperadmin,
+            admin.user_emailaddress
+        );
+    });
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0
-            ? Math.max(0, (1 + page) * props.rowsPerPage - rows.length)
-            : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -139,13 +136,13 @@ export default function AdminTable(props) {
     };
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ width: "100%" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                 <TableBody>
-                    {(props.rowsPerPage > 0
+                    {(rowsPerPage > 0
                         ? rows.slice(
-                              page * props.rowsPerPage,
-                              page * props.rowsPerPage + props.rowsPerPage
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
                           )
                         : rows
                     ).map((row, index) => (
@@ -153,7 +150,7 @@ export default function AdminTable(props) {
                             <TableCell style={{ width: 10 }} align="left">
                                 <div className="tableCellTextContainer">
                                     <Typography variant="body1">
-                                        {row.profileImg}
+                                        {row.profileImage}
                                     </Typography>
                                 </div>
                             </TableCell>
@@ -164,16 +161,22 @@ export default function AdminTable(props) {
                                     </Typography>
                                 </div>
                             </TableCell>
-                            <TableCell style={{ width: 200 }} align="left">
+                            <TableCell style={{ width: 200 }} align="right">
                                 <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {isSuperAdmin(row.isSuperAdmin)}
+                                    <Typography
+                                        variant="body1"
+                                        sx={{ fontStyle: "italic" }}
+                                    >
+                                        {row.isSuperAdmin ? "Super admin" : ""}
                                     </Typography>
                                 </div>
                             </TableCell>
                             <TableCell style={{ width: 200 }} align="right">
                                 <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
+                                    <Typography
+                                        variant="body1"
+                                        sx={{ width: "50rem" }}
+                                    >
                                         {row.email}
                                     </Typography>
                                 </div>
@@ -190,9 +193,9 @@ export default function AdminTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[]}
-                            colSpan={3}
+                            colSpan={rowsPerPage}
                             count={rows.length}
-                            rowsPerPage={props.rowsPerPage}
+                            rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{
                                 inputProps: {

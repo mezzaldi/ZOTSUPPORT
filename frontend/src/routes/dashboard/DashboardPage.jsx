@@ -36,6 +36,34 @@ const DashboardPage = () => {
         getFollowedPrograms();
     }, [userData]);
 
+    // Get the user's notifications
+    const [notifications, setNotifications] = useState();
+    useEffect(() => {
+        const getNotifications = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/notifications/:${userData.ucinetid}`
+                )
+                .catch((err) => console.log(err));
+            setNotifications(res.data);
+        };
+        getNotifications();
+    }, [userData]);
+
+    // Get the program's administrators
+    const [admins, setAdmins] = useState();
+    useEffect(() => {
+        const getAdmins = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${userData.program_id}/administrators`
+                )
+                .catch((err) => console.log(err));
+            setAdmins(res.data);
+        };
+        getAdmins();
+    }, [userData]);
+
     return (
         <div className="pageContent">
             <Box
@@ -89,9 +117,15 @@ const DashboardPage = () => {
                 <div className="h2Container">
                     <Typography variant="h2">Notifications</Typography>
                 </div>
-                <div className="tableContainer">
-                    <NotificationTable rowsPerPage={4} />
-                </div>
+                {/* make sure notifs are loaded in */}
+                {notifications && (
+                    <div className="tableContainer">
+                        <NotificationTable
+                            rowsPerPage={10}
+                            data={notifications}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Program admin table only shownt to admin or superadmin */}
@@ -103,7 +137,7 @@ const DashboardPage = () => {
                         </Typography>
                     </div>
                     <div className="tableContainer">
-                        <AdminTable rowsPerPage={5} />
+                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
                     </div>
                 </div>
             )}
@@ -116,18 +150,14 @@ const DashboardPage = () => {
                 </div>
             )}
 
-            {/* Make sure followedPrograms is loaded in */}
-            {followedPrograms && (
-                <div>
-                    <div className="h2Container">
-                        <Typography variant="h2">Followed programs</Typography>
-                    </div>
-                    <CardCarousel
-                        cardType="program"
-                        data={followedPrograms.map((item) => item.program_id)}
-                    />
+            <div>
+                <div className="h2Container">
+                    <Typography variant="h2">Followed programs</Typography>
                 </div>
-            )}
+                {followedPrograms && (
+                    <CardCarousel cardType="program" data={followedPrograms} />
+                )}
+            </div>
         </div>
     );
 };
