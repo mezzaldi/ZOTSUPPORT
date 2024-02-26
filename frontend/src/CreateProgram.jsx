@@ -51,12 +51,19 @@ const CreateProgram = () => {
     }
   };
 
-  const allTags = [
+  const levelTags = [ 
     { value: '1', label: 'Undergraduate', color: '#11007B' },
     { value: '2', label: 'Graduate', color: '#11007B' },
+  ];
+
+  const subjectTags = [ 
     { value: '3', label: 'Art', color: '#80CEAC' },
     { value: '4', label: 'Biology', color: '#80CEAC' },
-    // Add more tag options as needed
+  ];
+
+  const allTags = [
+    { label: 'Level', options: levelTags },
+    { label: 'Subject', options: subjectTags },
   ];
 
   const programColors = [
