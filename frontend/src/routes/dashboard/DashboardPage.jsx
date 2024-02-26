@@ -154,9 +154,9 @@ const DashboardPage = () => {
                 <div className="h2Container">
                     <Typography variant="h2">Followed programs</Typography>
                 </div>
-                {followedPrograms && (
+                {/* {followedPrograms && (
                     <CardCarousel cardType="program" data={followedPrograms} />
-                )}
+                )} */}
             </div>
         </div>
     );

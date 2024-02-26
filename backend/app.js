@@ -943,22 +943,36 @@ app.get("/users/:ucinetid/events/attended", async (req, res) => {
     }
 });
 
+// Get past events for a specific program, including tags and list of admins that hosted the event
 app.get("/programs/:programId/events/past", async (req, res) => {
-    const { programId } = req.params;
+    const programId = req.params.programId.replace(":", "");
 
     try {
         // Write your database query to retrieve past events for the specified program
         const pastEventsQuery = `
-      SELECT e.*
+      SELECT e.event_id, 
+            e.event_name, 
+            e.description, 
+            e.date,
+            ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins, 
+            ARRAY_AGG(DISTINCT et.tag_id) AS tags
       FROM events e
-      JOIN programevents pe ON e.event_id = pe.event_id
-      WHERE pe.program_id = $1
-      AND e.date < CURRENT_DATE
+      LEFT JOIN
+        eventadmins ea ON ea.event_id = e.event_id
+      LEFT JOIN
+        users u ON u.ucinetid = ea.ucinetid
+      LEFT JOIN
+        eventtags et on et.event_id = e.event_id
+      WHERE 
+        e.program_id = $1
+      AND 
+        e.date < CURRENT_DATE
+      GROUP BY
+        e.event_id;
     `;
         const pastEventsResult = await pool.query(pastEventsQuery, [programId]);
-        const pastEvents = pastEventsResult.rows;
 
-        res.status(200).json({ pastEvents });
+        res.status(200).json(pastEventsResult.rows);
     } catch (error) {
         console.error("Error fetching past events:", error);
         res.status(500).json({ error: "Internal server error" });

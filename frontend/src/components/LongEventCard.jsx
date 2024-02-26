@@ -6,7 +6,28 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
+// function makeDate(dateString) {
+//     const date = new Date(dateString);
+//     return date;
+// }
+
 const LongEventCard = (props) => {
+    const data = props.data;
+
+    let date = new Date(data.date).toLocaleDateString("en-US");
+
+    function formatAdmins(adminList) {
+        let result = "";
+        adminList.forEach((admin, index) => {
+            if (index != adminList.length - 1) {
+                result += admin + ", ";
+            } else {
+                result += admin;
+            }
+        });
+        return result;
+    }
+
     return (
         <div>
             <Card
@@ -16,18 +37,16 @@ const LongEventCard = (props) => {
                     marginBottom: "1.5rem",
                 }}
             >
-                {/* The program header image */}
-
                 <CardContent>
                     <div className="cardText">
                         <Typography variant="subtitle1" sx={{ color: "blue" }}>
-                            Date
+                            {date}
                         </Typography>
                         <Typography variant="h2" sx={{ marginBottom: "5px" }}>
-                            {props.title}
+                            {data.event_name}
                         </Typography>
                         <Typography variant="subtitle1">
-                            Hosted by AdminName, AdminName, AdminName
+                            Hosted by {formatAdmins(data.admins)}
                         </Typography>
                     </div>
 
