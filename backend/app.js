@@ -464,35 +464,6 @@ app.post("/events", async (req, res) => {
     }
 });
 
-// Get upcoming events for a specific program
-app.get("/upcoming-events/:programId", async (req, res) => {
-    const programId = req.params.programId;
-
-    try {
-        // Query the database to get upcoming events for the specified program
-        const query = `
-            SELECT *
-            FROM events
-            WHERE program_id = $1 AND date >= CURRENT_DATE
-            ORDER BY date ASC;
-        `;
-        const { rows } = await pool.query(query, [programId]);
-
-        // Check if any upcoming events were found
-        if (rows.length === 0) {
-            return res.status(404).json({
-                error: "No upcoming events found for the specified program",
-            });
-        }
-
-        // Return the upcoming events
-        res.status(200).json(rows);
-    } catch (error) {
-        console.error("Error fetching upcoming events:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
 // GET endpoint to fetch top 10 most popular upcoming events from all programs
 app.get("/popular-upcoming-events", async (req, res) => {
     try {
@@ -939,6 +910,46 @@ app.get("/users/:ucinetid/events/attended", async (req, res) => {
         res.status(200).json({ attended_events: rows });
     } catch (error) {
         console.error("Error fetching attended events:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get upcoming events for a specific program, including tags and list of admins that hosted the event
+app.get("/programs/:programId/events/upcoming", async (req, res) => {
+    const programId = req.params.programId.replace(":", "");
+
+    try {
+        // Write your database query to retrieve past events for the specified program
+        const upcomingEventsQuery = `
+      SELECT e.event_id, 
+            e.event_name, 
+            e.description, 
+            e.date,
+            ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins, 
+            ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
+      FROM events e
+      LEFT JOIN
+        eventadmins ea ON ea.event_id = e.event_id
+      LEFT JOIN
+        users u ON u.ucinetid = ea.ucinetid
+      LEFT JOIN
+        eventtags et on et.event_id = e.event_id
+      LEFT JOIN
+        tags t on et.tag_id = t.tag_id
+      WHERE 
+        e.program_id = $1
+      AND 
+        e.date >= CURRENT_DATE
+      GROUP BY
+        e.event_id;
+    `;
+        const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
+            programId,
+        ]);
+
+        res.status(200).json(upcomingEventsResult.rows);
+    } catch (error) {
+        console.error("Error fetching upcoming events:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });

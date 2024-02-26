@@ -33,6 +33,20 @@ const ProgramEventsPage = () => {
         getPreviousEvents();
     }, [userData.program_id]);
 
+    // Get upcoming events
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${userData.program_id}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+        };
+        getUpcomingEvents();
+    }, [userData.program_id]);
+
     const [currentTab, setCurrentTab] = React.useState(1);
     const handleTabChange = (event, newTab) => {
         setCurrentTab(newTab);
@@ -99,19 +113,22 @@ const ProgramEventsPage = () => {
                 {/* UPCOMING EVENTS */}
                 {currentTab === 1 && (
                     <Box>
-                        {/* <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} /> */}
+                        {upcomingEvents &&
+                            upcomingEvents.map((eventData) => {
+                                console.log(eventData);
+                                return <LongEventCard data={eventData} />;
+                            })}
                     </Box>
                 )}
 
                 {/* PREVIOUS EVENTS */}
                 {currentTab === 2 && (
                     <Box>
-                        {previousEvents.map((eventData) => {
-                            console.log(eventData);
-                            return <LongEventCard data={eventData} />;
-                        })}
+                        {previousEvents &&
+                            previousEvents.map((eventData) => {
+                                console.log(eventData);
+                                return <LongEventCard data={eventData} />;
+                            })}
                     </Box>
                 )}
             </Box>

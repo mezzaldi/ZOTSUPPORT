@@ -31,15 +31,15 @@ const LongEventCard = (props) => {
     function formatTags(tags) {
         let chips = [];
         tags.forEach((tag) => {
-            console.log(tag);
-            tag = tag.split(":");
-            console.log(tag);
-            chips.push(
-                <Chip
-                    label={tag[0]}
-                    sx={{ backgroundColor: tag[1], color: "white" }}
-                />
-            );
+            if (tag != ":") {
+                tag = tag.split(":");
+                chips.push(
+                    <Chip
+                        label={tag[0]}
+                        sx={{ backgroundColor: tag[1], color: "white" }}
+                    />
+                );
+            }
         });
         return chips;
     }
