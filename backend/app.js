@@ -493,7 +493,7 @@ app.get("/upcoming-events/:programId", async (req, res) => {
     }
 });
 
-// GET endpoint to fetch popular upcoming events from all programs
+// GET endpoint to fetch top 10 most popular upcoming events from all programs
 app.get("/popular-upcoming-events", async (req, res) => {
     try {
         // Query to retrieve popular upcoming events
@@ -516,7 +516,8 @@ app.get("/popular-upcoming-events", async (req, res) => {
             GROUP BY 
                 e.event_id, e.event_name, e.program_id, p.program_name, e.date
             ORDER BY 
-                num_attendees DESC;
+                num_attendees DESC
+            LIMIT 10;
         `;
 
         // Execute the query
@@ -965,24 +966,26 @@ app.get("/programs/:programId/events/past", async (req, res) => {
 });
 //need more clarification
 
-app.get("/popular-program", async (req, res) => {
+// Get top 10 most popular programs
+app.get("/popular-programs", async (req, res) => {
     try {
         // Query the database to get the program with the most followers
+
         const query = `
-      SELECT
-        p.program_id,
-        p.program_name,
-        COUNT(pf.ucinetid) AS num_followers
-      FROM
-        programs p
-      LEFT JOIN
-        programfollowers pf ON p.program_id = pf.program_id
-      GROUP BY
-        p.program_id
-      ORDER BY
-        num_followers DESC
-      LIMIT 1;
-    `;
+          SELECT
+            p.program_id,
+            p.program_name,
+            COUNT(pf.ucinetid) AS num_followers
+          FROM
+            programs p
+          LEFT JOIN
+            programfollowers pf ON p.program_id = pf.program_id
+          GROUP BY
+            p.program_id
+          ORDER BY
+            num_followers DESC
+          LIMIT 10;
+        `;
         const result = await pool.query(query);
 
         // Check if any program was found
@@ -990,16 +993,15 @@ app.get("/popular-program", async (req, res) => {
             return res.status(404).json({ error: "No popular program found" });
         }
 
-        // Return the most popular program
-        const popularProgram = result.rows[0];
-        res.status(200).json(popularProgram);
+        // Return the most popular programs
+        res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching popular program:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-app.get("/upcoming-events/sooner", async (req, res) => {
+app.get("/upcoming-events-sooner", async (req, res) => {
     try {
         // Calculate the date for one week from today
         const oneWeekFromNow = new Date();
@@ -1018,11 +1020,12 @@ app.get("/upcoming-events/sooner", async (req, res) => {
         const upcomingEvents = result.rows;
         res.status(200).json(upcomingEvents);
     } catch (error) {
-        console.error("Error fetching upcoming events:", error);
+        console.error("Error fetching upcoming events (sooner):", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
+// Get the 10 first upcoming events from all programs
 app.get("/upcoming-events", async (req, res) => {
     try {
         // Query the database to get upcoming events
@@ -1030,7 +1033,8 @@ app.get("/upcoming-events", async (req, res) => {
       SELECT *
       FROM events
       WHERE date >= CURRENT_DATE
-      ORDER BY date ASC;
+      ORDER BY date ASC
+      LIMIT 10;
     `;
         const result = await pool.query(query);
 

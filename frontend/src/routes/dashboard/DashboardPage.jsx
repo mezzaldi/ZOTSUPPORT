@@ -150,18 +150,14 @@ const DashboardPage = () => {
                 </div>
             )}
 
-            {/* Make sure followedPrograms is loaded in */}
-            {followedPrograms && (
-                <div>
-                    <div className="h2Container">
-                        <Typography variant="h2">Followed programs</Typography>
-                    </div>
-                    <CardCarousel
-                        cardType="program"
-                        data={followedPrograms.map((item) => item.program_id)}
-                    />
+            <div>
+                <div className="h2Container">
+                    <Typography variant="h2">Followed programs</Typography>
                 </div>
-            )}
+                {followedPrograms && (
+                    <CardCarousel cardType="program" data={followedPrograms} />
+                )}
+            </div>
         </div>
     );
 };
