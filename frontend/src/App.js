@@ -11,6 +11,8 @@ import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
 import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
+import ProgramHomePage from './routes/program/ProgramHomePage';
+
 
 
 // global stylesheet
@@ -110,6 +112,10 @@ const App = () => {
             <Route path="/ViewNotification" element={<ViewNotification/>} />
             <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
             <Route path="/EditProgramForm" element={<EditProgramForm/>} />
+            <Route
+                            path="/ProgramHomePage"
+                            element={<ProgramHomePage />}
+                        />
           </Routes>
         </Router>
       </ThemeProvider>
