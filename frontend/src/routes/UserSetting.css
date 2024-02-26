@@ -1,0 +1,213 @@
+User
+
+.settings-container {
+  font-family: 'Arial', sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  color: #333;
+  background-color: #fff;
+}
+
+.settings-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px; 
+  text-align: left;
+}
+
+
+.settings-profile{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.settings-notifications, .settings-accessibility {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.settings-avatar {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #eee; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; 
+  border: 2px solid #ccc;
+}
+
+.avatar-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
+
+.btn-change-photo {
+  background-color: transparent; /* Remove background */
+  color: #0E1C4C; /* Text color */
+  padding: 0; /* Remove padding */
+  border: none; /* Remove border */
+  cursor: pointer; /* Ensure it's still clickable */
+  font-size: 16px;
+  text-decoration: underline; /* Underline to indicate it's clickable */
+  display: inline; /* Make it inline like text */
+  margin: 0; /* Reset margin */
+}
+
+.settings-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.user-name {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px; 
+  font-weight: normal; 
+}
+
+.avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  background-color: #eee;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  font-size: 24px;
+  color: #333;
+}
+
+.btn-logout {
+  padding: 10px 20px;
+  background-color: #0E1C4C;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-email-updates, .btn-save-changes {
+  background-color: #0E1C4C;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+h2, h3 {
+  margin: 0 0 15px 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.btn-save-changes {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  color: #0E1C4C;
+}
+
+
+.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark-mode .settings-profile,
+.dark-mode .settings-notifications,
+.dark-mode .settings-accessibility {
+  background-color: #333;
+  border-color: #444;
+}
+
+
+.high-contrast {
+  background-color: #000;
+  color: #fff;
+  border-color: #fff;
+}
+
+.high-contrast .settings-profile,
+.high-contrast .settings-notifications,
+.high-contrast .settings-accessibility {
+  background-color: #000;
+  border-color: #fff;
+}
+
+
+.colorblind-mode {
+  --primary-text: #000000;
+  --secondary-text: #474747; 
+  --background: #ffffff; 
+  --border-color: #dedede; 
+  --button-background: #2d3e50; 
+  --button-text: #ffffff; 
+  --placeholder-color: #a8a8a8; 
+}
+
+
+.colorblind-mode .settings-container {
+  color: var(--primary-text);
+  background-color: var(--background);
+}
+
+.colorblind-mode .settings-profile,
+.colorblind-mode .settings-notifications,
+.colorblind-mode .settings-accessibility {
+  border-color: var(--border-color);
+}
+
+.colorblind-mode .avatar-placeholder {
+  background-color: var(--placeholder-color);
+}
+
+.colorblind-mode .btn-change-photo,
+.colorblind-mode .btn-logout,
+.colorblind-mode .btn-email-updates,
+.colorblind-mode .btn-save-changes {
+  background-color: var(--button-background);
+  color: var(--button-text);
+}
+
+
+.colorblind-mode a,
+.colorblind-mode .link {
+  color: var(--button-background);
+  text-decoration: underline; 
+}
+
+
+.colorblind-mode .settings-container input[type='checkbox']:focus,
+.colorblind-mode .settings-container button:focus {
+  outline: 3px solid var(--button-background);
+  outline-offset: 2px;
+}

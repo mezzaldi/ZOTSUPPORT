@@ -27,6 +27,10 @@ import {
     ThemeProvider,
     responsiveFontSizes,
 } from "@mui/material/styles";
+import UserSetting from "./routes/UserSetting";
+import ViewNotification from "./routes/notifications/ViewNotification";
+import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
+import EditProgramForm from "./routes/EditProgramForm";
 
 const primaryTextColor = "#242424";
 
@@ -93,9 +97,9 @@ const App = () => {
             <ThemeProvider theme={globalTheme}>
                 <Router>
                     {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-                    <Navbar />
+                    <Navbar userData={userData}/>
                     <Routes>
-                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/LandingPage" element={<LandingPage />} />
                         <Route path="/SignIn" element={<SignInPage />} />
                         <Route path="/About" element={<AboutUsPage />} />
                         <Route
@@ -107,7 +111,8 @@ const App = () => {
                             element={<CreateNewEventPage />}
                         />
 
-                        <Route path="/Discover" element={<DiscoverPage />} />
+                        
+            <Route path="/Discover" element={<DiscoverPage />} />
                         <Route path="/Dashboard" element={<DashboardPage />} />
                         <Route
                             path="/Notifications"
@@ -121,7 +126,15 @@ const App = () => {
                             path="/ProgramHomePage"
                             element={<ProgramHomePage />}
                         />
-                    </Routes>
+                      <Route path="/UserSetting" element={<UserSetting />} />
+            <Route path="/ViewNotification" element={<ViewNotification/>} />
+            <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
+            <Route path="/EditProgramForm" element={<EditProgramForm/>} />
+            <Route
+                            path="/ProgramHomePage"
+                            element={<ProgramHomePage />}
+                        />
+          </Routes>
                 </Router>
             </ThemeProvider>
         </UserContext.Provider>
