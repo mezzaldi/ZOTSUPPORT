@@ -11,6 +11,7 @@ const DiscoverPage = () => {
     // Get upcoming events
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
+        console.log("useeffect upcoming events");
         const getUpcomingEvents = async () => {
             const res = await axios
                 .get(`http://localhost:3001/upcoming-events`)
@@ -18,7 +19,33 @@ const DiscoverPage = () => {
             setUpcomingEvents(res.data);
         };
         getUpcomingEvents();
-    });
+    }, []);
+
+    // Get popular events
+    const [popularEvents, setPopularEvents] = useState();
+    useEffect(() => {
+        console.log("useeffect popular events");
+        const getPopularEvents = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/popular-upcoming-events`)
+                .catch((err) => console.log(err));
+            setPopularEvents(res.data);
+        };
+        getPopularEvents();
+    }, []);
+
+    // Get popular programs
+    const [popularPrograms, setPopularPrograms] = useState();
+    useEffect(() => {
+        console.log("useeffect popular programs");
+        const getPopularPrograms = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/popular-programs`)
+                .catch((err) => console.log(err));
+            setPopularPrograms(res.data);
+        };
+        getPopularPrograms();
+    }, []);
 
     return (
         <div class="pageContent">
@@ -33,6 +60,9 @@ const DiscoverPage = () => {
 
             <div className="h2Container">
                 <Typography variant="h2">Popular events</Typography>
+                {popularEvents && (
+                    <CardCarousel cardType="event" data={popularEvents} />
+                )}
             </div>
 
             {/* <CardCarousel cardType="event" /> */}
@@ -41,6 +71,9 @@ const DiscoverPage = () => {
                 <Typography variant="h2">
                     Popular learning support programs
                 </Typography>
+                {popularPrograms && (
+                    <CardCarousel cardType="program" data={popularPrograms} />
+                )}
             </div>
 
             {/* <CardCarousel cardType="program" /> */}

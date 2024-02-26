@@ -11,7 +11,42 @@ import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 
+import UserContext from "../../user/UserContext";
+import { useContext, useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
+
 const ProgramEventsPage = () => {
+    const userData = useContext(UserContext);
+
+    // Get previous events
+    const [previousEvents, setPreviousEvents] = useState();
+    useEffect(() => {
+        const getPreviousEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${userData.program_id}/events/past`
+                )
+                .catch((err) => console.log(err));
+            setPreviousEvents(res.data);
+        };
+        getPreviousEvents();
+    }, [userData.program_id]);
+
+    // Get upcoming events
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${userData.program_id}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+        };
+        getUpcomingEvents();
+    }, [userData.program_id]);
+
     const [currentTab, setCurrentTab] = React.useState(1);
     const handleTabChange = (event, newTab) => {
         setCurrentTab(newTab);
@@ -75,19 +110,25 @@ const ProgramEventsPage = () => {
             </Box>
 
             <Box>
+                {/* UPCOMING EVENTS */}
                 {currentTab === 1 && (
                     <Box>
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
+                        {upcomingEvents &&
+                            upcomingEvents.map((eventData) => {
+                                console.log(eventData);
+                                return <LongEventCard data={eventData} />;
+                            })}
                     </Box>
                 )}
 
+                {/* PREVIOUS EVENTS */}
                 {currentTab === 2 && (
                     <Box>
-                        <LongEventCard title={"Previous Event name"} />
-                        <LongEventCard title={"Previous Event name"} />
-                        <LongEventCard title={"Previous Event name"} />
+                        {previousEvents &&
+                            previousEvents.map((eventData) => {
+                                console.log(eventData);
+                                return <LongEventCard data={eventData} />;
+                            })}
                     </Box>
                 )}
             </Box>
