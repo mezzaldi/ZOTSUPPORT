@@ -18,7 +18,7 @@ const ViewNotification = () => {
         </Button>
       </Box>
       <Paper elevation={3} style={{ padding: '2rem', margin: '2rem 2rem 0 2rem' }}>
-        <Typography variant="h2" gutterBottom component="div">
+        <Typography variant="h5" gutterBottom component="div">
           Today's class - from IN4MATX 191B
         </Typography>
         <Typography variant="body1" paragraph>

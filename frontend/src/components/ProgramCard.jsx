@@ -1,17 +1,15 @@
-import React from 'react';
+import React from "react";
 
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
 
 const ProgramCard = (props) => {
-  return (
-    <div className="card">
-        <Card>
-
+    return (
+        <Card sx={{ marginRight: "1.5rem" }}>
             {/* The program header image */}
             <CardMedia
                 sx={{ height: 140 }}
@@ -21,9 +19,7 @@ const ProgramCard = (props) => {
 
             <CardContent className="cardText">
                 <div className="cardText">
-                    <Typography variant="h3">
-                    {props.title}
-                    </Typography>
+                    <Typography variant="h3">{props.title}</Typography>
                 </div>
             </CardContent>
 
@@ -32,10 +28,8 @@ const ProgramCard = (props) => {
                     Unfollow
                 </Button>
             </CardActions>
-            
         </Card>
-    </div>
-  );
+    );
 };
 
 export default ProgramCard;

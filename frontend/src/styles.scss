@@ -1,7 +1,5 @@
-
-
 .pageContent {
-    margin: 3rem;
+    margin: 3rem 5rem 5rem 5rem;
 }
 
 .h1Container {
@@ -15,7 +13,7 @@
 }
 
 .cardContainer {
-    display:flex;
+    display: flex;
     flex-direction: row;
 }
 
@@ -25,7 +23,7 @@
 }
 
 .navbarTitle {
-    flex-grow:1;
+    flex-grow: 1;
 }
 
 .profileImg {
@@ -35,19 +33,13 @@
     border-radius: 50%;
 }
 
-.tableCellTextContainer {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 .card {
     max-width: 17rem;
-    display:block;
+    display: block;
 }
 
 .cardText {
-    display:block;
+    display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -58,25 +50,54 @@
 }
 
 .upcomingEventBar {
-    background-color: #DADEFF;
+    background-color: #dadeff;
     width: 40rem;
     padding: 1rem;
-    border-left: 0.2rem solid #11007B;
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:0.5rem;
+    border-left: 0.2rem solid #11007b;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
 }
 
 .dateChip {
-    background-color: #11007B;
-    display:inline-block;
-    padding:0.2rem;
-    border-radius:4px;
+    background-color: #11007b;
+    display: inline-block;
+    padding: 0.2rem;
+    border-radius: 4px;
 }
 
 .eventBarsAndCalendar {
     display: flex;
     flex-direction: row;
 }
+
+.formQuestion {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 3rem;
+}
+
+.checkboxContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+.tagContainer {
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+    font-family: "Open Sans";
+}
+
+.datePickerQuestion {
+    display: flex;
+    flex-direction: row;
+    width: 100%
+
+}
+
