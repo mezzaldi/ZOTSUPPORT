@@ -19,7 +19,7 @@ import axios from "axios";
 const ProgramEventsPage = () => {
     const userData = useContext(UserContext);
 
-    // Get upcoming events
+    // Get previous events
     const [previousEvents, setPreviousEvents] = useState();
     useEffect(() => {
         const getPreviousEvents = async () => {
@@ -31,7 +31,7 @@ const ProgramEventsPage = () => {
             setPreviousEvents(res.data);
         };
         getPreviousEvents();
-    }, []);
+    }, [userData.program_id]);
 
     const [currentTab, setCurrentTab] = React.useState(1);
     const handleTabChange = (event, newTab) => {

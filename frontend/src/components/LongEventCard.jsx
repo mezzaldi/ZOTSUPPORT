@@ -19,13 +19,29 @@ const LongEventCard = (props) => {
     function formatAdmins(adminList) {
         let result = "";
         adminList.forEach((admin, index) => {
-            if (index != adminList.length - 1) {
+            if (index !== adminList.length - 1) {
                 result += admin + ", ";
             } else {
                 result += admin;
             }
         });
         return result;
+    }
+
+    function formatTags(tags) {
+        let chips = [];
+        tags.forEach((tag) => {
+            console.log(tag);
+            tag = tag.split(":");
+            console.log(tag);
+            chips.push(
+                <Chip
+                    label={tag[0]}
+                    sx={{ backgroundColor: tag[1], color: "white" }}
+                />
+            );
+        });
+        return chips;
     }
 
     return (
@@ -52,22 +68,7 @@ const LongEventCard = (props) => {
 
                     <Stack direction="row" spacing={1}>
                         {/* Later load in these tags from the database!! */}
-                        <Chip
-                            label="tag"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
-                        <Chip
-                            label="tag"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="tag"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="tag"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
+                        {formatTags(data.tags)}
                     </Stack>
                 </CardContent>
             </Card>

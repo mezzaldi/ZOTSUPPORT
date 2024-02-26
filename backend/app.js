@@ -955,7 +955,7 @@ app.get("/programs/:programId/events/past", async (req, res) => {
             e.description, 
             e.date,
             ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins, 
-            ARRAY_AGG(DISTINCT et.tag_id) AS tags
+            ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
       FROM events e
       LEFT JOIN
         eventadmins ea ON ea.event_id = e.event_id
@@ -963,6 +963,8 @@ app.get("/programs/:programId/events/past", async (req, res) => {
         users u ON u.ucinetid = ea.ucinetid
       LEFT JOIN
         eventtags et on et.event_id = e.event_id
+      LEFT JOIN
+        tags t on et.tag_id = t.tag_id
       WHERE 
         e.program_id = $1
       AND 
