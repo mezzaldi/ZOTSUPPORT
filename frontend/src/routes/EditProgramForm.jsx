@@ -133,7 +133,7 @@ const EditProgramForm = ({ existingProgramData }) => {
                   label="Select Color"
                   onChange={handleColorChange}
                 >
-                  {/* Color options */}
+        
                 </Select>
               </FormControl>
             </Grid>
