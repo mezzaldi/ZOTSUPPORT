@@ -108,7 +108,7 @@ const Program = () => {
     <div className='h2Container'>
       <form onSubmit={handleSubmit}>
 
-      <Grid container align-items='center' paddingBottom='3rem' columnSpacing = {2} rowSpacing = {8}>
+      <Grid container align-items='center' paddingBottom='3rem' columnSpacing = {2} rowSpacing = {6}>
         <Grid item xs = {3}>
         <Typography variant="h2">  
             Program Name:
