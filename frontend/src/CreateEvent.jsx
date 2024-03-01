@@ -138,7 +138,7 @@ const Event = () => {
 
     formData.endDate = endData.date
     formData.recurring = recurringData.recurring.value
-    //checks if the recurring end date is changed from default, and stores the data accordingly
+    //checks if the recurring date is changed from default, and stores the data accordingly
     if (typeof recurringEndData == Date) {
       formData.recurringEndDate = recurringEndData.date
     }
@@ -322,7 +322,7 @@ const Event = () => {
         </Grid>
         <Grid item xs = {9}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker 
+            <DatePicker 
             label="Recurring End Date" defaultValue={dayjs()} minDate={dayjs()} 
             value={recurringEndData.recurringEndDate} onChange={handleRecurringEndInputChange}
             disabled={!isRecurring}
