@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
 import Select from 'react-select';
+import { Grid } from '@mui/material';
 import axios from 'axios';
 
 const Program = () => {
@@ -108,54 +109,65 @@ const Program = () => {
 
   return (
     <div className='h2Container'>
-    <form onSubmit={handleSubmit}>
-      <div className='formQuestion'>
-        <Typography width='40%' variant="h2">  
-          Program Name:
-        </Typography>
-        <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
-      </div>
+      <form onSubmit={handleSubmit}>
 
-      <div className='formQuestion'>
-        <Typography width='40%' variant="h2">  
-            Description:
-        </Typography>          
-        <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange}/>
-      </div>
-
-      <div className='formQuestion'>
+      <Grid container align-items='center' paddingBottom='3rem' columnSpacing = {2} rowSpacing = {8}>
+        <Grid item xs = {3}>
         <Typography variant="h2">  
-          Header Image:
-        </Typography>  
-        <Button variant="outlined" component='label'> 
-          Upload Image  
-          <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
-        </Button>
-      </div>
+            Program Name:
+          </Typography>
+        </Grid>
+        <Grid item xs = {9}>
+          <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
+        </Grid>
 
-      <div display={'flex'}>
-      <Typography variant="h2">
+        <Grid item xs = {3}>
+        <Typography variant="h2">  
+            Description:
+          </Typography>
+        </Grid>
+        <Grid item xs = {9}>
+          <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange}/>
+        </Grid>
+
+        <Grid item xs = {3}>
+        <Typography variant="h2">  
+            Header Image:
+          </Typography>
+        </Grid>
+        <Grid item xs = {9}>
+          <Button variant="outlined" component='label'> 
+            Upload Image  
+            <input type="file" hidden onChange={handleInputChange} value={formData.headerImage}/>
+          </Button>      
+        </Grid>
+
+        <Grid item xs = {3}>
+        <Typography variant="h2">  
             Color:
-      </Typography>
-      </div>
+        </Typography>
+        </Grid>
+        <Grid item xs = {9}>
+          <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
+        </Grid>
 
-      <div className='h2container'>
-      <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
-      </div>
-
-      <div>
-      <Typography variant="h2">
+        <Grid item xs = {3}>
+        <Typography variant="h2">  
             Tags:
-      </Typography>
-      </div>
+        </Typography>
+        </Grid>
+        <Grid item xs = {9}>
+          <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
+        </Grid>
 
-      <div className='h2container'>
-      <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
-      </div>
+      </Grid>
 
-      <div>
-        <Button variant="contained" type="submit">Publish new program page</Button>
-      </div>
+      <Grid container justifyContent="center">
+        <Grid item>
+          <Button variant="contained" type="submit">Publish new program page</Button>
+        </Grid>
+      </Grid>
+
     </form>
     </div>
   );
