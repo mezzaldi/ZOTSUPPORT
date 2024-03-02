@@ -1,7 +1,6 @@
 // App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-
 // pages
 import CreateNewProgramPage from "./routes/CreateNewProgramPage";
 import CreateNewEventPage from "./routes/CreateNewEventPage";
@@ -14,13 +13,10 @@ import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
-
 // global stylesheet
 import "./styles.scss";
-
 // user role
 import UserContext from "./user/UserContext";
-
 // MUI
 import {
     createTheme,
@@ -31,6 +27,10 @@ import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
+
+import { useContext, useEffect } from "react";
+import axios from "axios";
+import { useState } from "react";
 
 const primaryTextColor = "#242424";
 
@@ -84,60 +84,106 @@ let globalTheme = createTheme({
 globalTheme = responsiveFontSizes(globalTheme);
 
 const App = () => {
+    // Using single test UCINetID for now
+    const ucinetid = "5";
+
+    // load in the user's data from the database based on UCINetID
+    const [userData2, setUserData] = useState();
+    useEffect(() => {
+        const getUserData = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/userData/:${ucinetid}`)
+                .catch((err) => console.log(err));
+
+            const userobject = res.data[0];
+
+            setUserData(res.data);
+        };
+        getUserData();
+    }, [ucinetid]);
+
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {
         role: "superadmin",
-        name: "Peter Anteater",
-        ucinetid: "12345",
-        program_id: 777,
+        firstname: "Peter",
+        lastname: "Anteater",
+        program_id: 1,
+        ucinetid: 5,
     };
 
     return (
-        <UserContext.Provider value={userData}>
-            <ThemeProvider theme={globalTheme}>
-                <Router>
-                    {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-                    <Navbar userData={userData}/>
-                    <Routes>
-                        <Route path="/LandingPage" element={<LandingPage />} />
-                        <Route path="/SignIn" element={<SignInPage />} />
-                        <Route path="/About" element={<AboutUsPage />} />
-                        <Route
-                            path="/CreateNewProgram"
-                            element={<CreateNewProgramPage />}
-                        />
-                        <Route
-                            path="/CreateNewEvent"
-                            element={<CreateNewEventPage />}
-                        />
+        userData && (
+            <UserContext.Provider value={userData}>
+                <ThemeProvider theme={globalTheme}>
+                    <Router>
+                        {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
+                        <Navbar userData={userData} />
+                        <Routes>
+                            <Route
+                                path="/LandingPage"
+                                element={<LandingPage />}
+                            />
+                            <Route path="/SignIn" element={<SignInPage />} />
+                            <Route path="/About" element={<AboutUsPage />} />
+                            <Route
+                                path="/CreateNewProgram"
+                                element={<CreateNewProgramPage />}
+                            />
+                            <Route
+                                path="/CreateNewEvent"
+                                element={<CreateNewEventPage />}
+                            />
 
-                        
-            <Route path="/Discover" element={<DiscoverPage />} />
-                        <Route path="/Dashboard" element={<DashboardPage />} />
-                        <Route
-                            path="/Notifications"
-                            element={<NotificationsPage />}
-                        />
-                        <Route
-                            path="/ProgramEvents"
-                            element={<ProgramEventsPage />}
-                        />
-                        <Route
-                            path="/ProgramHomePage"
-                            element={<ProgramHomePage />}
-                        />
-                      <Route path="/UserSetting" element={<UserSetting />} />
-            <Route path="/ViewNotification" element={<ViewNotification/>} />
-            <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
-            <Route path="/EditProgramForm" element={<EditProgramForm/>} />
-            <Route
-                            path="/ProgramHomePage"
-                            element={<ProgramHomePage />}
-                        />
-          </Routes>
-                </Router>
-            </ThemeProvider>
-        </UserContext.Provider>
+                            <Route
+                                path="/Discover"
+                                element={<DiscoverPage />}
+                            />
+                            <Route
+                                path="/Dashboard"
+                                element={<DashboardPage />}
+                            />
+                            <Route
+                                path="/Notifications"
+                                element={<NotificationsPage />}
+                            />
+                            <Route
+                                path="/ProgramEvents"
+                                element={<ProgramEventsPage />}
+                            />
+                            {/* GET RID OF THIS LATER SINCE ITS A BLANK TEMPLATE */}
+                            <Route
+                                path="/ProgramHomePage"
+                                element={<ProgramHomePage />}
+                            />
+                            <Route
+                                path="/ProgramHomePage/:program_id"
+                                element={<ProgramHomePage />}
+                            />
+                            <Route
+                                path="/UserSetting"
+                                element={<UserSetting />}
+                            />
+                            <Route
+                                path="/ViewNotification"
+                                element={<ViewNotification />}
+                            />
+                            <Route
+                                path="/ProgramDashboard"
+                                element={<ProgramDashboard />}
+                            />
+                            <Route
+                                path="/EditProgramForm"
+                                element={<EditProgramForm />}
+                            />
+                            <Route
+                                path="/ProgramHomePage"
+                                element={<ProgramHomePage />}
+                            />
+                        </Routes>
+                    </Router>
+                </ThemeProvider>
+            </UserContext.Provider>
+        )
     );
 };
 

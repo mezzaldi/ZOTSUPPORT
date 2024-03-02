@@ -107,8 +107,6 @@ export default function AdminTable(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
 
-    console.log(props.data);
-
     function createData(profileImage, name, isSuperAdmin, email) {
         return { profileImage, name, isSuperAdmin, email };
     }
