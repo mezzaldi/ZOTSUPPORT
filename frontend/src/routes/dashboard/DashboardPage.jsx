@@ -86,7 +86,7 @@ const DashboardPage = () => {
                             Program events
                         </Button>
                     </Link>
-                    <Link to="/ProgramHome">
+                    <Link to="/ProgramHomePage">
                         <Button variant="outlined">Program home</Button>
                     </Link>
                 </div>

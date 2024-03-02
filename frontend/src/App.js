@@ -150,8 +150,13 @@ const App = () => {
                                 path="/ProgramEvents"
                                 element={<ProgramEventsPage />}
                             />
+                            {/* GET RID OF THIS LATER SINCE ITS A BLANK TEMPLATE */}
                             <Route
                                 path="/ProgramHomePage"
+                                element={<ProgramHomePage />}
+                            />
+                            <Route
+                                path="/ProgramHomePage/:program_id"
                                 element={<ProgramHomePage />}
                             />
                             <Route
