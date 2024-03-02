@@ -32,6 +32,7 @@ const DashboardPage = () => {
                 )
                 .catch((err) => console.log(err));
             setFollowedPrograms(res.data);
+            console.log("FOLLOWED PROGRAMS: ", res.data);
         };
         getFollowedPrograms();
     }, [userData]);
@@ -76,7 +77,7 @@ const DashboardPage = () => {
                 }}
             >
                 <Typography variant="h1">
-                    {userData.name}'s Dashboard
+                    {userData.firstname}'s Dashboard
                 </Typography>
 
                 <div>
@@ -154,9 +155,9 @@ const DashboardPage = () => {
                 <div className="h2Container">
                     <Typography variant="h2">Followed programs</Typography>
                 </div>
-                {/* {followedPrograms && (
+                {followedPrograms && (
                     <CardCarousel cardType="program" data={followedPrograms} />
-                )} */}
+                )}
             </div>
         </div>
     );

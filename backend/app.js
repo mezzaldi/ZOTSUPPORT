@@ -42,8 +42,15 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
-        const query =
-            "SELECT program_id FROM programFollowers WHERE ucinetid = $1";
+        const query = `SELECT 
+                p.program_id,
+                p.program_name,
+                p.description,
+                p.headerimage,
+                p.color
+             FROM programFollowers pf 
+             LEFT JOIN programs p ON p.program_id = pf.program_id
+             WHERE pf.ucinetid = $1`;
         const data = await client.query(query, [ucinetid]);
         res.json(data.rows);
     } catch (error) {
@@ -56,7 +63,8 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
 
 // POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
-    const { name, description, headerImage, color, tags, adminemail } = req.body;
+    const { name, description, headerImage, color, tags, adminemail } =
+        req.body;
 
     // Validate input data
     if (!name || !description || !adminemail) {
@@ -85,21 +93,29 @@ app.post("/programs", async (req, res) => {
             if (tags && Array.isArray(tags) && tags.length > 0) {
                 for (const tagName of tags) {
                     // Fetch tag_id for the current tag name
-                    const tagQuery = "SELECT tag_id FROM tags WHERE tag_name = $1";
+                    const tagQuery =
+                        "SELECT tag_id FROM tags WHERE tag_name = $1";
                     const tagResult = await client.query(tagQuery, [tagName]);
                     const tagId = tagResult.rows[0].tag_id;
 
                     // Insert into program_tags
                     const programTagInsertQuery =
                         "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)";
-                    await client.query(programTagInsertQuery, [programId, tagId]);
+                    await client.query(programTagInsertQuery, [
+                        programId,
+                        tagId,
+                    ]);
                 }
             }
 
             // 3. Add the user specified as admin for the program
-            const adminUserQuery = "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
+            const adminUserQuery =
+                "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
             const adminUserValues = [adminemail];
-            const adminUserResult = await client.query(adminUserQuery, adminUserValues);
+            const adminUserResult = await client.query(
+                adminUserQuery,
+                adminUserValues
+            );
 
             // Check if admin user was found
             if (adminUserResult.rows.length === 0) {
@@ -108,7 +124,8 @@ app.post("/programs", async (req, res) => {
 
             const adminUcinetid = adminUserResult.rows[0].ucinetid;
 
-            const adminInsertQuery = "INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)";
+            const adminInsertQuery =
+                "INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)";
             await client.query(adminInsertQuery, [programId, adminUcinetid]);
 
             // Commit the transaction
@@ -299,7 +316,6 @@ app.get("/notifications/:ucinetid", async (req, res) => {
             notifications.title,
             notifications.contents,
             notifications.file,
-            notificationrecipients.seen,
             programs.program_name
             FROM notificationrecipients
             LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
@@ -504,23 +520,6 @@ app.get("/popular-upcoming-events", async (req, res) => {
 app.get("/programs/:programId/administrators", async (req, res) => {
     const programId = req.params.programId.replace(":", "");
 
-    // await client.query("BEGIN");
-    // // first get notif IDs from notifRecipients table
-    // const query = `SELECT
-    //     notifications.notification_id,
-    //     notifications.program_id,
-    //     notifications.title,
-    //     notifications.contents,
-    //     notifications.file,
-    //     notificationrecipients.seen,
-    //     programs.program_name
-    //     FROM notificationrecipients
-    //     LEFT JOIN notifications ON notifications.notification_id = notificationrecipients.notification_id
-    //     LEFT JOIN programs ON programs.program_id = notifications.program_id
-    //     WHERE ucinetid = $1`;
-    // const data = await client.query(query, [ucinetid]);
-    // res.json(data.rows);
-
     try {
         // Query to fetch administrators for the specified program
         const query = `
@@ -530,7 +529,6 @@ app.get("/programs/:programId/administrators", async (req, res) => {
                 u.profileimage,
                 u.firstname,
                 u.lastname,
-                pa.isadmin,
                 pa.issuperadmin
             FROM
                 programadmins pa
@@ -850,30 +848,29 @@ app.get("/students/:ucinetid/events", async (req, res) => {
 
 // Get programs the user is an administrator for
 app.get("/users/:ucinetid/programs", async (req, res) => {
-    const { ucinetid } = req.params;
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    const client = await pool.connect();
 
     try {
+        await client.query("BEGIN");
         // Query the database to get the list of programs the user is an administrator for
-        const userProgramsQuery = `
+        const query = `
       SELECT 
         p.program_id,
         p.program_name,
         p.description,
         p.headerimage,
-        p.color,
-        u.user_emailaddress AS admin_name
+        p.color
       FROM 
         programs p
       INNER JOIN 
         programadmins pa ON p.program_id = pa.program_id
-      INNER JOIN 
-        users u ON pa.ucinetid = u.ucinetid
       WHERE 
         pa.ucinetid = $1;
     `;
-        const { rows } = await pool.query(userProgramsQuery, [ucinetid]);
+        const data = await client.query(query, [ucinetid]);
 
-        res.status(200).json({ programs: rows });
+        res.status(200).json(data.rows);
     } catch (error) {
         console.error("Error fetching user programs:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -1309,6 +1306,53 @@ app.get("/programs/:programId/followers", async (req, res) => {
         res.status(200).json(rows);
     } catch (error) {
         console.error("Error fetching program followers:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// GET user data based on ucinetid
+app.get("/userData/:ucinetid", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+
+            // Query to fetch program details including its tags and admin email
+            const query = `
+        SELECT 
+          u.user_emailaddress, 
+          u.profileimage, 
+          u.firstname, 
+          u.lastname
+        FROM 
+          users u
+        WHERE 
+          u.ucinetid = $1
+      `;
+            const { rows } = await client.query(query, [ucinetid]);
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            // Check if program exists
+            if (rows.length === 0) {
+                return res.status(404).json({ error: "User not found" });
+            }
+
+            res.status(200).json(rows);
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error("Error fetching program details:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
