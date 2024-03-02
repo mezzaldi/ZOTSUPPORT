@@ -35,6 +35,11 @@ const ProgramDashboard = () => {
         getPrograms();
     }, [userData]);
 
+    const navigate = useNavigate();
+    const handleCardClick = (title) => {
+        navigate(`/program/${title}`);
+    };
+
     return (
         <div className="pageContent">
             <Typography variant="h1" gutterBottom>
@@ -42,32 +47,46 @@ const ProgramDashboard = () => {
             </Typography>
             {programs && (
                 <div>
-                    {programs.map((program) => {
-                        return (
-                            <ProgramCard
-                                title={program.program_name}
-                            ></ProgramCard>
-                        );
-                    })}
+                    <Grid container>
+                        {programs.map((program, index) => {
+                            return (
+                                <Grid item key={index}>
+                                    <ProgramCard
+                                        title={program.program_name}
+                                    ></ProgramCard>
+                                </Grid>
+                            );
+                        })}
+                        <Grid item xs={12} sm={6} md={4} lg={3}>
+                            <Card>
+                                <CardActionArea
+                                    onClick={() =>
+                                        navigate("/CreateNewProgramPage")
+                                    }
+                                    style={{
+                                        height: "100%",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <CardContent>
+                                        <Typography
+                                            variant="h3"
+                                            component="div"
+                                        >
+                                            + New Program
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    </Grid>
                 </div>
             )}
         </div>
     );
-
-    // // Get the programs the user is an admin for
-    // const [userPrograms, setUserPrograms] = useState();
-    // useEffect(() => {
-    //     const getUserPrograms = async () => {
-    //         const res = await axios
-    //             .get(
-    //                 `http://localhost:3001/users/:${userData.ucinetid}/programs`
-    //             )
-    //             .catch((err) => console.log(err));
-    //         setUserPrograms(res.data[0]);
-    //         console.log("PROGRAMS, ", res.data);
-    //     };
-    //     getUserPrograms();
-    // }, [userData]);
 
     // useEffect(() => {
     //     console.log("Updated userPrograms: ", userPrograms);
