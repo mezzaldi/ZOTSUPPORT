@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // pages
 import CreateNewProgramPage from "./routes/CreateNewProgramPage";
 import CreateNewEventPage from "./routes/CreateNewEventPage";
+import CreateNewNotificationPage from "./routes/CreateNewNotificationPage";
 import LandingPage from "./routes/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
 import SignInPage from "./routes/SignInPage";
@@ -104,6 +105,10 @@ const App = () => {
             <Route 
               path='/CreateNewEvent'
               element={<CreateNewEventPage />}
+            />
+            <Route 
+              path='/CreateNewNotification'
+              element={<CreateNewNotificationPage />}
             />
              
             <Route path="/Discover" element={<DiscoverPage />} />
