@@ -5,6 +5,13 @@ import Select from 'react-select';
 import axios from 'axios';
 
 const Program = () => {
+
+  const programColors = [ 
+    //program color options
+      {value:'#C41E3A', label:"Red"},
+      {value:'#11007B', label:"Blue"}  
+    ]
+    
   const [formData, setFormData] = useState({
     programName: '',
     headerImage: '',
@@ -17,7 +24,7 @@ const Program = () => {
   });
 
   const [colorData, setColorData] = useState({
-    color: ''
+    color: programColors[1]
   })
 
   //This will update the input of program name, admin email, header image, and description on change
@@ -58,11 +65,7 @@ const Program = () => {
       // Handle the error appropriately
     }*/
   } 
-  const programColors = [ 
-    //program color options
-      {value:'#C41E3A', label:"Red"},
-      {value:'#11007B', label:"Blue"}  
-    ]
+
 
   const levelTags = [ 
   //load in only tags with the level category

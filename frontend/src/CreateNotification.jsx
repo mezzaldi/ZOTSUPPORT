@@ -4,15 +4,25 @@ import Select from 'react-select';
 import axios from 'axios';
 
 const Notification = () => {
+
+  const recipientOptions = [
+    {value:'programFollowers', label:"All Followers"},
+
+    //load in the last 3 most recent events 
+    {value: "1", label: "Workshop"},
+    {value: "2", label: "Peer Tutoring"},
+    {value: "3", label: "Academic Coaching"},
+
+  ]
+  
   const [formData, setFormData] = useState({
     title: '',
     contents: '',
     file: '',
-    recipients: '',
   });
 
   const [recipientsData, setRecipientsData] = useState({
-    recipients: []
+    recipients: recipientOptions[0]
   });
 
   //This will update the input of notification title, content, file, and recipients on change
@@ -41,15 +51,7 @@ const Notification = () => {
     }*/
   } 
 
-  const recipientOptions = [
-    {value:'programFollowers', label:"All Followers"},
 
-    //load in the last 3 most recent events 
-    {value: "1", label: "Workshop"},
-    {value: "2", label: "Peer Tutoring"},
-    {value: "3", label: "Academic Coaching"},
-
-  ]
 
   
 
