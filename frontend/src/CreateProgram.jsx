@@ -67,6 +67,11 @@ const Program = () => {
     }*/
   } 
 
+  //All the different tag categories
+  let levelTags = []
+  let subjectTags = []
+  let eventTypeTags = []
+
   // Get tags from database
     const [tags, setTags] = useState();
     useEffect(() => {
@@ -79,27 +84,27 @@ const Program = () => {
         };
         getTags();
         console.log(tags)
+
     }, []);
 
-  //All the different tag categories
-  let levelTags = []
-  let subjectTags = []
-  let eventTypeTags = []
-
 // Load tag data into menu options under the correct category
-tags.forEach((tag) => {
+  tags.forEach((tag) => {
   if (tag.tag_category == 'Level') {
-    levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
   }
-
+        
   if (tag.tag_category == 'Subject') {
     subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-  }
-
+   }
+        
   if (tag.tag_category == 'Event Type') {
-    eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-  }
-})
+   eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   }
+   })
+
+
+
+
   
 
 //Gather all the categories of tags under one list

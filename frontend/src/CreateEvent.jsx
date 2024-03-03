@@ -190,19 +190,19 @@ let subjectTags = []
 let eventTypeTags = []
 
 // Load tag data into menu options under the correct category
- tags.map((tag) => {
-   if (tag.tag_category == 'Level') {
-      levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+tags.map((tag) => {
+  if (tag.tag_category == 'Level') {
+     levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   }
+     
+  if (tag.tag_category == 'Subject') {
+     subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   }
+     
+   if (tag.tag_category == 'Event Type') {
+     eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
     }
-      
-   if (tag.tag_category == 'Subject') {
-      subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-    }
-      
-    if (tag.tag_category == 'Event Type') {
-      eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-     }
-  })
+ })
 
 
 //Gather all the categories of tags under one list
@@ -235,12 +235,27 @@ option: (styles, { data }) => {
 }
 };
 
-  const eventAdmins = [
-    //load in eventAdmins data
-    {value:'1', label:"Mario", color: "#80CEAC"},
-    {value:'2', label:"Trace", color: "#80CEAC"}
+// Get admin from database
+const [admins, setAdmins] = useState();
+useEffect(() => {
+    console.log("useeffect admin");
+    const getAdmins = async () => {
+        const res = await axios
+            .get(`http://localhost:3001/programs/:1/administrators`)
+            .catch((err) => console.log(err));
+        setAdmins(await res.data);
+    };
+    getAdmins();
+    console.log(admins)
+}, []);
 
-  ]
+  const eventAdmins = []
+
+  admins.map((admin) => {
+    eventAdmins.push({value: admin.ucinetid, label: admin.firstname + " " + admin.lastname})
+  })
+
+
 
   
 
