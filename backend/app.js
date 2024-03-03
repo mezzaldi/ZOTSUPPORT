@@ -139,12 +139,20 @@ app.post("/programs", async (req, res) => {
     }
 });
 
-
 // edit/ PUT endpoint for updating programs
 // PUT endpoint for updating programs
 app.put("/programs/:programId", async (req, res) => {
     const programId = req.params.programId;
     const { name, description, headerImage, color, tags } = req.body;
+
+    // Define a mapping for tag values to labels
+    const tagValueToLabel = {
+        "1": "Undergraduate",
+        "2": "Graduate",
+        "3": "Art",
+        "4": "Biology",
+        // Add more mappings as needed
+    };
 
     // Validate input data
     if (!name || !description) {
@@ -157,26 +165,31 @@ app.put("/programs/:programId", async (req, res) => {
         try {
             await client.query("BEGIN");
 
-            // Update program details
-            const updateQuery = `
+            // 1. Update the program entry
+            const programUpdateQuery = `
                 UPDATE programs 
                 SET program_name = $1, 
                     description = $2, 
                     headerimage = $3, 
                     color = $4
                 WHERE program_id = $5`;
-            const updateValues = [name, description, headerImage, color, programId];
-            await client.query(updateQuery, updateValues);
+            const programUpdateValues = [name, description, headerImage, color, programId];
+            await client.query(programUpdateQuery, programUpdateValues);
 
-            // Delete existing tags associated with the program
+            // 2. Delete existing program tags
             const deleteTagsQuery = `
-                DELETE FROM program_tags
+                DELETE FROM program_tags 
                 WHERE program_id = $1`;
             await client.query(deleteTagsQuery, [programId]);
 
-            // Insert new tags associated with the program
-            if (tags && Array.isArray(tags) && tags.length > 0) {
-                for (const tagName of tags) {
+            // 3. Filter out unwanted tags and convert tag values to labels
+            const parsedTags = tags
+                .filter(tag => tag !== "21") // Remove tag "21"
+                .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+
+            // 4. Add only valid tags associated with the program
+            if (parsedTags.length > 0) {
+                for (const tagName of parsedTags) {
                     // Fetch tag_id for the current tag name
                     const tagQuery =
                         "SELECT tag_id FROM tags WHERE tag_name = $1";
