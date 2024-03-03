@@ -1360,3 +1360,27 @@ app.get("/userData/:ucinetid", async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
+
+// GET all tags
+app.get("/tags", async (req, res) => {
+    try {
+        // Query the database to get alltags
+        const query = `
+      SELECT 
+        t.tag_id,
+        t.tag_category,
+        t.tag_name,
+        t.tag_color 
+      FROM
+        tags t
+    `;
+        const result = await pool.query(query);
+
+        // Return the upcoming events
+        const tags = result.rows;
+        res.status(200).json(tags);
+    } catch (error) {
+        console.error("Error fetching tags:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});

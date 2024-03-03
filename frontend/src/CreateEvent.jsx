@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
@@ -169,46 +169,71 @@ const Event = () => {
       {value:'Monthly', label:"Monthly"}  
     ]
 
-  const levelTags = [ 
-  //load in tags for each tag category
-  //value would be tagid, label would be tag name
-  //note: must add new column for color (?)
-    {value:'1', label:"Undergraduate", color: "#11007B"},
-    {value:'2', label:"Graduate", color: "#11007B"},
 
-  ]
 
-  const subjectTags = [ 
-  //load in tags for each tag category
-    {value:'3', label:"Art", color: "#80CEAC"},
-    {value:'4', label:"Biology", color: "#80CEAC"},
+// Get tags from database
+const [tags, setTags] = useState();
+useEffect(() => {
+    console.log("useeffect tags");
+    const getTags = async () => {
+        const res = await axios
+            .get(`http://localhost:3001/tags`)
+            .catch((err) => console.log(err));
+        setTags(await res.data);
+    };
+    getTags();
+}, []);
 
-  ]
+//All the different tag categories
+let levelTags = []
+let subjectTags = []
+let eventTypeTags = []
 
-  const allTags = [
-  //all categories and their following tags
-    { 
-      label: "Level",
-      options: levelTags
-    },
-
-    { 
-      label: "Subject",
-      options: subjectTags
+// Load tag data into menu options under the correct category
+ tags.map((tag) => {
+   if (tag.tag_category == 'Level') {
+      levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
     }
-
-  ]
-
-  //styling tags so they correspond to assigned color
-  const tagStyles = {
-    option: (styles, { data }) => {
-      return {
-        ...styles,
-        color: data.color
-
-      };
+      
+   if (tag.tag_category == 'Subject') {
+      subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
     }
+      
+    if (tag.tag_category == 'Event Type') {
+      eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+     }
+  })
+
+
+//Gather all the categories of tags under one list
+const allTags = [
+{ 
+  label: "Level",
+  options: levelTags
+},
+
+{ 
+  label: "Subject",
+  options: subjectTags
+},
+
+{ 
+  label: "Event Types",
+  options: eventTypeTags
+}
+
+]
+
+//styling tags so they correspond to assigned color
+const tagStyles = {
+option: (styles, { data }) => {
+  return {
+    ...styles,
+    color: data.color
+
   };
+}
+};
 
   const eventAdmins = [
     //load in eventAdmins data

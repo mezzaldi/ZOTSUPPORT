@@ -1,5 +1,6 @@
 // ProgramForm.js
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Typography, TextField, Button, Grid } from '@mui/material';
 import Select from 'react-select';
 import axios from 'axios';
@@ -11,7 +12,7 @@ const Program = () => {
       {value:'#C41E3A', label:"Red"},
       {value:'#11007B', label:"Blue"}  
     ]
-    
+
   const [formData, setFormData] = useState({
     programName: '',
     headerImage: '',
@@ -66,22 +67,42 @@ const Program = () => {
     }*/
   } 
 
+  // Get tags from database
+    const [tags, setTags] = useState();
+    useEffect(() => {
+        console.log("useeffect tags");
+        const getTags = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/tags`)
+                .catch((err) => console.log(err));
+            setTags(res.data);
+        };
+        getTags();
+        console.log(tags)
+    }, []);
 
-  const levelTags = [ 
-  //load in only tags with the level category
-  //note: must add new column for color (?)
-    {value:'1', label:"Undergraduate", color: "#11007B"},
-    {value:'2', label:"Graduate", color: "#11007B"},
+  //All the different tag categories
+  let levelTags = []
+  let subjectTags = []
+  let eventTypeTags = []
 
-  ]
+// Load tag data into menu options under the correct category
+tags.forEach((tag) => {
+  if (tag.tag_category == 'Level') {
+    levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+  }
 
-  const subjectTags = [ 
+  if (tag.tag_category == 'Subject') {
+    subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+  }
 
-    {value:'3', label:"Art", color: "#80CEAC"},
-    {value:'4', label:"Biology", color: "#80CEAC"},
+  if (tag.tag_category == 'Event Type') {
+    eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+  }
+})
+  
 
-  ]
-
+//Gather all the categories of tags under one list
   const allTags = [
     { 
       label: "Level",
@@ -91,10 +112,16 @@ const Program = () => {
     { 
       label: "Subject",
       options: subjectTags
+    },
+
+    { 
+      label: "Event Types",
+      options: eventTypeTags
     }
 
   ]
 
+  //styling tags so they correspond to assigned color
   const tagStyles = {
     option: (styles, { data }) => {
       return {
