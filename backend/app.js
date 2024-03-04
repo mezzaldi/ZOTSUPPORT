@@ -224,6 +224,48 @@ app.put("/programs/:programId", async (req, res) => {
     }
 });
 
+// GET endpoint to fetch program details by ID
+app.get("/programs/:id", async (req, res) => {
+    const programId = req.params.id;
+
+    try {
+        // Query the database to get program details
+        const programQuery = `
+            SELECT * FROM programs WHERE program_id = $1
+        `;
+        const programResult = await pool.query(programQuery, [programId]);
+
+        if (programResult.rows.length === 0) {
+            return res.status(404).json({ error: "Program not found" });
+        }
+
+        // Query the database to get associated tags
+        const tagsQuery = `
+            SELECT t.tag_name FROM tags t
+            INNER JOIN program_tags pt ON t.tag_id = pt.tag_id
+            WHERE pt.program_id = $1
+        `;
+        const tagsResult = await pool.query(tagsQuery, [programId]);
+        const tags = tagsResult.rows.map(row => row.tag_name);
+
+        // Construct the response object
+        const programDetails = {
+            programId: programResult.rows[0].program_id,
+            name: programResult.rows[0].program_name,
+            description: programResult.rows[0].description,
+            headerImage: programResult.rows[0].headerimage,
+            color: programResult.rows[0].color,
+            tags: tags
+        };
+
+        res.status(200).json(programDetails);
+    } catch (error) {
+        console.error("Error fetching program details:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+  
 // DELETE endpoint for deleting programs
 app.delete("/programs/:programId", async (req, res) => {
     const programId = req.params.programId;
