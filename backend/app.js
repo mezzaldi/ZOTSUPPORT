@@ -224,6 +224,102 @@ app.put("/programs/:programId", async (req, res) => {
     }
 });
 
+// API endpoint for deleting a notification by ID
+app.delete('/notifications/:notificationId', async (req, res) => {
+    const notificationId = req.params.notificationId;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // Delete notification from notifications table
+            const deleteNotificationQuery = `
+                DELETE FROM notifications
+                WHERE notification_id = $1`;
+            await client.query(deleteNotificationQuery, [notificationId]);
+
+            // Delete notification recipients from notificationrecipients table
+            const deleteRecipientsQuery = `
+                DELETE FROM notificationrecipients
+                WHERE notification_id = $1`;
+            await client.query(deleteRecipientsQuery, [notificationId]);
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            res.status(200).json({ message: 'Notification deleted successfully' });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query('ROLLBACK');
+            console.error('Error deleting notification:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error connecting to database:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// API endpoint for sending a new notification
+app.post('/notifications', async (req, res) => {
+    const { title, contents, file, recipients } = req.body;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // Insert notification into notifications table
+            const notificationInsertQuery = `
+                INSERT INTO notifications (title, contents, file)
+                VALUES ($1, $2, $3)
+                RETURNING notification_id`;
+            const notificationInsertValues = [title, contents, file];
+            const notificationInsertResult = await client.query(notificationInsertQuery, notificationInsertValues);
+            const notificationId = notificationInsertResult.rows[0].notification_id;
+
+            // Insert recipients into notificationrecipients table
+            for (const recipientEmail of recipients) {
+                // Fetch ucinetid for the current recipient
+                const userQuery = `
+                    SELECT ucinetid FROM users WHERE user_emailaddress = $1`;
+                const userResult = await client.query(userQuery, [recipientEmail]);
+                const ucinetid = userResult.rows[0].ucinetid;
+
+                // Insert into notificationrecipients table
+                const recipientInsertQuery = `
+                    INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
+                    VALUES ($1, $2, false)`;
+                await client.query(recipientInsertQuery, [notificationId, ucinetid]);
+            }
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            res.status(201).json({ message: 'Notification sent successfully' });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query('ROLLBACK');
+            console.error('Error sending notification:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error connecting to database:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
 // GET endpoint to fetch program details by ID
 app.get("/programs/:id", async (req, res) => {
     const programId = req.params.id;
