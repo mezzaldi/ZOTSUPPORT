@@ -71,12 +71,12 @@
 
 .image-box {
   display: block;
-  max-width: 98%; /* Adjusted to match the page width */
+  max-width: 90%; /* Adjusted to match the page width */
   margin: 20px auto;
   padding: 0;
   border-radius: 10px;
   overflow: hidden; /* This will ensure the image doesn't overflow the rounded corners */
-  height: 420px; /* Set a fixed height to make the box vertically smaller */
+  height: 600px; /* Set a fixed height to make the box vertically smaller */
 }
 
 .image-box img {

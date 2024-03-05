@@ -31,6 +31,7 @@ import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
+import EditEventForm  from "./routes/EditEventForm";
 
 const primaryTextColor = "#242424";
 
@@ -99,7 +100,7 @@ const App = () => {
                     {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
                     <Navbar userData={userData}/>
                     <Routes>
-                        <Route path="/LandingPage" element={<LandingPage />} />
+                        <Route path="/" element={<LandingPage />} />
                         <Route path="/SignIn" element={<SignInPage />} />
                         <Route path="/About" element={<AboutUsPage />} />
                         <Route
@@ -130,6 +131,7 @@ const App = () => {
             <Route path="/ViewNotification" element={<ViewNotification/>} />
             <Route path="/ProgramDashboard" element={<ProgramDashboard/>} />
             <Route path="/EditProgramForm" element={<EditProgramForm/>} />
+            <Route path="/EditEventForm" element={<EditEventForm/>} />
             <Route
                             path="/ProgramHomePage"
                             element={<ProgramHomePage />}
