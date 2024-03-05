@@ -6,10 +6,16 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
 
 const ProgramCard = (props) => {
+    const navigate = useNavigate();
+
     return (
-        <Card sx={{ marginRight: "1.5rem" }}>
+        <Card
+            sx={{ width: "17rem", cursor: "pointer", marginRight: "3rem" }}
+            onClick={() => navigate(`/ProgramHomePage/:${props.program_id}`)}
+        >
             {/* The program header image */}
             <CardMedia
                 sx={{ height: 140 }}
