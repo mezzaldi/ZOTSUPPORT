@@ -10,15 +10,6 @@ const ProgramForm = () => {
     { value: '#11007B', label: "Blue" }
   ];
 
-<<<<<<< HEAD
-=======
-  const programColors = [ 
-    //program color options
-      {value:'#C41E3A', label:"Red"},
-      {value:'#11007B', label:"Blue"}  
-    ]
-
->>>>>>> formAPI
   const [formData, setFormData] = useState({
     programName: '',
     headerImage: '',
@@ -75,21 +66,7 @@ const ProgramForm = () => {
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
-<<<<<<< HEAD
     }
-  };
-
-  const levelTags = [
-    { value: '1', label: "Undergraduate", color: "#11007B" },
-    { value: '2', label: "Graduate", color: "#11007B" }
-  ];
-
-  const subjectTags = [
-    { value: '3', label: "Art", color: "#80CEAC" },
-    { value: '4', label: "Biology", color: "#80CEAC" }
-  ];
-=======
-    }*/
   } 
 
   //All the different tag categories
@@ -131,7 +108,6 @@ const ProgramForm = () => {
 
 
   
->>>>>>> formAPI
 
 //Gather all the categories of tags under one list
   const allTags = [
