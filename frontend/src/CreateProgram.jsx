@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Typography, TextField, Button, Grid } from '@mui/material';
 import Select from 'react-select';
 import axios from 'axios';
@@ -9,6 +10,15 @@ const ProgramForm = () => {
     { value: '#11007B', label: "Blue" }
   ];
 
+<<<<<<< HEAD
+=======
+  const programColors = [ 
+    //program color options
+      {value:'#C41E3A', label:"Red"},
+      {value:'#11007B', label:"Blue"}  
+    ]
+
+>>>>>>> formAPI
   const [formData, setFormData] = useState({
     programName: '',
     headerImage: '',
@@ -65,6 +75,7 @@ const ProgramForm = () => {
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
+<<<<<<< HEAD
     }
   };
 
@@ -77,7 +88,52 @@ const ProgramForm = () => {
     { value: '3', label: "Art", color: "#80CEAC" },
     { value: '4', label: "Biology", color: "#80CEAC" }
   ];
+=======
+    }*/
+  } 
 
+  //All the different tag categories
+  let levelTags = []
+  let subjectTags = []
+  let eventTypeTags = []
+
+  // Get tags from database
+    const [tags, setTags] = useState();
+    useEffect(() => {
+        console.log("useeffect tags");
+        const getTags = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/tags`)
+                .catch((err) => console.log(err));
+            setTags(res.data);
+        };
+        getTags();
+        console.log(tags)
+
+    }, []);
+
+// Load tag data into menu options under the correct category
+  tags.forEach((tag) => {
+  if (tag.tag_category == 'Level') {
+   levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+  }
+        
+  if (tag.tag_category == 'Subject') {
+    subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   }
+        
+  if (tag.tag_category == 'Event Type') {
+   eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+   }
+   })
+
+
+
+
+  
+>>>>>>> formAPI
+
+//Gather all the categories of tags under one list
   const allTags = [
     {
       label: "Level",
@@ -86,9 +142,15 @@ const ProgramForm = () => {
     {
       label: "Subject",
       options: subjectTags
+    },
+
+    { 
+      label: "Event Types",
+      options: eventTypeTags
     }
   ];
 
+  //styling tags so they correspond to assigned color
   const tagStyles = {
     option: (styles, { data }) => {
       return {
