@@ -50,14 +50,17 @@ const ProgramForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    tagData.tags.push( {value: 21, label: "Learning Support Program"})
 
     const postData = {
       name: formData.programName,
       description: formData.description,
       headerImage: formData.headerImage,
       color: colorData.color.value,
-      tags: tagData.tags.map(tag => String(tag.value))
+      tags: tagData.tags.map(tag => String(tag.label)) 
     };
+
+    console.log(postData)
 
     try {
       const response = await axios.post('http://localhost:3001/programs', postData);

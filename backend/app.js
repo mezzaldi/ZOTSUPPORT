@@ -100,7 +100,7 @@ app.post("/programs", async (req, res) => {
             // 2. Filter out unwanted tags and convert tag values to labels
             const parsedTags = tags
                 .filter(tag => tag !== "21") // Remove tag "21"
-                .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 3. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
@@ -146,13 +146,13 @@ app.put("/programs/:programId", async (req, res) => {
     const { name, description, headerImage, color, tags } = req.body;
 
     // Define a mapping for tag values to labels
-    const tagValueToLabel = {
-        "1": "Undergraduate",
-        "2": "Graduate",
-        "3": "Art",
-        "4": "Biology",
-        // Add more mappings as needed
-    };
+    // const tagValueToLabel = {
+    //     "1": "Undergraduate",
+    //     "2": "Graduate",
+    //     "3": "Art",
+    //     "4": "Biology",
+    //     // Add more mappings as needed
+    // };
 
     // Validate input data
     if (!name || !description) {
@@ -185,7 +185,7 @@ app.put("/programs/:programId", async (req, res) => {
             // 3. Filter out unwanted tags and convert tag values to labels
             const parsedTags = tags
                 .filter(tag => tag !== "21") // Remove tag "21"
-                .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 4. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
