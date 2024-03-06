@@ -56,7 +56,7 @@ const ProgramForm = () => {
       description: formData.description,
       headerImage: formData.headerImage,
       color: colorData.color.value,
-      tags: tagData.tags.map(tag => tag.value)
+      tags: tagData.tags.map(tag => String(tag.value))
     };
 
     try {
