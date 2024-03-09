@@ -63,11 +63,19 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
 
 // POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
-    const { name, description, headerImage, color, tags, adminemail } =
-        req.body;
+    const { name, description, headerImage, color, tags } = req.body;
+
+    // Define a mapping for tag values to labels
+    const tagValueToLabel = {
+        "1": "Undergraduate",
+        "2": "Graduate",
+        "3": "Art",
+        "4": "Biology",
+        // Add more mappings as needed
+    };
 
     // Validate input data
-    if (!name || !description || !adminemail) {
+    if (!name || !description) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -89,9 +97,14 @@ app.post("/programs", async (req, res) => {
             );
             const programId = programInsertResult.rows[0].program_id;
 
-            // 2. Add tags associated with the program
-            if (tags && Array.isArray(tags) && tags.length > 0) {
-                for (const tagName of tags) {
+            // 2. Filter out unwanted tags and convert tag values to labels
+            const parsedTags = tags
+                .filter(tag => tag !== "21") // Remove tag "21"
+                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+
+            // 3. Add only valid tags associated with the program
+            if (parsedTags.length > 0) {
+                for (const tagName of parsedTags) {
                     // Fetch tag_id for the current tag name
                     const tagQuery =
                         "SELECT tag_id FROM tags WHERE tag_name = $1";
@@ -107,26 +120,6 @@ app.post("/programs", async (req, res) => {
                     ]);
                 }
             }
-
-            // 3. Add the user specified as admin for the program
-            const adminUserQuery =
-                "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
-            const adminUserValues = [adminemail];
-            const adminUserResult = await client.query(
-                adminUserQuery,
-                adminUserValues
-            );
-
-            // Check if admin user was found
-            if (adminUserResult.rows.length === 0) {
-                return res.status(404).json({ error: "Admin user not found" });
-            }
-
-            const adminUcinetid = adminUserResult.rows[0].ucinetid;
-
-            const adminInsertQuery =
-                "INSERT INTO programadmins (program_id, ucinetid) VALUES ($1, $2)";
-            await client.query(adminInsertQuery, [programId, adminUcinetid]);
 
             // Commit the transaction
             await client.query("COMMIT");
@@ -147,13 +140,22 @@ app.post("/programs", async (req, res) => {
 });
 
 // edit/ PUT endpoint for updating programs
+// PUT endpoint for updating programs
 app.put("/programs/:programId", async (req, res) => {
     const programId = req.params.programId;
-    const { name, description, headerImage, color, tags, adminemail } =
-        req.body;
+    const { name, description, headerImage, color, tags } = req.body;
+
+    // Define a mapping for tag values to labels
+    // const tagValueToLabel = {
+    //     "1": "Undergraduate",
+    //     "2": "Graduate",
+    //     "3": "Art",
+    //     "4": "Biology",
+    //     // Add more mappings as needed
+    // };
 
     // Validate input data
-    if (!name || !description || !adminemail) {
+    if (!name || !description) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -165,32 +167,29 @@ app.put("/programs/:programId", async (req, res) => {
 
             // 1. Update the program entry
             const programUpdateQuery = `
-        UPDATE programs
-        SET
-          program_name = $1,
-          description = $2,
-          headerimage = $3,
-          color = $4
-        WHERE
-          program_id = $5
-      `;
-            const programUpdateValues = [
-                name,
-                description,
-                headerImage,
-                color,
-                programId,
-            ];
+                UPDATE programs 
+                SET program_name = $1, 
+                    description = $2, 
+                    headerimage = $3, 
+                    color = $4
+                WHERE program_id = $5`;
+            const programUpdateValues = [name, description, headerImage, color, programId];
             await client.query(programUpdateQuery, programUpdateValues);
 
-            // 2. Remove existing tags associated with the program
-            const removeTagsQuery =
-                "DELETE FROM program_tags WHERE program_id = $1";
-            await client.query(removeTagsQuery, [programId]);
+            // 2. Delete existing program tags
+            const deleteTagsQuery = `
+                DELETE FROM program_tags 
+                WHERE program_id = $1`;
+            await client.query(deleteTagsQuery, [programId]);
 
-            // 3. Add new tags associated with the program
-            if (tags && Array.isArray(tags) && tags.length > 0) {
-                for (const tagName of tags) {
+            // 3. Filter out unwanted tags and convert tag values to labels
+            const parsedTags = tags
+                .filter(tag => tag !== "21") // Remove tag "21"
+                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+
+            // 4. Add only valid tags associated with the program
+            if (parsedTags.length > 0) {
+                for (const tagName of parsedTags) {
                     // Fetch tag_id for the current tag name
                     const tagQuery =
                         "SELECT tag_id FROM tags WHERE tag_name = $1";
@@ -206,20 +205,6 @@ app.put("/programs/:programId", async (req, res) => {
                     ]);
                 }
             }
-
-            // 4. Update the admin for the program
-            const adminUserQuery =
-                "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
-            const adminUserValues = [adminemail];
-            const adminUserResult = await client.query(
-                adminUserQuery,
-                adminUserValues
-            );
-            const adminUcinetid = adminUserResult.rows[0].ucinetid;
-
-            const adminUpdateQuery =
-                "UPDATE programadmins SET ucinetid = $1 WHERE program_id = $2";
-            await client.query(adminUpdateQuery, [adminUcinetid, programId]);
 
             // Commit the transaction
             await client.query("COMMIT");
@@ -238,6 +223,185 @@ app.put("/programs/:programId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+// API endpoint for deleting a notification by ID
+app.delete('/notifications/:notificationId', async (req, res) => {
+    const notificationId = req.params.notificationId;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // Delete notification from notifications table
+            const deleteNotificationQuery = `
+                DELETE FROM notifications
+                WHERE notification_id = $1`;
+            await client.query(deleteNotificationQuery, [notificationId]);
+
+            // Delete notification recipients from notificationrecipients table
+            const deleteRecipientsQuery = `
+                DELETE FROM notificationrecipients
+                WHERE notification_id = $1`;
+            await client.query(deleteRecipientsQuery, [notificationId]);
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            res.status(200).json({ message: 'Notification deleted successfully' });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query('ROLLBACK');
+            console.error('Error deleting notification:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error connecting to database:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// API endpoint for sending a new notification
+app.post('/notifications', async (req, res) => {
+    const { title, contents, file, recipients } = req.body;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // Insert notification into notifications table
+            const notificationInsertQuery = `
+                INSERT INTO notifications (title, contents, file)
+                VALUES ($1, $2, $3)
+                RETURNING notification_id`;
+            const notificationInsertValues = [title, contents, file];
+            const notificationInsertResult = await client.query(notificationInsertQuery, notificationInsertValues);
+            const notificationId = notificationInsertResult.rows[0].notification_id;
+
+            // Insert recipients into notificationrecipients table
+            for (const recipientEmail of recipients) {
+                // Fetch ucinetid for the current recipient
+                const userQuery = `
+                    SELECT ucinetid FROM users WHERE user_emailaddress = $1`;
+                const userResult = await client.query(userQuery, [recipientEmail]);
+                const ucinetid = userResult.rows[0].ucinetid;
+
+                // Insert into notificationrecipients table
+                const recipientInsertQuery = `
+                    INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
+                    VALUES ($1, $2, false)`;
+                await client.query(recipientInsertQuery, [notificationId, ucinetid]);
+            }
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            res.status(201).json({ message: 'Notification sent successfully' });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query('ROLLBACK');
+            console.error('Error sending notification:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error connecting to database:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+// GET endpoint to fetch program details by ID
+app.get("/programs/:id", async (req, res) => {
+    const programId = req.params.id;
+
+    try {
+        // Query the database to get program details
+        const programQuery = `
+            SELECT * FROM programs WHERE program_id = $1
+        `;
+        const programResult = await pool.query(programQuery, [programId]);
+
+        if (programResult.rows.length === 0) {
+            return res.status(404).json({ error: "Program not found" });
+        }
+
+        // Query the database to get associated tags
+        const tagsQuery = `
+            SELECT t.tag_name FROM tags t
+            INNER JOIN program_tags pt ON t.tag_id = pt.tag_id
+            WHERE pt.program_id = $1
+        `;
+        const tagsResult = await pool.query(tagsQuery, [programId]);
+        const tags = tagsResult.rows.map(row => row.tag_name);
+
+        // Construct the response object
+        const programDetails = {
+            programId: programResult.rows[0].program_id,
+            name: programResult.rows[0].program_name,
+            description: programResult.rows[0].description,
+            headerImage: programResult.rows[0].headerimage,
+            color: programResult.rows[0].color,
+            tags: tags
+        };
+
+        res.status(200).json(programDetails);
+    } catch (error) {
+        console.error("Error fetching program details:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+  
+// DELETE endpoint for deleting programs
+app.delete("/programs/:programId", async (req, res) => {
+    const programId = req.params.programId;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+
+            // Delete program from programs table
+            const deleteProgramQuery = `
+                DELETE FROM programs
+                WHERE program_id = $1`;
+            await client.query(deleteProgramQuery, [programId]);
+
+            // Delete associated program_tags
+            const deleteTagsQuery = `
+                DELETE FROM program_tags
+                WHERE program_id = $1`;
+            await client.query(deleteTagsQuery, [programId]);
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            res.status(200).json({ message: "Program deleted successfully" });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error("Error deleting program:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 // GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
@@ -432,7 +596,7 @@ app.post("/events", async (req, res) => {
 
             // Fetch ucinetid for the specified user_emailaddress
             const userQuery =
-                "SELECT ucinetid FROM users WHERE user_emailaddress = $1";
+                "SELECT ucinetid FROM users WHERE firstname = $1";
             const userResult = await client.query(userQuery, [
                 user_emailaddress,
             ]);
@@ -1359,4 +1523,28 @@ app.get("/userData/:ucinetid", async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
+});
+
+// GET all tags
+app.get("/tags", async (req, res) => {
+    try {
+        // Query the database to get alltags
+        const query = `
+      SELECT 
+        t.tag_id,
+        t.tag_category,
+        t.tag_name,
+        t.tag_color 
+      FROM
+        tags t
+    `;
+        const result = await pool.query(query);
+
+        // Return the upcoming events
+        const tags = result.rows;
+        res.status(200).json(tags);
+    } catch (error) {
+        console.error("Error fetching tags:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
