@@ -1053,7 +1053,6 @@ app.get("/users/:ucinetid/programs", async (req, res) => {
 
 app.get("/users/:ucinetid/events/attended", async (req, res) => {
     const { ucinetid } = req.params;
-
     try {
         // Query the database to get the list of events the user has attended
         const attendedEventsQuery = `
@@ -1117,6 +1116,31 @@ app.get("/programs/:programId/events/upcoming", async (req, res) => {
     `;
         const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
             programId,
+        ]);
+
+        res.status(200).json(upcomingEventsResult.rows);
+    } catch (error) {
+        console.error("Error fetching upcoming events:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get upcoming events that a specific user is registered for, including tags and list of admins that hosted the event
+app.get("/users/:ucinetid/events/upcoming", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    try {
+        // Write your database query to retrieve past events for the specified program
+        const upcomingEventsQuery = `
+        SELECT e.event_id, 
+        e.event_name, 
+        e.description, 
+        e.date
+        FROM events AS e, eventregistrees AS er
+        WHERE e.event_id = er.event_id AND er.ucinetid = $1
+        AND e.date >= CURRENT_DATE
+    `;
+        const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
+            ucinetid,
         ]);
 
         res.status(200).json(upcomingEventsResult.rows);

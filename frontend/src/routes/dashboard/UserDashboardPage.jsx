@@ -11,13 +11,10 @@ import { Link } from "react-router-dom";
 import NotificationTable from "../../components/NotificationTable";
 import CardCarousel from "../../components/CardCarousel";
 import EventBar from "../../components/EventBar";
-import AdminTable from "../../components/AdminTable";
 
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
-import AddAdminModal from "../../components/AddAdminModal";
-import RemoveAdminModal from "../../components/RemoveAdminModal";
 
 const DashboardPage = () => {
     const userData = useContext(UserContext);
@@ -32,7 +29,6 @@ const DashboardPage = () => {
                 )
                 .catch((err) => console.log(err));
             setFollowedPrograms(res.data);
-            console.log("FOLLOWED PROGRAMS: ", res.data);
         };
         getFollowedPrograms();
     }, [userData]);
@@ -65,18 +61,17 @@ const DashboardPage = () => {
         getAdmins();
     }, [userData]);
 
-    // Get the programs's upcoming events [IF A PROGRAM DASHBOARD]
+    // Get user's upcoming events they are registered for
     const [upcomingEvents, setUpcomingEvents] = useState();
-    // TEST PROGRAM ID
-    const programId = 1;
     useEffect(() => {
         const getUpcomingEvents = async () => {
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/${programId}/events/upcoming`
+                    `http://localhost:3001/users/:${userData.ucinetid}/events/upcoming`
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
+            console.log(res.data);
         };
         getUpcomingEvents();
     }, [userData]);
@@ -95,17 +90,6 @@ const DashboardPage = () => {
                 <Typography variant="h1">
                     {userData.firstname}'s Dashboard
                 </Typography>
-
-                <div>
-                    <Link to="/ProgramEvents">
-                        <Button variant="outlined" sx={{ marginRight: "10px" }}>
-                            Program events
-                        </Button>
-                    </Link>
-                    <Link to="/ProgramHomePage">
-                        <Button variant="outlined">Program home</Button>
-                    </Link>
-                </div>
             </Box>
 
             <div className="eventBarsAndCalendar">
@@ -118,7 +102,6 @@ const DashboardPage = () => {
                     <div>
                         {upcomingEvents &&
                             upcomingEvents.map((eventData) => {
-                                console.log(eventData);
                                 return <EventBar data={eventData} />;
                             })}
                     </div>
