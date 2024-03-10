@@ -65,6 +65,22 @@ const DashboardPage = () => {
         getAdmins();
     }, [userData]);
 
+    // Get the programs's upcoming events [IF A PROGRAM DASHBOARD]
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    // TEST PROGRAM ID
+    const programId = 1;
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/${programId}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+        };
+        getUpcomingEvents();
+    }, [userData]);
+
     return (
         <div className="pageContent">
             <Box
@@ -100,11 +116,11 @@ const DashboardPage = () => {
                         </Typography>
                     </div>
                     <div>
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
+                        {upcomingEvents &&
+                            upcomingEvents.map((eventData) => {
+                                console.log(eventData);
+                                return <EventBar data={eventData} />;
+                            })}
                     </div>
                 </div>
 
