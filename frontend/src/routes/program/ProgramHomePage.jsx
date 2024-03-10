@@ -74,22 +74,12 @@ const ProgramHomePage = () => {
                         sx={{ marginTop: "1rem" }}
                     >
                         {/* Later load in these tags from the database!! */}
-                        <Chip
-                            label="Undergrad"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
-                        <Chip
-                            label="Math"
-                            sx={{ backgroundColor: "purple", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="Biology"
-                            sx={{ backgroundColor: "orange", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="Walk-in"
-                            sx={{ backgroundColor: "red", color: "white" }}
-                        />
+                        {program.tags && (
+                            program.tags.map(tag => 
+                                <Chip label={tag.tag_name}
+                                sx={{ backgroundColor: tag.tag_color, color: "white" }} />
+                            )
+                        )}
                     </Stack>
 
                     <Typography

@@ -6,10 +6,17 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
+
 
 const EventCard = (props) => {
+    const navigate = useNavigate();
+    
     return (
-        <Card sx={{ marginRight: "1.5rem" }}>
+        <Card sx={{ marginRight: "1.5rem" }}
+              onClick={() => navigate(`/EventHomePage/:${props.event_id}`)}
+        >
+
             {/* The program header image */}
             <CardMedia
                 sx={{ height: 140 }}

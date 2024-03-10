@@ -14,6 +14,8 @@ import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
+import EventHomePage from "./routes/event/EventHomePage";
+
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -160,6 +162,14 @@ const App = () => {
                             <Route
                                 path="/ProgramHomePage"
                                 element={<ProgramHomePage />}
+                            />
+                            <Route
+                                path="/EventHomePage"
+                                element={<EventHomePage />}
+                            />
+                            <Route
+                                path="/EventHomePage/:event_id"
+                                element={<EventHomePage />}
                             />
                             <Route
                                 path="/ProgramHomePage/:program_id"
