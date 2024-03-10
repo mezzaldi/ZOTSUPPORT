@@ -145,28 +145,6 @@ const DashboardPage = () => {
                 )}
             </div>
 
-            {/* Program admin table only shownt to admin or superadmin */}
-            {(userData.role === "admin" || userData.role === "superadmin") && (
-                <div>
-                    <div className="h2Container">
-                        <Typography variant="h2">
-                            Program administrators
-                        </Typography>
-                    </div>
-                    <div className="tableContainer">
-                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
-                    </div>
-                </div>
-            )}
-
-            {/* Buttons to change admins only shown to superadmin */}
-            {userData.role === "superadmin" && (
-                <div>
-                    <AddAdminModal />
-                    <RemoveAdminModal />
-                </div>
-            )}
-
             <div>
                 <div className="h2Container">
                     <Typography variant="h2">Followed programs</Typography>

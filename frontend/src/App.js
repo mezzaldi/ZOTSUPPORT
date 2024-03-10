@@ -10,7 +10,8 @@ import AboutUsPage from "./routes/about/AboutUsPage";
 import SignInPage from "./routes/SignInPage";
 import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
-import DashboardPage from "./routes/dashboard/DashboardPage";
+import UserDashboardPage from "./routes/dashboard/UserDashboardPage";
+import ProgramDashboardPage from "./routes/dashboard/ProgramDashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
@@ -26,7 +27,7 @@ import {
 } from "@mui/material/styles";
 import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
-import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
+import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
 
 import { useContext, useEffect } from "react";
@@ -143,7 +144,7 @@ const App = () => {
                             />
                             <Route
                                 path="/Dashboard"
-                                element={<DashboardPage />}
+                                element={<UserDashboardPage />}
                             />
                             <Route
                                 path="/Notifications"
@@ -153,14 +154,13 @@ const App = () => {
                                 path="/ProgramEvents"
                                 element={<ProgramEventsPage />}
                             />
-                            {/* GET RID OF THIS LATER SINCE ITS A BLANK TEMPLATE */}
-                            <Route
-                                path="/ProgramHomePage"
-                                element={<ProgramHomePage />}
-                            />
                             <Route
                                 path="/ProgramHomePage/:program_id"
                                 element={<ProgramHomePage />}
+                            />
+                            <Route
+                                path="/ProgramDashboardPage/:program_id"
+                                element={<ProgramDashboardPage />}
                             />
                             <Route
                                 path="/UserSetting"
@@ -171,8 +171,8 @@ const App = () => {
                                 element={<ViewNotification />}
                             />
                             <Route
-                                path="/ProgramDashboard"
-                                element={<ProgramDashboard />}
+                                path="/ProgramSelectDashboard"
+                                element={<ProgramSelectDashboard />}
                             />
                             <Route
                                 path="/EditProgramForm"

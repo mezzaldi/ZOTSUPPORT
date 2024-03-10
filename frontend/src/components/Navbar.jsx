@@ -78,7 +78,7 @@ const Navbar = ({ userData }) => {
                             </Button>
                             {isAdmin && (
                                 <Button
-                                    href="/ProgramDashboard"
+                                    href="/ProgramSelectDashboard"
                                     startIcon={<AdminPanelSettingsIcon />}
                                     sx={{ color: "white" }}
                                 >
