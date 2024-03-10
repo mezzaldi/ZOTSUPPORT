@@ -14,7 +14,13 @@ const ProgramCard = (props) => {
     return (
         <Card
             sx={{ width: "17rem", cursor: "pointer", marginRight: "3rem" }}
-            onClick={() => navigate(`/ProgramHomePage/:${props.program_id}`)}
+            onClick={() => {
+                if (props.linkType == "dashboard") {
+                    navigate(`/ProgramDashboardPage/:${props.program_id}`);
+                } else {
+                    navigate(`/ProgramHomePage/:${props.program_id}`);
+                }
+            }}
         >
             {/* The program header image */}
             <CardMedia
