@@ -120,10 +120,7 @@ const App = () => {
                         {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
                         <Navbar userData={userData} />
                         <Routes>
-                            <Route
-                                path="/LandingPage"
-                                element={<LandingPage />}
-                            />
+                            <Route path="/" element={<LandingPage />} />
                             <Route path="/SignIn" element={<SignInPage />} />
                             <Route path="/About" element={<AboutUsPage />} />
                             <Route
@@ -135,8 +132,8 @@ const App = () => {
                                 element={<CreateNewEventPage />}
                             />
 
-                            <Route 
-                                path='/CreateNewNotification'
+                            <Route
+                                path="/CreateNewNotification"
                                 element={<CreateNewNotificationPage />}
                             />
 

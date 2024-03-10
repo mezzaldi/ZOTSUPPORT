@@ -115,7 +115,6 @@ const ProgramEventsPage = () => {
                     <Box>
                         {upcomingEvents &&
                             upcomingEvents.map((eventData) => {
-                                console.log(eventData);
                                 return <LongEventCard data={eventData} />;
                             })}
                     </Box>

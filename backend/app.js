@@ -67,10 +67,10 @@ app.post("/programs", async (req, res) => {
 
     // Define a mapping for tag values to labels
     const tagValueToLabel = {
-        "1": "Undergraduate",
-        "2": "Graduate",
-        "3": "Art",
-        "4": "Biology",
+        1: "Undergraduate",
+        2: "Graduate",
+        3: "Art",
+        4: "Biology",
         // Add more mappings as needed
     };
 
@@ -98,9 +98,8 @@ app.post("/programs", async (req, res) => {
             const programId = programInsertResult.rows[0].program_id;
 
             // 2. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags
-                .filter(tag => tag !== "21") // Remove tag "21"
-                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
+            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 3. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
@@ -173,7 +172,13 @@ app.put("/programs/:programId", async (req, res) => {
                     headerimage = $3, 
                     color = $4
                 WHERE program_id = $5`;
-            const programUpdateValues = [name, description, headerImage, color, programId];
+            const programUpdateValues = [
+                name,
+                description,
+                headerImage,
+                color,
+                programId,
+            ];
             await client.query(programUpdateQuery, programUpdateValues);
 
             // 2. Delete existing program tags
@@ -183,9 +188,8 @@ app.put("/programs/:programId", async (req, res) => {
             await client.query(deleteTagsQuery, [programId]);
 
             // 3. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags
-                .filter(tag => tag !== "21") // Remove tag "21"
-                // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
+            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 4. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
@@ -225,14 +229,14 @@ app.put("/programs/:programId", async (req, res) => {
 });
 
 // API endpoint for deleting a notification by ID
-app.delete('/notifications/:notificationId', async (req, res) => {
+app.delete("/notifications/:notificationId", async (req, res) => {
     const notificationId = req.params.notificationId;
 
     try {
         // Start a transaction
         const client = await pool.connect();
         try {
-            await client.query('BEGIN');
+            await client.query("BEGIN");
 
             // Delete notification from notifications table
             const deleteNotificationQuery = `
@@ -247,33 +251,36 @@ app.delete('/notifications/:notificationId', async (req, res) => {
             await client.query(deleteRecipientsQuery, [notificationId]);
 
             // Commit the transaction
-            await client.query('COMMIT');
+            await client.query("COMMIT");
 
-            res.status(200).json({ message: 'Notification deleted successfully' });
+            res.status(200).json({
+                message: "Notification deleted successfully",
+            });
         } catch (error) {
             // Rollback transaction if any error occurs
-            await client.query('ROLLBACK');
-            console.error('Error deleting notification:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            await client.query("ROLLBACK");
+            console.error("Error deleting notification:", error);
+            res.status(500).json({ error: "Internal server error" });
         } finally {
             // Release the client back to the pool
             client.release();
         }
     } catch (error) {
-        console.error('Error connecting to database:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
 // API endpoint for sending a new notification
-app.post('/notifications', async (req, res) => {
+app.post("/notifications", async (req, res) => {
     const { title, contents, file, recipients } = req.body;
+    // console.log("NOTIFICATIONS BODY: ", req.body);
 
     try {
         // Start a transaction
         const client = await pool.connect();
         try {
-            await client.query('BEGIN');
+            await client.query("BEGIN");
 
             // Insert notification into notifications table
             const notificationInsertQuery = `
@@ -281,48 +288,55 @@ app.post('/notifications', async (req, res) => {
                 VALUES ($1, $2, $3)
                 RETURNING notification_id`;
             const notificationInsertValues = [title, contents, file];
-            const notificationInsertResult = await client.query(notificationInsertQuery, notificationInsertValues);
-            const notificationId = notificationInsertResult.rows[0].notification_id;
+            const notificationInsertResult = await client.query(
+                notificationInsertQuery,
+                notificationInsertValues
+            );
+            const notificationId =
+                notificationInsertResult.rows[0].notification_id;
 
             // Insert recipients into notificationrecipients table
             for (const recipientEmail of recipients) {
                 // Fetch ucinetid for the current recipient
                 const userQuery = `
                     SELECT ucinetid FROM users WHERE user_emailaddress = $1`;
-                const userResult = await client.query(userQuery, [recipientEmail]);
+                const userResult = await client.query(userQuery, [
+                    recipientEmail,
+                ]);
                 const ucinetid = userResult.rows[0].ucinetid;
 
                 // Insert into notificationrecipients table
                 const recipientInsertQuery = `
                     INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
                     VALUES ($1, $2, false)`;
-                await client.query(recipientInsertQuery, [notificationId, ucinetid]);
+                await client.query(recipientInsertQuery, [
+                    notificationId,
+                    ucinetid,
+                ]);
             }
 
             // Commit the transaction
-            await client.query('COMMIT');
+            await client.query("COMMIT");
 
-            res.status(201).json({ message: 'Notification sent successfully' });
+            res.status(201).json({ message: "Notification sent successfully" });
         } catch (error) {
             // Rollback transaction if any error occurs
-            await client.query('ROLLBACK');
-            console.error('Error sending notification:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            await client.query("ROLLBACK");
+            console.error("Error sending notification:", error);
+            res.status(500).json({ error: "Internal server error" });
         } finally {
             // Release the client back to the pool
             client.release();
         }
     } catch (error) {
-        console.error('Error connecting to database:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
-
-
 // GET endpoint to fetch program details by ID
 app.get("/programs/:id", async (req, res) => {
-    const programId = req.params.id;
+    const programId = req.params.id.replace(":", "");
 
     try {
         // Query the database to get program details
@@ -342,7 +356,7 @@ app.get("/programs/:id", async (req, res) => {
             WHERE pt.program_id = $1
         `;
         const tagsResult = await pool.query(tagsQuery, [programId]);
-        const tags = tagsResult.rows.map(row => row.tag_name);
+        const tags = tagsResult.rows.map((row) => row.tag_name);
 
         // Construct the response object
         const programDetails = {
@@ -351,7 +365,7 @@ app.get("/programs/:id", async (req, res) => {
             description: programResult.rows[0].description,
             headerImage: programResult.rows[0].headerimage,
             color: programResult.rows[0].color,
-            tags: tags
+            tags: tags,
         };
 
         res.status(200).json(programDetails);
@@ -361,7 +375,6 @@ app.get("/programs/:id", async (req, res) => {
     }
 });
 
-  
 // DELETE endpoint for deleting programs
 app.delete("/programs/:programId", async (req, res) => {
     const programId = req.params.programId;
@@ -401,7 +414,6 @@ app.delete("/programs/:programId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
@@ -595,8 +607,7 @@ app.post("/events", async (req, res) => {
             const eventId = eventInsertResult.rows[0].event_id;
 
             // Fetch ucinetid for the specified user_emailaddress
-            const userQuery =
-                "SELECT ucinetid FROM users WHERE firstname = $1";
+            const userQuery = "SELECT ucinetid FROM users WHERE firstname = $1";
             const userResult = await client.query(userQuery, [
                 user_emailaddress,
             ]);
@@ -1084,6 +1095,7 @@ app.get("/programs/:programId/events/upcoming", async (req, res) => {
             e.event_name, 
             e.description, 
             e.date,
+            p.program_name,
             ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins, 
             ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
       FROM events e
@@ -1095,12 +1107,14 @@ app.get("/programs/:programId/events/upcoming", async (req, res) => {
         eventtags et on et.event_id = e.event_id
       LEFT JOIN
         tags t on et.tag_id = t.tag_id
+      LEFT JOIN
+        programs p on p.program_id = e.program_id
       WHERE 
         e.program_id = $1
       AND 
         e.date >= CURRENT_DATE
       GROUP BY
-        e.event_id;
+        e.event_id, p.program_name;
     `;
         const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
             programId,
