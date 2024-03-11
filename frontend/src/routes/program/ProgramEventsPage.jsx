@@ -12,12 +12,14 @@ import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 
 import UserContext from "../../user/UserContext";
+import { useParams } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 
 const ProgramEventsPage = () => {
-    const userData = useContext(UserContext);
+    let { program_id } = useParams();
+    program_id = program_id.replace(":", "");
 
     // Get previous events
     const [previousEvents, setPreviousEvents] = useState();
@@ -25,13 +27,13 @@ const ProgramEventsPage = () => {
         const getPreviousEvents = async () => {
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/events/past`
+                    `http://localhost:3001/programs/:${program_id}/events/past`
                 )
                 .catch((err) => console.log(err));
             setPreviousEvents(res.data);
         };
         getPreviousEvents();
-    }, [userData.program_id]);
+    }, [program_id]);
 
     // Get upcoming events
     const [upcomingEvents, setUpcomingEvents] = useState();
@@ -39,13 +41,13 @@ const ProgramEventsPage = () => {
         const getUpcomingEvents = async () => {
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/events/upcoming`
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
         };
         getUpcomingEvents();
-    }, [userData.program_id]);
+    }, [program_id]);
 
     const [currentTab, setCurrentTab] = React.useState(1);
     const handleTabChange = (event, newTab) => {
@@ -116,7 +118,12 @@ const ProgramEventsPage = () => {
                         {upcomingEvents &&
                             upcomingEvents.map((eventData) => {
                                 console.log(eventData);
-                                return <LongEventCard data={eventData} event_id={eventData.event_id} />;
+                                return (
+                                    <LongEventCard
+                                        data={eventData}
+                                        event_id={eventData.event_id}
+                                    />
+                                );
                             })}
                     </Box>
                 )}
@@ -127,7 +134,12 @@ const ProgramEventsPage = () => {
                         {previousEvents &&
                             previousEvents.map((eventData) => {
                                 console.log(eventData);
-                                return <LongEventCard data={eventData} event_id={eventData.event_id}/>;
+                                return (
+                                    <LongEventCard
+                                        data={eventData}
+                                        event_id={eventData.event_id}
+                                    />
+                                );
                             })}
                     </Box>
                 )}
