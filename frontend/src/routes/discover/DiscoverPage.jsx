@@ -14,16 +14,14 @@ const DiscoverPage = () => {
 
     const [searchTags, setSearchTags] = useState("");
     const [searchResults, setSearchResults] = useState(null);
-    const navigate = useNavigate(); // useNavigate hook for navigation
+    const navigate = useNavigate(); 
 
     const handleSearch = async () => {
-        if (!searchTags.trim()) return; // Prevent empty search
+        if (!searchTags.trim()) return; 
     
         try {
             const res = await axios.get(`http://localhost:3001/search?tags=${searchTags}`);
             setSearchResults(res.data); 
-    
-            // Navigate to SearchResultsPage with searchResults in state
             navigate("/search-results", { state: { searchResults: res.data } });
         } catch (error) {
             console.error("Error fetching search results:", error);

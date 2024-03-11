@@ -72,7 +72,7 @@ function LandingPage() {
           <Typography variant="h1" gutterBottom>Our Sponsor For ZOTSUPPORT: UCI LARC</Typography>
           <Box my={2}>
              <div>
-              {/* Using the image-box style for the sponsor image */}
+              
           <Box className="image-box">
               <img src={Logo} alt="UCI LARC" />
           </Box>

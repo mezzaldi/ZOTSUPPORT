@@ -1,16 +1,15 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button"; // Import Button from Material UI
+import Button from "@mui/material/Button"; 
 import CardCarousel from "../../components/CardCarousel";
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useLocation, useNavigate } from 'react-router-dom'; 
 
 
 const SearchResultsPage = () => {
     const location = useLocation();
-    const navigate = useNavigate(); // Hook for programmatic navigation
+    const navigate = useNavigate(); 
     const searchResults = location.state?.searchResults;
 
-    // Deduplicate programs based on 'program_id'
     const uniquePrograms = searchResults?.programs ? Array.from(new Map(searchResults.programs.map(item => [item['program_id'], item])).values()) : [];
 
     const hasResults = uniquePrograms?.length > 0 || searchResults?.events?.length > 0;
@@ -22,14 +21,12 @@ const SearchResultsPage = () => {
                
                 {hasResults ? (
                     <>
-                        {/* Conditional rendering for uniquePrograms */}
                         {uniquePrograms && uniquePrograms.length > 0 && (
                             <div>
                                 <Typography variant="h2">Programs</Typography>
                                 <CardCarousel cardType="program" data={uniquePrograms} />
                             </div>
                         )}
-                        {/* Rendering events if they exist */}
                         {searchResults?.events && (
                             <div>
                                 <Typography variant="h2">Events</Typography>
