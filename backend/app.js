@@ -1024,7 +1024,6 @@ app.get("/students/:ucinetid/events", async (req, res) => {
 app.get("/users/:ucinetid/programs", async (req, res) => {
     const ucinetid = req.params.ucinetid.replace(":", "");
     const client = await pool.connect();
-
     try {
         await client.query("BEGIN");
         // Query the database to get the list of programs the user is an administrator for
