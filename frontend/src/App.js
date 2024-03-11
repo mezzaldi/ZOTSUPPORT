@@ -93,13 +93,13 @@ const App = () => {
     const [userData2, setUserData] = useState();
     useEffect(() => {
         const getUserData = async () => {
-            const res = await axios
-                .get(`http://localhost:3001/userData/:${ucinetid}`)
-                .catch((err) => console.log(err));
-
-            const userobject = res.data[0];
-
-            setUserData(res.data);
+            try {
+                const res = await axios.get(`http://localhost:3001/userData/:${ucinetid}`);
+                const userobject = res.data[0]; // This line is likely causing the error
+                setUserData(res.data);
+            } catch (err) {
+                console.log('Error fetching user data:', err);
+            }
         };
         getUserData();
     }, [ucinetid]);
@@ -185,6 +185,10 @@ const App = () => {
                             <Route
                                 path="/ProgramHomePage"
                                 element={<ProgramHomePage />}
+                            />
+                             <Route
+                                path="/EditEventForm"
+                                element={<EditEventForm />}
                             />
                         </Routes>
                     </Router>

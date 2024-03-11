@@ -24,7 +24,6 @@ const EditProgramForm = ({ programId }) => {
   });
 
   useEffect(() => {
-    // Fetch program data when programId changes
     const fetchProgram = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/programs/${programId}`);
@@ -49,7 +48,7 @@ const EditProgramForm = ({ programId }) => {
     };
 
     fetchProgram();
-  }, [programId]); // Fetch data when programId changes
+  }, [programId]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,7 +59,7 @@ const EditProgramForm = ({ programId }) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData({ ...formData, headerImage: reader.result });
-      e.target.value = ''; // Clear the input field after uploading
+      e.target.value = '';
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -88,12 +87,18 @@ const EditProgramForm = ({ programId }) => {
 
     try {
       const response = await axios.put(`http://localhost:3001/programs/${programId}`, putData);
-      console.log(programId);
       console.log('Program updated successfully:', response.data);
-      // You can handle the success response accordingly
     } catch (error) {
       console.error('Error updating program:', error);
-      // Handle the error appropriately
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/programs/${programId}`);
+      console.log('Program deleted successfully');
+    } catch (error) {
+      console.error('Error deleting program:', error);
     }
   };
 
@@ -130,30 +135,23 @@ const EditProgramForm = ({ programId }) => {
   return (
     <div className='h2Container'>
       <form onSubmit={handleSubmit}>
-
         <Grid container align-items='center' paddingBottom='3rem' columnSpacing={2} rowSpacing={6}>
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Program Name:
-          </Typography>
+            <Typography variant="h2">Program Name:</Typography>
           </Grid>
           <Grid item xs={9}>
             <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Description:
-          </Typography>
+            <Typography variant="h2">Description:</Typography>
           </Grid>
           <Grid item xs={9}>
             <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange} />
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Header Image:
-          </Typography>
+            <Typography variant="h2">Header Image:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Button variant="outlined" component='label'>
@@ -164,18 +162,14 @@ const EditProgramForm = ({ programId }) => {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Color:
-          </Typography>
+            <Typography variant="h2">Color:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Tags:
-          </Typography>
+            <Typography variant="h2">Tags:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
@@ -183,9 +177,12 @@ const EditProgramForm = ({ programId }) => {
 
         </Grid>
 
-        <Grid container justifyContent="center">
+        <Grid container justifyContent="center" spacing={2}>
           <Grid item>
             <Button variant="contained" type="submit">Update program</Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="error" onClick={handleDelete}>Delete program</Button>
           </Grid>
         </Grid>
 

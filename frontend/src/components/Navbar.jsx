@@ -10,7 +10,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 const Navbar = ({ userData }) => { // Use userData prop to access user information
   const location = useLocation();
 
-  const isLandingPage = location.pathname === "/LandingPage";
+  const isLandingPage = location.pathname === "/";
   // Determine if the user is an admin or superadmin
   const isAdmin = userData?.role === "admin" || userData?.role === "superadmin";
 
