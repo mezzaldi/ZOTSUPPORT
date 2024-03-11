@@ -36,6 +36,7 @@ import EditEventForm  from "./routes/EditEventForm";
 import { useContext, useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import UserImg from "./UserImg.jpeg";
 
 
 const primaryTextColor = "#242424";
@@ -115,6 +116,7 @@ const App = () => {
         lastname: "Anteater",
         program_id: 1,
         ucinetid: 5,
+        profileimage: UserImg,
     };
 
     return (
