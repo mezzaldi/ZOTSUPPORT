@@ -795,6 +795,8 @@ app.get("/events/:id", async (req, res) => {
                 date: eventResult.rows[0].date,
                 starttime: eventResult.rows[0].starttime,
                 endtime: eventResult.rows[0].endtime,
+                location: eventResult.rows[0].location,
+                program_id: eventResult.rows[0].program_id,
                 program_name: programResult.rows[0].program_name,
                 tags: tagsResult.rows
             };

@@ -13,10 +13,14 @@ import { useContext, useEffect } from "react";
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const EventHomePage = () => {
     let { event_id } = useParams();
     event_id = event_id.replace(":", "");
+    const navigate = useNavigate();
+
 
     const userData = useContext(UserContext);
 
@@ -85,7 +89,9 @@ const EventHomePage = () => {
                         <Box> 
                             <div className="eventTitle">
 
-                            <Button variant="outlined">View Program Page</Button>
+                            <Button variant="outlined" 
+                                    onClick={() => navigate(`/ProgramHomePage/:${event.program_id}`)}
+                                          >View Program Page</Button>
 
 
                             {userData.role === "superadmin" && (
@@ -109,6 +115,12 @@ const EventHomePage = () => {
                 <div className="h2Container"> 
                     <Typography variant="h2">
                         End Time: {event.endtime}
+                    </Typography>
+                </div>
+
+                <div className="h2Container"> 
+                    <Typography variant="h2">
+                        Location: {event.location}
                     </Typography>
                 </div>
 
@@ -137,7 +149,7 @@ const EventHomePage = () => {
                 
                 <Typography
                         variant="h2"
-                        sx={{ marginTop: "3rem", marginBottom: "2rem" }}
+                        sx={{ marginTop: "3rem"}}
                     >
                         Staff:
                     </Typography>
