@@ -78,7 +78,7 @@ const ProgramHomePage = () => {
                         )}
 
                         {userData.role === "student" && (
-                            <Button variant="contained">Register</Button>
+                            <Button variant="contained">Follow</Button>
                         )}
                     </Box>
 

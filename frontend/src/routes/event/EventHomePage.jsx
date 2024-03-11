@@ -33,8 +33,41 @@ const EventHomePage = () => {
     }, [userData]);
 
     return (
+        <div class="pageContent">
+            {event &&(
+                <div>
+                    <img
+                        src={"/images/placeholder.jpg"}
+                        alt="program header"
+                        width="100%"
+                        height="250px"
+                        style={{ objectFit: "cover", objectPosition: "center" }}
+                    ></img>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingTop: "2rem",
+                            paddingBottom: "2rem",
+                        }}
+                    >
+                        <Typography variant="h1">
+                            {event.name}
+                        </Typography>
 
-        <Typography> Testing </Typography>
+                        {userData.role === "superadmin" && (
+                            <Button variant="contained">Edit</Button>
+                        )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Register</Button>
+                        )}
+                </Box>
+                </div>
+            )}
+        </div>
+
 
 
     );
