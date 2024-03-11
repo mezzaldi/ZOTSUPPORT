@@ -29,6 +29,7 @@ import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
+import EventHomePage from "./routes/event/EventHomePage";
 
 import EditEventForm  from "./routes/EditEventForm";
 
@@ -169,6 +170,14 @@ const App = () => {
                                 path="/ProgramHomePage/:program_id"
                                 element={<ProgramHomePage />}
                             />
+                             <Route
+                                path="/EventHomePage"
+                                element={<EventHomePage />}
+                            />
+                            <Route
+                                path="/EventHomePage/:event_id"
+                                element={<EventHomePage />}
+                            />
                             <Route
                                 path="/UserSetting"
                                 element={<UserSetting />}
@@ -193,6 +202,10 @@ const App = () => {
                              <Route
                                 path="/EditEventForm"
                                 element={<EditEventForm />}
+                            />
+                            <Route 
+                                path="/EditEventForm/:event_id" 
+                                element={<EditEventForm />} 
                             />
                             <Route 
                                 path="/search-results" 

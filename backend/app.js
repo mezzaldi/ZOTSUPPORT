@@ -617,7 +617,7 @@ app.get("/programs/:programId/administrators", async (req, res) => {
 
 // GET endpoint for retrieving specific events
 app.get("/events/:eventId", async (req, res) => {
-    const eventId = req.params.eventId;
+    const eventId = req.params.eventId.replace(":", "");
 
     try {
         // Connect to the database
