@@ -622,7 +622,33 @@ app.get("/events/:id", async (req, res) => {
         // Connect to the database
         try {
             // Retrieve the event details from the database based on the event ID
-            const eventQuery = "SELECT * FROM events WHERE event_id = $1";
+            const eventQuery = `SELECT e.event_id,
+                                    e.event_name,
+                                    e.description,
+                                    e.date,
+                                    e.starttime,
+                                    e.endtime,
+                                    e.requireregistration,
+                                    p.program_name,
+                                    ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins,
+                                    ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
+
+                                FROM events e
+                                JOIN 
+                                    programs p ON e.program_id = p.program_id
+                                LEFT JOIN
+                                    eventadmins ea ON ea.event_id = e.event_id
+                                LEFT JOIN
+                                    users u ON u.ucinetid = ea.ucinetid
+                                LEFT JOIN
+                                    eventtags et on et.event_id = e.event_id
+                                LEFT JOIN
+                                    tags t on et.tag_id = t.tag_id
+
+                                WHERE e.event_id = $1
+                                GROUP BY e.event_id, e.event_name, e.description, e.date, e.starttime, e.endtime, e.requireregistration, p.program_name`;
+                            
+
             const eventResult = await pool.query(eventQuery, [eventId]);
             const event = eventResult.rows;
 

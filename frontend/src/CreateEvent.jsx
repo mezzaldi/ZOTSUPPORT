@@ -190,19 +190,21 @@ let subjectTags = []
 let eventTypeTags = []
 
 // Load tag data into menu options under the correct category
-tags.map((tag) => {
-  if (tag.tag_category == 'Level') {
+{tags && (
+  tags.map((tag) => {
+    if (tag.tag_category == 'Level') {
      levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-   }
-     
-  if (tag.tag_category == 'Subject') {
-     subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-   }
-     
-   if (tag.tag_category == 'Event Type') {
-     eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
     }
- })
+          
+    if (tag.tag_category == 'Subject') {
+      subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+     }
+          
+    if (tag.tag_category == 'Event Type') {
+     eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+     }
+     })
+)}
 
 
 //Gather all the categories of tags under one list
@@ -251,9 +253,12 @@ useEffect(() => {
 
   const eventAdmins = []
 
-  admins.map((admin) => {
-    eventAdmins.push({value: admin.ucinetid, label: admin.firstname + " " + admin.lastname})
-  })
+  {admins && (
+    admins.map((admin) => {
+      eventAdmins.push({value: admin.ucinetid, label: admin.firstname + " " + admin.lastname})
+    })
+  )}
+
 
 
 

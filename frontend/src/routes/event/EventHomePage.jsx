@@ -26,11 +26,12 @@ const EventHomePage = () => {
             const res = await axios
                 .get(`http://localhost:3001/events/:${event_id}`)
                 .catch((err) => console.log(err));
-            setEvent(res.data);
+            setEvent(res.data[0]);
             console.log(res.data);
         };
         getEvent();
-    }, [userData]);
+    }, [userData])
+
 
     return (
         <div class="pageContent">
@@ -52,17 +53,31 @@ const EventHomePage = () => {
                             paddingBottom: "2rem",
                         }}
                     >
-                        <Typography variant="h1">
-                            {event.name}
-                        </Typography>
+                        <div>
+                            <div>
+                                <Typography variant="h1">
+                                {event.event_name}
+                                </Typography>
+                            </div>
+                            <div >
+                                <Typography variant="h3">
+                                Hosted by: {event.program_name}
+                                </Typography>
+                            </div>
+                        </div>
+                        <Box m={2}> 
+                            <Button variant="outlined">View Program Page</Button>
 
-                        {userData.role === "superadmin" && (
-                            <Button variant="contained">Edit</Button>
-                        )}
+                            {userData.role === "superadmin" && (
+                                <Button variant="contained">Edit</Button>
+                             )}
 
-                        {userData.role === "student" && (
-                            <Button variant="contained">Register</Button>
-                        )}
+                            {userData.role === "student" && (
+                                 <Button variant="contained">Register</Button>
+                            )}
+
+                        </Box>
+
                 </Box>
                 </div>
             )}
