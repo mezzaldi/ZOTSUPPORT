@@ -112,7 +112,7 @@ const EditEventForm = ({ existingEventData }) => {
   };
 
   const handleCancel = () => {
-    navigate('/EventDashboard'); // Or wherever you want to redirect to
+    navigate('/EventDashboard'); 
   };
 
   return (
@@ -220,7 +220,7 @@ const EditEventForm = ({ existingEventData }) => {
                 options={tagOptions}
                 value={formData.tags.map(tag => ({ value: tag, label: tag }))}
                 onChange={(selected) => setFormData({ ...formData, tags: selected.map(s => s.value) })}
-                styles={customSelectStyles} // Apply the custom styles here
+                styles={customSelectStyles} 
               />
             </Grid>
           </Grid>
@@ -235,7 +235,7 @@ const EditEventForm = ({ existingEventData }) => {
                 options={adminOptions}
                 value={formData.admins.map(admin => ({ value: admin, label: admin }))}
                 onChange={(selected) => setFormData({ ...formData, admins: selected.map(s => s.value) })}
-                styles={customSelectStyles} // Apply the custom styles here
+                styles={customSelectStyles} 
               />
             </Grid>
           </Grid>

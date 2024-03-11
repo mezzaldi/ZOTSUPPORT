@@ -4,8 +4,8 @@ import { AppBar, Toolbar, Typography, Button, Stack } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"; 
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import axios from 'axios';
 
 const Navbar = ({ userData }) => { // Use userData prop to access user information
   const location = useLocation();
@@ -49,10 +49,10 @@ const Navbar = ({ userData }) => { // Use userData prop to access user informati
               )}
             </>
           )}
-          {!isLandingPage && (
-            <Button endIcon={<ArrowDropDownIcon />} sx={{ color: "white" }}>
-              <img src="/images/placeholder.jpg" className="profileImg" alt="student profile" style={{ width: 30, height: 30, borderRadius: '50%' }}></img>
-              <Typography variant="h3" color="inherit">User's Name</Typography>
+          {!isLandingPage && userData && (
+            <Button href="/UserSetting" sx={{ color: "white" }}>
+              <img src={userData.profileimage} className="profileImg" alt="student profile" style={{ width: 30, height: 30, borderRadius: '50%' }}></img>
+              <Typography variant="h3" color="inherit">{`${userData.firstname} ${userData.lastname}`}</Typography>
             </Button>
           )}
         </Stack>

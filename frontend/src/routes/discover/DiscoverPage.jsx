@@ -1,13 +1,35 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
-
 import CardCarousel from "../../components/CardCarousel";
-
+import TextField from "@mui/material/TextField"; 
+import Button from "@mui/material/Button"; 
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
 
+import SearchResultsPage from "./SearchResultsPage"; 
+import { useNavigate } from "react-router-dom"; 
+
 const DiscoverPage = () => {
+
+    const [searchTags, setSearchTags] = useState("");
+    const [searchResults, setSearchResults] = useState(null);
+    const navigate = useNavigate(); // useNavigate hook for navigation
+
+    const handleSearch = async () => {
+        if (!searchTags.trim()) return; // Prevent empty search
+    
+        try {
+            const res = await axios.get(`http://localhost:3001/search?tags=${searchTags}`);
+            setSearchResults(res.data); 
+    
+            // Navigate to SearchResultsPage with searchResults in state
+            navigate("/search-results", { state: { searchResults: res.data } });
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+        }
+    };
+
     // Get upcoming events
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
@@ -49,6 +71,25 @@ const DiscoverPage = () => {
 
     return (
         <div class="pageContent">
+             <div className="searchContainer" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <TextField
+                    label="Search for Programs and Events..."
+                    type="text"
+                    value={searchTags}
+                    onChange={(e) => setSearchTags(e.target.value)}
+                    variant="outlined"
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch();
+                        }
+                    }}
+                    style={{ width: '50rem' }}
+                    
+                />
+                <Button variant="contained" onClick={handleSearch}>Search</Button>
+            </div>
+            {searchResults && <SearchResultsPage searchResults={searchResults} />}
+            
             <div className="h2Container">
                 <Typography variant="h2">Upcoming events</Typography>
                 {upcomingEvents && (

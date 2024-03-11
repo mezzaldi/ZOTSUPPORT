@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Typography, TextField, Button, Grid } from '@mui/material';
 import Select from 'react-select';
 import axios from 'axios';
 
-const EditProgramForm = ({ programId }) => {
+const EditProgramForm = () => {
+  const { program_id } = useParams();
+  console.log("program_id:", program_id);
+
   const programColors = [
     { value: '#C41E3A', label: "Red" },
     { value: '#11007B', label: "Blue" }
@@ -26,7 +30,7 @@ const EditProgramForm = ({ programId }) => {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/programs/${programId}`);
+        const response = await axios.get(`http://localhost:3001/programs/${program_id}`);
         const programData = response.data;
 
         setFormData({
@@ -48,7 +52,7 @@ const EditProgramForm = ({ programId }) => {
     };
 
     fetchProgram();
-  }, [programId]);
+  }, [program_id]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -86,7 +90,7 @@ const EditProgramForm = ({ programId }) => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:3001/programs/${programId}`, putData);
+      const response = await axios.put(`http://localhost:3001/programs/${program_id}`, putData);
       console.log('Program updated successfully:', response.data);
     } catch (error) {
       console.error('Error updating program:', error);
@@ -95,7 +99,7 @@ const EditProgramForm = ({ programId }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3001/programs/${programId}`);
+      await axios.delete(`http://localhost:3001/programs/${program_id}`);
       console.log('Program deleted successfully');
     } catch (error) {
       console.error('Error deleting program:', error);

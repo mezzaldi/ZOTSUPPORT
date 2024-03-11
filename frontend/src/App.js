@@ -14,6 +14,7 @@ import DashboardPage from "./routes/dashboard/DashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
+import SearchResultsPage from "./routes/discover/SearchResultsPage";
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -28,11 +29,13 @@ import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
+
 import EditEventForm  from "./routes/EditEventForm";
 
 import { useContext, useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+
 
 const primaryTextColor = "#242424";
 
@@ -178,10 +181,11 @@ const App = () => {
                                 path="/ProgramDashboard"
                                 element={<ProgramDashboard />}
                             />
-                            <Route
-                                path="/EditProgramForm"
-                                element={<EditProgramForm />}
+                           <Route 
+                                path="/EditProgramForm/:program_id" 
+                                element={<EditProgramForm />} 
                             />
+
                             <Route
                                 path="/ProgramHomePage"
                                 element={<ProgramHomePage />}
@@ -189,6 +193,10 @@ const App = () => {
                              <Route
                                 path="/EditEventForm"
                                 element={<EditEventForm />}
+                            />
+                            <Route 
+                                path="/search-results" 
+                                element={<SearchResultsPage />} 
                             />
                         </Routes>
                     </Router>

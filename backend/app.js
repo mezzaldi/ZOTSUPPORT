@@ -142,7 +142,7 @@ app.post("/programs", async (req, res) => {
 // edit/ PUT endpoint for updating programs
 // PUT endpoint for updating programs
 app.put("/programs/:programId", async (req, res) => {
-    const programId = req.params.programId;
+    const programId = req.params.programId.replace(":", "");
     const { name, description, headerImage, color, tags } = req.body;
 
     // Define a mapping for tag values to labels
@@ -226,7 +226,7 @@ app.put("/programs/:programId", async (req, res) => {
 
 // GET endpoint to fetch program details by ID
 app.get("/programs/:id", async (req, res) => {
-    const programId = req.params.id;
+    const programId = req.params.id.replace(":", "");
 
     try {
         // Query the database to get program details
