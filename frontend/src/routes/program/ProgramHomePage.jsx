@@ -114,8 +114,9 @@ const ProgramHomePage = () => {
                                 <LongEventCard data={event} event_id={event.event_id}/>
                             )
                         )}
-
                     </Box>
+            
+
                 </div>
             )}
         </div>
