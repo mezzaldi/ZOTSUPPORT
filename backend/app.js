@@ -690,8 +690,8 @@ app.get("/popular-upcoming-events", async (req, res) => {
 });
 
 // GET endpoint to fetch administrators for a specific program
-app.get("/events/:eventId/administrators", async (req, res) => {
-    const eventId = req.params.eventId.replace(":", "");
+app.get("/programs/:programId/administrators", async (req, res) => {
+    const programId = req.params.programId.replace(":", "");
 
     try {
         // Query to fetch administrators for the specified program
@@ -720,7 +720,35 @@ app.get("/events/:eventId/administrators", async (req, res) => {
     }
 });
 
-//GET endpoint to fetch admin
+//GET endpoint to fetch administrators for a specific event
+app.get("/events/:eventId/administrators", async (req, res) => {
+    const eventId = req.params.eventId.replace(":", "");
+
+    try {
+        // Query to fetch administrators for the specified program
+        const query = `
+            SELECT
+                u.ucinetid,
+                u.user_emailaddress,
+                u.profileimage,
+                u.firstname,
+                u.lastname
+            FROM
+                eventadmins ea
+            JOIN
+                users u ON ea.ucinetid = u.ucinetid
+            WHERE
+                ea.event_id = $1
+        `;
+        const { rows } = await pool.query(query, [eventId]);
+
+        // Send the retrieved administrators as the response
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error fetching administrators:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 // GET endpoint for retrieving specific events
 app.get("/events/:id", async (req, res) => {

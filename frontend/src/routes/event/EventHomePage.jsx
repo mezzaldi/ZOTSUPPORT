@@ -1,7 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
-import LongEventCard from "../../components/LongEventCard";
 import { Box } from "@mui/material";
+import AdminTable from "../../components/AdminTable";
 
 import { Button } from "@mui/material";
 
@@ -30,6 +30,20 @@ const EventHomePage = () => {
         };
         getEvent();
     }, [userData])
+
+    const [admins, setAdmins] = useState();
+    useEffect(() => {
+        const getAdmins = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/events/:${event_id}/administrators`)
+                .catch((err) => console.log(err));
+            setAdmins(res.data);
+            console.log(res.data)
+        };
+        getAdmins();
+    }, [userData])
+
+    
 
     console.log(event)
 
@@ -119,7 +133,20 @@ const EventHomePage = () => {
                             )
                             
                         )}
-                    </Stack>      
+                </Stack>   
+                
+                <Typography
+                        variant="h2"
+                        sx={{ marginTop: "3rem", marginBottom: "2rem" }}
+                    >
+                        Staff:
+                    </Typography>
+
+                <div className="tableContainer">
+                    {admins && (
+                        <AdminTable rowsPerPage={5} data={admins} />
+                    )}
+                </div>   
 
 
 
