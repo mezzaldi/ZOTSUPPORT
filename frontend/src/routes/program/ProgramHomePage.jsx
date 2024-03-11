@@ -29,10 +29,25 @@ const ProgramHomePage = () => {
                 .get(`http://localhost:3001/programs/:${program_id}`)
                 .catch((err) => console.log(err));
             setProgram(res.data);
-            console.log(res.data);
         };
         getProgram();
     }, [userData]);
+
+    // Get upcoming events
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+            console.log(res.data)
+        };
+        getUpcomingEvents();
+    }, [userData]);
+
 
     return (
         <div class="pageContent">
@@ -56,11 +71,15 @@ const ProgramHomePage = () => {
                         }}
                     >
                         <Typography variant="h1">
-                            {program.program_name}
+                            {program.name}
                         </Typography>
 
                         {userData.role === "superadmin" && (
                             <Button variant="contained">Edit</Button>
+                        )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Follow</Button>
                         )}
                     </Box>
 
@@ -73,23 +92,13 @@ const ProgramHomePage = () => {
                         spacing={1}
                         sx={{ marginTop: "1rem" }}
                     >
-                        {/* Later load in these tags from the database!! */}
-                        <Chip
-                            label="Undergrad"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
-                        <Chip
-                            label="Math"
-                            sx={{ backgroundColor: "purple", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="Biology"
-                            sx={{ backgroundColor: "orange", color: "white" }}
-                        />{" "}
-                        <Chip
-                            label="Walk-in"
-                            sx={{ backgroundColor: "red", color: "white" }}
-                        />
+                
+                        {program.tags && (
+                            program.tags.map(tag => 
+                                <Chip label={tag.tag_name}
+                                sx={{ backgroundColor: tag.tag_color, color: "white" }} />
+                            )
+                        )}
                     </Stack>
 
                     <Typography
@@ -100,11 +109,12 @@ const ProgramHomePage = () => {
                     </Typography>
 
                     <Box>
-                        {/* <LongEventCard title={"Upcoming Event name"} />
-                <LongEventCard title={"Upcoming Event name"} />
-                <LongEventCard title={"Upcoming Event name"} />
-                <LongEventCard title={"Upcoming Event name"} />
-                <LongEventCard title={"Upcoming Event name"} /> */}
+                        {upcomingEvents && (
+                            upcomingEvents.map(event =>
+                                <LongEventCard data={event} event_id={event.event_id}/>
+                            )
+                        )}
+
                     </Box>
                 </div>
             )}
