@@ -26,21 +26,15 @@ const Navbar = ({ userData }) => {
             }}
         >
             <Toolbar variant="dense">
-                <Typography variant="h2" color="inherit" sx={{ flexGrow: 1 }}>
-                    ZOTSUPPORT
-                </Typography>
-                <Stack direction="row" spacing={2}>
+                <Button href="/" sx={{ color: "white" }}>
+                    <Typography variant="h2" color="inherit">
+                        ZOTSUPPORT
+                    </Typography>
+                </Button>
+
+                <Stack direction="row" spacing={2} sx={{ marginLeft: "auto" }}>
                     {isLandingPage ? (
                         <>
-                            <Button
-                                href="/About"
-                                startIcon={<SearchIcon />}
-                                sx={{ color: "white" }}
-                            >
-                                <Typography variant="h3" color="inherit">
-                                    About
-                                </Typography>
-                            </Button>
                             <Button href="/sign-in" sx={{ color: "white" }}>
                                 <Typography variant="h3" color="inherit">
                                     Sign in

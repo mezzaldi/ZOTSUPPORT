@@ -2,9 +2,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // pages
-import CreateNewProgramPage from "./routes/CreateNewProgramPage";
-import CreateNewEventPage from "./routes/CreateNewEventPage";
-import CreateNewNotificationPage from "./routes/CreateNewNotificationPage";
+import CreateNewProgramPage from "./routes/program/CreateNewProgramPage";
+import CreateNewEventPage from "./routes/event/CreateNewEventPage";
+import CreateNewNotificationPage from "./routes/notifications/CreateNewNotificationPage";
 import LandingPage from "./routes/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
 import SignInPage from "./routes/SignInPage";
@@ -30,9 +30,9 @@ import {
 import UserSetting from "./routes/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
-import EditProgramForm from "./routes/EditProgramForm";
+import EditProgramForm from "./routes/program/EditProgramForm";
 
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
 
@@ -153,7 +153,7 @@ const App = () => {
                                 element={<NotificationsPage />}
                             />
                             <Route
-                                path="/ProgramEvents"
+                                path="/ProgramEvents/:program_id"
                                 element={<ProgramEventsPage />}
                             />
                             <Route
@@ -169,8 +169,8 @@ const App = () => {
                                 element={<EventHomePage />}
                             />
                             <Route
-                                path="/ProgramHomePage/:program_id"
-                                element={<ProgramHomePage />}
+                                path="/ProgramDashboardPage/:program_id"
+                                element={<ProgramDashboardPage />}
                             />
                             <Route
                                 path="/UserSetting"
@@ -187,10 +187,6 @@ const App = () => {
                             <Route
                                 path="/EditProgramForm"
                                 element={<EditProgramForm />}
-                            />
-                            <Route
-                                path="/ProgramHomePage"
-                                element={<ProgramHomePage />}
                             />
                         </Routes>
                     </Router>
