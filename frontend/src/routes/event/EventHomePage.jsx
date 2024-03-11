@@ -26,16 +26,17 @@ const EventHomePage = () => {
             const res = await axios
                 .get(`http://localhost:3001/events/:${event_id}`)
                 .catch((err) => console.log(err));
-            setEvent(res.data[0]);
-            console.log(res.data);
+            setEvent(res.data);
         };
         getEvent();
     }, [userData])
 
+    console.log(event)
 
     return (
         <div class="pageContent">
-            {event &&(
+
+            {event && (
                 <div>
                     <img
                         src={"/images/placeholder.jpg"}
@@ -57,7 +58,7 @@ const EventHomePage = () => {
                         <div>
                             <div>
                                 <Typography variant="h1">
-                                {event.event_name}
+                                {event.name}
                                 </Typography>
                             </div>
                             <div >
@@ -84,10 +85,43 @@ const EventHomePage = () => {
 
                         </Box>
                     </Box>
-
-                 <Typography variant="body1">
-                    {event.description}
+                
+                <div className="h2Container">
+                    <Typography variant="h2">
+                        Start Time: {event.starttime}
                     </Typography>
+                </div>
+
+                <div className="h2Container"> 
+                    <Typography variant="h2">
+                        End Time: {event.endtime}
+                    </Typography>
+                </div>
+
+
+                <div className="h2Container">
+                    <Typography variant="body1">
+                        {event.description}
+                    </Typography>
+                </div>    
+
+                <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ marginTop: "1rem" }}
+                    >
+                
+                        {event.tags && (
+                            event.tags.map(tag => 
+
+                                <Chip label={tag.tag_name}
+                                sx={{ backgroundColor: tag.tag_color, color: "white" }} />
+                            )
+                            
+                        )}
+                    </Stack>      
+
+
 
                 </div>
             )}

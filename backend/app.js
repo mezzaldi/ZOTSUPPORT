@@ -67,10 +67,10 @@ app.post("/programs", async (req, res) => {
 
     // Define a mapping for tag values to labels
     const tagValueToLabel = {
-        "1": "Undergraduate",
-        "2": "Graduate",
-        "3": "Art",
-        "4": "Biology",
+        1: "Undergraduate",
+        2: "Graduate",
+        3: "Art",
+        4: "Biology",
         // Add more mappings as needed
     };
 
@@ -98,9 +98,8 @@ app.post("/programs", async (req, res) => {
             const programId = programInsertResult.rows[0].program_id;
 
             // 2. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags
-                .filter(tag => tag !== "21") // Remove tag "21"
-                .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
+            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 3. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
@@ -146,13 +145,13 @@ app.put("/programs/:programId", async (req, res) => {
     const { name, description, headerImage, color, tags } = req.body;
 
     // Define a mapping for tag values to labels
-    const tagValueToLabel = {
-        "1": "Undergraduate",
-        "2": "Graduate",
-        "3": "Art",
-        "4": "Biology",
-        // Add more mappings as needed
-    };
+    // const tagValueToLabel = {
+    //     "1": "Undergraduate",
+    //     "2": "Graduate",
+    //     "3": "Art",
+    //     "4": "Biology",
+    //     // Add more mappings as needed
+    // };
 
     // Validate input data
     if (!name || !description) {
@@ -173,7 +172,13 @@ app.put("/programs/:programId", async (req, res) => {
                     headerimage = $3, 
                     color = $4
                 WHERE program_id = $5`;
-            const programUpdateValues = [name, description, headerImage, color, programId];
+            const programUpdateValues = [
+                name,
+                description,
+                headerImage,
+                color,
+                programId,
+            ];
             await client.query(programUpdateQuery, programUpdateValues);
 
             // 2. Delete existing program tags
@@ -183,9 +188,8 @@ app.put("/programs/:programId", async (req, res) => {
             await client.query(deleteTagsQuery, [programId]);
 
             // 3. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags
-                .filter(tag => tag !== "21") // Remove tag "21"
-                .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
+            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
+            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
 
             // 4. Add only valid tags associated with the program
             if (parsedTags.length > 0) {
@@ -224,10 +228,115 @@ app.put("/programs/:programId", async (req, res) => {
     }
 });
 
+// API endpoint for deleting a notification by ID
+app.delete("/notifications/:notificationId", async (req, res) => {
+    const notificationId = req.params.notificationId;
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+
+            // Delete notification from notifications table
+            const deleteNotificationQuery = `
+                DELETE FROM notifications
+                WHERE notification_id = $1`;
+            await client.query(deleteNotificationQuery, [notificationId]);
+
+            // Delete notification recipients from notificationrecipients table
+            const deleteRecipientsQuery = `
+                DELETE FROM notificationrecipients
+                WHERE notification_id = $1`;
+            await client.query(deleteRecipientsQuery, [notificationId]);
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            res.status(200).json({
+                message: "Notification deleted successfully",
+            });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            console.error("Error deleting notification:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// API endpoint for sending a new notification
+app.post("/notifications", async (req, res) => {
+    const { title, contents, file, recipients } = req.body;
+    // console.log("NOTIFICATIONS BODY: ", req.body);
+
+    try {
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+
+            // Insert notification into notifications table
+            const notificationInsertQuery = `
+                INSERT INTO notifications (title, contents, file)
+                VALUES ($1, $2, $3)
+                RETURNING notification_id`;
+            const notificationInsertValues = [title, contents, file];
+            const notificationInsertResult = await client.query(
+                notificationInsertQuery,
+                notificationInsertValues
+            );
+            const notificationId =
+                notificationInsertResult.rows[0].notification_id;
+
+            // Insert recipients into notificationrecipients table
+            for (const recipientEmail of recipients) {
+                // Fetch ucinetid for the current recipient
+                const userQuery = `
+                    SELECT ucinetid FROM users WHERE user_emailaddress = $1`;
+                const userResult = await client.query(userQuery, [
+                    recipientEmail,
+                ]);
+                const ucinetid = userResult.rows[0].ucinetid;
+
+                // Insert into notificationrecipients table
+                const recipientInsertQuery = `
+                    INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
+                    VALUES ($1, $2, false)`;
+                await client.query(recipientInsertQuery, [
+                    notificationId,
+                    ucinetid,
+                ]);
+            }
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            res.status(201).json({ message: "Notification sent successfully" });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            console.error("Error sending notification:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
+    } catch (error) {
+        console.error("Error connecting to database:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // GET endpoint to fetch program details by ID
 app.get("/programs/:id", async (req, res) => {
     const programId = req.params.id.replace(":", "");
-
     try {
         // Query the database to get program details
         const programQuery = `
@@ -264,7 +373,6 @@ app.get("/programs/:id", async (req, res) => {
     }
 });
 
-  
 // DELETE endpoint for deleting programs
 app.delete("/programs/:programId", async (req, res) => {
     const programId = req.params.programId;
@@ -304,7 +412,6 @@ app.delete("/programs/:programId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // GET endpoint to retrieve program details by ID
 app.get("/programs/:programId", async (req, res) => {
@@ -498,8 +605,7 @@ app.post("/events", async (req, res) => {
             const eventId = eventInsertResult.rows[0].event_id;
 
             // Fetch ucinetid for the specified user_emailaddress
-            const userQuery =
-                "SELECT ucinetid FROM users WHERE firstname = $1";
+            const userQuery = "SELECT ucinetid FROM users WHERE firstname = $1";
             const userResult = await client.query(userQuery, [
                 user_emailaddress,
             ]);
@@ -622,31 +728,9 @@ app.get("/events/:id", async (req, res) => {
         // Connect to the database
         try {
             // Retrieve the event details from the database based on the event ID
-            const eventQuery = `SELECT e.event_id,
-                                    e.event_name,
-                                    e.description,
-                                    e.date,
-                                    e.starttime,
-                                    e.endtime,
-                                    e.requireregistration,
-                                    p.program_name,
-                                    ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins,
-                                    ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
-
-                                FROM events e
-                                JOIN 
-                                    programs p ON e.program_id = p.program_id
-                                LEFT JOIN
-                                    eventadmins ea ON ea.event_id = e.event_id
-                                LEFT JOIN
-                                    users u ON u.ucinetid = ea.ucinetid
-                                LEFT JOIN
-                                    eventtags et on et.event_id = e.event_id
-                                LEFT JOIN
-                                    tags t on et.tag_id = t.tag_id
-
-                                WHERE e.event_id = $1
-                                GROUP BY e.event_id, e.event_name, e.description, e.date, e.starttime, e.endtime, e.requireregistration, p.program_name`;
+            const eventQuery = `SELECT *
+                                FROM events
+                                WHERE event_id = $1`
                             
 
             const eventResult = await pool.query(eventQuery, [eventId]);
@@ -657,23 +741,32 @@ app.get("/events/:id", async (req, res) => {
                 return res.status(404).json({ error: "Event not found" });
             }
 
-            // Retrieve admin email associated with the event
-            // const adminQuery =
-            //     "SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1";
-            // const adminResult = await pool.query(adminQuery, [eventId]);
-            // const adminEmail = adminResult.rows[0]?.user_emailaddress;
+            const tagsQuery = `SELECT t.tag_name, t.tag_color FROM tags t
+                            INNER JOIN eventtags et ON t.tag_id = et.tag_id
+                            WHERE et.event_id = $1`
+        ;
+            const tagsResult = await pool.query(tagsQuery, [eventId]);
 
-            // Retrieve tags associated with the event
-            // const tagsQuery =
-            //     "SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1";
-            // const tagsResult = await pool.query(tagsQuery, [eventId]);
-            // const tags = tagsResult.rows.map((row) => row.tag_name);
+            const programQuery = `SELECT p.program_name FROM programs p
+                                INNER JOIN events e ON p.program_id = e.program_id
+                                WHERE e.event_id = $1`
 
-            // Combine event details, admin email, and tags into a single object
-            const eventData = { ...event };
+            const programResult = await pool.query(programQuery, [eventId]);
+           
+            const eventDetails = {
+                event_id: eventResult.rows[0].event_id,
+                name: eventResult.rows[0].event_name,
+                description: eventResult.rows[0].description,
+                headerImage: eventResult.rows[0].headerimage,
+                date: eventResult.rows[0].date,
+                starttime: eventResult.rows[0].starttime,
+                endtime: eventResult.rows[0].endtime,
+                program_name: programResult.rows[0].program_name,
+                tags: tagsResult.rows
+            };
 
             // Return the event details in the response
-            res.status(200).json(eventData);
+            res.status(200).json(eventDetails);
         } catch (error) {
             // Handle database query errors
             console.error("Error fetching event:", error);
@@ -968,7 +1061,6 @@ app.get("/users/:ucinetid/programs", async (req, res) => {
 
 app.get("/users/:ucinetid/events/attended", async (req, res) => {
     const { ucinetid } = req.params;
-
     try {
         // Query the database to get the list of events the user has attended
         const attendedEventsQuery = `
@@ -1009,6 +1101,7 @@ app.get("/programs/:programId/events/upcoming", async (req, res) => {
             e.event_name, 
             e.description, 
             e.date,
+            p.program_name,
             ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins, 
             ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
       FROM events e
@@ -1020,15 +1113,42 @@ app.get("/programs/:programId/events/upcoming", async (req, res) => {
         eventtags et on et.event_id = e.event_id
       LEFT JOIN
         tags t on et.tag_id = t.tag_id
+      LEFT JOIN
+        programs p on p.program_id = e.program_id
       WHERE 
         e.program_id = $1
       AND 
         e.date >= CURRENT_DATE
       GROUP BY
-        e.event_id;
+        e.event_id, p.program_name;
     `;
         const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
             programId,
+        ]);
+
+        res.status(200).json(upcomingEventsResult.rows);
+    } catch (error) {
+        console.error("Error fetching upcoming events:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get upcoming events that a specific user is registered for, including tags and list of admins that hosted the event
+app.get("/users/:ucinetid/events/upcoming", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    try {
+        // Write your database query to retrieve past events for the specified program
+        const upcomingEventsQuery = `
+        SELECT e.event_id, 
+        e.event_name, 
+        e.description, 
+        e.date
+        FROM events AS e, eventregistrees AS er
+        WHERE e.event_id = er.event_id AND er.ucinetid = $1
+        AND e.date >= CURRENT_DATE
+    `;
+        const upcomingEventsResult = await pool.query(upcomingEventsQuery, [
+            ucinetid,
         ]);
 
         res.status(200).json(upcomingEventsResult.rows);
