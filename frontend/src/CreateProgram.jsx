@@ -85,10 +85,11 @@ const ProgramForm = () => {
             const res = await axios
                 .get(`http://localhost:3001/tags`)
                 .catch((err) => console.log(err));
+            console.log(res.data)
+
             setTags(res.data);
         };
         getTags();
-        console.log(tags)
 
     }, []);
 
