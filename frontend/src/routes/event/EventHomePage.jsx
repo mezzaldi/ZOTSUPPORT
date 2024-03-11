@@ -44,6 +44,7 @@ const EventHomePage = () => {
                         height="250px"
                         style={{ objectFit: "cover", objectPosition: "center" }}
                     ></img>
+
                     <Box
                         sx={{
                             display: "flex",
@@ -65,20 +66,29 @@ const EventHomePage = () => {
                                 </Typography>
                             </div>
                         </div>
-                        <Box m={2}> 
+
+                        <Box> 
+                            <div className="eventTitle">
+
                             <Button variant="outlined">View Program Page</Button>
+
 
                             {userData.role === "superadmin" && (
                                 <Button variant="contained">Edit</Button>
                              )}
 
-                            {userData.role === "student" && (
+                            {userData.role === "student" && event.requireregistration == true && (
                                  <Button variant="contained">Register</Button>
                             )}
+                            </div>
 
                         </Box>
+                    </Box>
 
-                </Box>
+                 <Typography variant="body1">
+                    {event.description}
+                    </Typography>
+
                 </div>
             )}
         </div>
