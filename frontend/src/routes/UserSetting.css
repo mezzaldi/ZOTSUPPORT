@@ -58,15 +58,15 @@ User
 }
 
 .btn-change-photo {
-  background-color: transparent; /* Remove background */
-  color: #0E1C4C; /* Text color */
-  padding: 0; /* Remove padding */
-  border: none; /* Remove border */
-  cursor: pointer; /* Ensure it's still clickable */
+  background-color: transparent; 
+  color: #0E1C4C; 
+  padding: 0; 
+  border: none; 
+  cursor: pointer;
   font-size: 16px;
-  text-decoration: underline; /* Underline to indicate it's clickable */
-  display: inline; /* Make it inline like text */
-  margin: 0; /* Reset margin */
+  text-decoration: underline; 
+  display: inline; 
+  margin: 0; 
 }
 
 .settings-info {

@@ -1,116 +1,94 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import LongEventCard from "../../components/LongEventCard";
-import { Box } from "@mui/material";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Button } from "@mui/material";
-
-import Paper from "@mui/material/Paper";
-import InputBase from "@mui/material/InputBase";
-import IconButton from "@mui/material/IconButton";
+import { Box, Button, IconButton, InputBase, Paper, Tab, Tabs } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
 import UserContext from "../../user/UserContext";
-import { useContext, useEffect } from "react";
-import { useState } from "react";
 import axios from "axios";
 
 const ProgramEventsPage = () => {
     const userData = useContext(UserContext);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Get previous events
     const [previousEvents, setPreviousEvents] = useState();
     useEffect(() => {
         const getPreviousEvents = async () => {
             const res = await axios
-                .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/events/past`
-                )
+                .get(`http://localhost:3001/programs/:${userData.program_id}/events/past`)
                 .catch((err) => console.log(err));
             setPreviousEvents(res.data);
         };
         getPreviousEvents();
     }, [userData.program_id]);
 
-    // Get upcoming events
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
         const getUpcomingEvents = async () => {
             const res = await axios
-                .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/events/upcoming`
-                )
+                .get(`http://localhost:3001/programs/:${userData.program_id}/events/upcoming`)
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
         };
         getUpcomingEvents();
     }, [userData.program_id]);
 
-    const [currentTab, setCurrentTab] = React.useState(1);
+    const [currentTab, setCurrentTab] = useState(1);
     const handleTabChange = (event, newTab) => {
         setCurrentTab(newTab);
     };
 
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filterEvents = (events) => {
+        if (!events) return [];
+        return events.filter((event) =>
+            (event.name && event.name.toLowerCase().includes(searchTerm.toLowerCase().trim())) ||
+            (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase().trim()))
+        );
+    };
+    
+
     return (
-        <div class="pageContent">
+        <div className="pageContent">
             <div className="h1Container">
                 <Typography variant="h1">Program name events</Typography>
             </div>
 
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                }}
-            >
+            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                 <Tabs value={currentTab} onChange={handleTabChange}>
                     <Tab label="Upcoming events" value={1} />
                     <Tab label="Previous events" value={2} />
                 </Tabs>
-
                 <Button variant="contained">+ New event</Button>
             </Box>
 
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "1.5rem",
-                    marginBottom: "1.5rem",
-                }}
-            >
+            <Box sx={{ display: "flex", flexDirection: "row", marginTop: "1.5rem", marginBottom: "1.5rem" }}>
                 <Paper
                     component="form"
-                    sx={{
-                        p: "2px 4px",
-                        display: "flex",
-                        alignItems: "center",
-                        width: "50%",
-                    }}
+                    sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: "50%" }}
                 >
                     <InputBase
                         sx={{ ml: 1, flex: 1 }}
                         placeholder="Search for an event"
                         inputProps={{ "aria-label": "search for an event" }}
+                        value={searchTerm}
+                        onChange={handleSearchChange}
                     />
                     <IconButton
-                        type="button"
+                        type="submit"
                         sx={{ p: "10px" }}
                         aria-label="search"
+                        onClick={(e) => e.preventDefault()}
                     >
                         <SearchIcon />
                     </IconButton>
                 </Paper>
-
-                <Button variant="outlined" sx={{ marginLeft: "1rem" }}>
-                    Filter results
-                </Button>
+                <Button variant="outlined" sx={{ marginLeft: "1rem" }}>Filter results</Button>
             </Box>
 
             <Box>
-                {/* UPCOMING EVENTS */}
                 {currentTab === 1 && (
                     <Box>
                         {upcomingEvents &&
@@ -120,8 +98,6 @@ const ProgramEventsPage = () => {
                             })}
                     </Box>
                 )}
-
-                {/* PREVIOUS EVENTS */}
                 {currentTab === 2 && (
                     <Box>
                         {previousEvents &&

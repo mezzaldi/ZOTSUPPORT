@@ -17,6 +17,7 @@ import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
 import EventHomePage from "./routes/event/EventHomePage";
 
+import SearchResultsPage from "./routes/discover/SearchResultsPage";
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -32,9 +33,12 @@ import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/EditProgramForm";
 
+import EditEventForm  from "./routes/EditEventForm";
+
 import { useContext, useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+
 
 const primaryTextColor = "#242424";
 
@@ -95,13 +99,13 @@ const App = () => {
     const [userData2, setUserData] = useState();
     useEffect(() => {
         const getUserData = async () => {
-            const res = await axios
-                .get(`http://localhost:3001/userData/:${ucinetid}`)
-                .catch((err) => console.log(err));
-
-            const userobject = res.data[0];
-
-            setUserData(res.data);
+            try {
+                const res = await axios.get(`http://localhost:3001/userData/:${ucinetid}`);
+                const userobject = res.data[0]; // This line is likely causing the error
+                setUserData(res.data);
+            } catch (err) {
+                console.log('Error fetching user data:', err);
+            }
         };
         getUserData();
     }, [ucinetid]);
@@ -123,7 +127,10 @@ const App = () => {
                         {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
                         <Navbar userData={userData} />
                         <Routes>
-                            <Route path="/" element={<LandingPage />} />
+                            <Route
+                                path="/"
+                                element={<LandingPage />}
+                            />
                             <Route path="/SignIn" element={<SignInPage />} />
                             <Route path="/About" element={<AboutUsPage />} />
                             <Route
@@ -184,13 +191,22 @@ const App = () => {
                                 path="/ProgramSelectDashboard"
                                 element={<ProgramSelectDashboard />}
                             />
-                            <Route
-                                path="/EditProgramForm"
-                                element={<EditProgramForm />}
+                           <Route 
+                                path="/EditProgramForm/:program_id" 
+                                element={<EditProgramForm />} 
                             />
+
                             <Route
                                 path="/ProgramHomePage"
                                 element={<ProgramHomePage />}
+                            />
+                             <Route
+                                path="/EditEventForm"
+                                element={<EditEventForm />}
+                            />
+                            <Route 
+                                path="/search-results" 
+                                element={<SearchResultsPage />} 
                             />
                         </Routes>
                     </Router>
