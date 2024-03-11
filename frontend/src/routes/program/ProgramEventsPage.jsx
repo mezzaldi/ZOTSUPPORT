@@ -116,7 +116,7 @@ const ProgramEventsPage = () => {
                         {upcomingEvents &&
                             upcomingEvents.map((eventData) => {
                                 console.log(eventData);
-                                return <LongEventCard data={eventData} />;
+                                return <LongEventCard data={eventData} event_id={eventData.event_id} />;
                             })}
                     </Box>
                 )}
@@ -127,7 +127,7 @@ const ProgramEventsPage = () => {
                         {previousEvents &&
                             previousEvents.map((eventData) => {
                                 console.log(eventData);
-                                return <LongEventCard data={eventData} />;
+                                return <LongEventCard data={eventData} event_id={eventData.event_id}/>;
                             })}
                     </Box>
                 )}
