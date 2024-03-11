@@ -85,27 +85,32 @@ const ProgramForm = () => {
             const res = await axios
                 .get(`http://localhost:3001/tags`)
                 .catch((err) => console.log(err));
+            console.log(res.data)
+
             setTags(res.data);
         };
         getTags();
-        console.log(tags)
 
     }, []);
 
 // Load tag data into menu options under the correct category
-  tags.forEach((tag) => {
-  if (tag.tag_category == 'Level') {
-   levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-  }
-        
-  if (tag.tag_category == 'Subject') {
-    subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-   }
-        
-  if (tag.tag_category == 'Event Type') {
-   eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
-   }
-   })
+  {tags && (
+    tags.map((tag) => {
+      if (tag.tag_category == 'Level') {
+       levelTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+      }
+            
+      if (tag.tag_category == 'Subject') {
+        subjectTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+       }
+            
+      if (tag.tag_category == 'Event Type') {
+       eventTypeTags.push({value: tag.tag_id, label: tag.tag_name, color: tag.tag_color})
+       }
+       })
+  )}
+    
+ 
 
 
 

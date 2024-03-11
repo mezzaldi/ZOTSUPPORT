@@ -60,7 +60,7 @@ const CardCarousel = (props) => {
         data.map((item) => {
             cards.push(
                 // key prop is needed for the carousel component to work, ignore
-                <EventCard key={item.event_name} title={item.event_name} />
+                <EventCard key={item.event_name} title={item.event_name} event_id={item.event_id}/>
             );
         });
     }

@@ -15,6 +15,8 @@ import ProgramDashboardPage from "./routes/dashboard/ProgramDashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
+import EventHomePage from "./routes/event/EventHomePage";
+
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -109,6 +111,7 @@ const App = () => {
         role: "superadmin",
         firstname: "Peter",
         lastname: "Anteater",
+        program_id: 1,
         ucinetid: 5,
     };
 
@@ -158,8 +161,16 @@ const App = () => {
                                 element={<ProgramHomePage />}
                             />
                             <Route
-                                path="/ProgramDashboardPage/:program_id"
-                                element={<ProgramDashboardPage />}
+                                path="/EventHomePage"
+                                element={<EventHomePage />}
+                            />
+                            <Route
+                                path="/EventHomePage/:event_id"
+                                element={<EventHomePage />}
+                            />
+                            <Route
+                                path="/ProgramHomePage/:program_id"
+                                element={<ProgramHomePage />}
                             />
                             <Route
                                 path="/UserSetting"
