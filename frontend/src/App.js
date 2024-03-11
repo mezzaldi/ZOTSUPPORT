@@ -112,7 +112,7 @@ const App = () => {
         firstname: "Peter",
         lastname: "Anteater",
         program_id: 1,
-        ucinetid: 1,
+        ucinetid: 5,
     };
 
     return (

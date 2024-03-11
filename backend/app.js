@@ -690,8 +690,8 @@ app.get("/popular-upcoming-events", async (req, res) => {
 });
 
 // GET endpoint to fetch administrators for a specific program
-app.get("/programs/:programId/administrators", async (req, res) => {
-    const programId = req.params.programId.replace(":", "");
+app.get("/events/:eventId/administrators", async (req, res) => {
+    const eventId = req.params.eventId.replace(":", "");
 
     try {
         // Query to fetch administrators for the specified program
@@ -719,6 +719,8 @@ app.get("/programs/:programId/administrators", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+//GET endpoint to fetch admin
 
 // GET endpoint for retrieving specific events
 app.get("/events/:id", async (req, res) => {
