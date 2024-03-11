@@ -752,7 +752,11 @@ app.get("/events/:id", async (req, res) => {
                                 WHERE e.event_id = $1`
 
             const programResult = await pool.query(programQuery, [eventId]);
-           
+
+            const adminsQuery = `SELECT u.program_name FROM programs p
+                                INNER JOIN events e ON p.program_id = e.program_id
+                                WHERE e.event_id = $1`
+
             const eventDetails = {
                 event_id: eventResult.rows[0].event_id,
                 name: eventResult.rows[0].event_name,
@@ -1587,6 +1591,7 @@ app.get("/tags", async (req, res) => {
 
         // Return the upcoming events
         const tags = result.rows;
+        console.log(tags)
         res.status(200).json(tags);
     } catch (error) {
         console.error("Error fetching tags:", error);
