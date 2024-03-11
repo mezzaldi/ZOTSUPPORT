@@ -102,7 +102,8 @@
 }
 
 .eventTitle {
-    padding-bottom: 1rem;
     display: flex;
+    justify-content: space-between;
+    column-gap: 1rem;
 }
 
