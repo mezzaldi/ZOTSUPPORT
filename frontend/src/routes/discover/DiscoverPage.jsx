@@ -11,7 +11,6 @@ const DiscoverPage = () => {
     // Get upcoming events
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
-        console.log("useeffect upcoming events");
         const getUpcomingEvents = async () => {
             const res = await axios
                 .get(`http://localhost:3001/upcoming-events`)
@@ -24,7 +23,6 @@ const DiscoverPage = () => {
     // Get popular events
     const [popularEvents, setPopularEvents] = useState();
     useEffect(() => {
-        console.log("useeffect popular events");
         const getPopularEvents = async () => {
             const res = await axios
                 .get(`http://localhost:3001/popular-upcoming-events`)

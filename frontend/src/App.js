@@ -92,6 +92,8 @@ const App = () => {
     const ucinetid = "5";
 
     // load in the user's data from the database based on UCINetID
+    // User data should contain:
+    // firstname, lastname, email, profileimage, ucinetid
     const [userData2, setUserData] = useState();
     useEffect(() => {
         const getUserData = async () => {
@@ -100,7 +102,6 @@ const App = () => {
                 .catch((err) => console.log(err));
 
             const userobject = res.data[0];
-
             setUserData(res.data);
         };
         getUserData();
@@ -114,6 +115,35 @@ const App = () => {
         program_id: 1,
         ucinetid: 5,
     };
+
+    // Get the programs the user is an admin for
+    const [adminPrograms, setAdminPrograms] = useState();
+    useEffect(() => {
+        const getAdminPrograms = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/users/:${userData.ucinetid}/programs`
+                )
+                .catch((err) => console.log(err));
+            setAdminPrograms(res.data);
+        };
+        getAdminPrograms();
+    }, [userData]);
+
+    // Get the programs the user is a super admin for
+    const [superAdminPrograms, setSuperAdminPrograms] = useState();
+    // useEffect(() => {
+    //     const getSuperAdminPrograms = async () => {
+    //         const res = await axios
+    //             .get(
+    //                 `http://localhost:3001/users/superadmins/:${userData.ucinetid}/`
+    //             )
+    //             .catch((err) => console.log(err));
+    //         setSuperAdminPrograms(res.data);
+    //         console.log("SUPERADMIN PROGRAMS: ", res.data);
+    //     };
+    //     getSuperAdminPrograms();
+    // }, [userData]);
 
     return (
         userData && (

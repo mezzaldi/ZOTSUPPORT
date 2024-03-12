@@ -363,7 +363,7 @@ app.get("/programs/:id", async (req, res) => {
             description: programResult.rows[0].description,
             headerImage: programResult.rows[0].headerimage,
             color: programResult.rows[0].color,
-            tags: tagsResult.rows
+            tags: tagsResult.rows,
         };
 
         res.status(200).json(programDetails);
@@ -752,7 +752,7 @@ app.get("/events/:eventId/administrators", async (req, res) => {
 
 // GET endpoint for retrieving specific events
 app.get("/events/:id", async (req, res) => {
-    const eventId = req.params.id.replace(":","");
+    const eventId = req.params.id.replace(":", "");
 
     try {
         // Connect to the database
@@ -760,8 +760,7 @@ app.get("/events/:id", async (req, res) => {
             // Retrieve the event details from the database based on the event ID
             const eventQuery = `SELECT *
                                 FROM events
-                                WHERE event_id = $1`
-                            
+                                WHERE event_id = $1`;
 
             const eventResult = await pool.query(eventQuery, [eventId]);
             const event = eventResult.rows;
@@ -773,19 +772,18 @@ app.get("/events/:id", async (req, res) => {
 
             const tagsQuery = `SELECT t.tag_name, t.tag_color FROM tags t
                             INNER JOIN eventtags et ON t.tag_id = et.tag_id
-                            WHERE et.event_id = $1`
-        ;
+                            WHERE et.event_id = $1`;
             const tagsResult = await pool.query(tagsQuery, [eventId]);
 
             const programQuery = `SELECT p.program_name FROM programs p
                                 INNER JOIN events e ON p.program_id = e.program_id
-                                WHERE e.event_id = $1`
+                                WHERE e.event_id = $1`;
 
             const programResult = await pool.query(programQuery, [eventId]);
 
             const adminsQuery = `SELECT u.program_name FROM programs p
                                 INNER JOIN events e ON p.program_id = e.program_id
-                                WHERE e.event_id = $1`
+                                WHERE e.event_id = $1`;
 
             const eventDetails = {
                 event_id: eventResult.rows[0].event_id,
@@ -798,7 +796,7 @@ app.get("/events/:id", async (req, res) => {
                 location: eventResult.rows[0].location,
                 program_id: eventResult.rows[0].program_id,
                 program_name: programResult.rows[0].program_name,
-                tags: tagsResult.rows
+                tags: tagsResult.rows,
             };
 
             // Return the event details in the response
@@ -807,7 +805,7 @@ app.get("/events/:id", async (req, res) => {
             // Handle database query errors
             console.error("Error fetching event:", error);
             res.status(500).json({ error: "Internal server error" });
-        } 
+        }
     } catch (error) {
         // Handle database connection errors
         console.error("Error connecting to database:", error);
@@ -1086,6 +1084,38 @@ app.get("/users/:ucinetid/programs", async (req, res) => {
         pa.ucinetid = $1;
     `;
         const data = await client.query(query, [ucinetid]);
+
+        res.status(200).json(data.rows);
+    } catch (error) {
+        console.error("Error fetching user programs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Get programs the user is a super administrator for
+app.get("/users/superadmins/:ucinetid/", async (req, res) => {
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    const client = await pool.connect();
+    console.log("GETTING SUPER ADMIN PROGRAMS");
+    try {
+        await client.query("BEGIN");
+        // Query the database to get the list of programs the user is an administrator for
+        const query = `
+      SELECT
+        p.program_id,
+        p.program_name,
+        p.description,
+        p.headerimage,
+        p.color
+      FROM
+        programs p
+      INNER JOIN
+        programadmins pa ON p.program_id = pa.program_id AND pa.issuperadmin = true
+      WHERE
+        pa.ucinetid = $1;
+    `;
+        const data = await client.query(query, [ucinetid]);
+        console.log("DATA: ", data.rows);
 
         res.status(200).json(data.rows);
     } catch (error) {
@@ -1566,15 +1596,16 @@ app.get("/userData/:ucinetid", async (req, res) => {
 
             // Query to fetch program details including its tags and admin email
             const query = `
-        SELECT 
-          u.user_emailaddress, 
-          u.profileimage, 
-          u.firstname, 
-          u.lastname
-        FROM 
-          users u
-        WHERE 
-          u.ucinetid = $1
+            SELECT 
+            u.user_emailaddress AS email, 
+            u.profileimage, 
+            u.firstname, 
+            u.lastname,
+            u.ucinetid
+          FROM 
+            users u
+          WHERE 
+            u.ucinetid = $1
       `;
             const { rows } = await client.query(query, [ucinetid]);
 
@@ -1622,7 +1653,7 @@ app.get("/tags", async (req, res) => {
 
         // Return the upcoming events
         const tags = result.rows;
-        console.log(tags)
+        console.log(tags);
         res.status(200).json(tags);
     } catch (error) {
         console.error("Error fetching tags:", error);
