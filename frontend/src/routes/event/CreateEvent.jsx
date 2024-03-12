@@ -17,11 +17,11 @@ const Event = () => {
   const [formData, setFormData] = useState({
     eventName: '',
     location: '',
-    recurring: '',
     description: '',
     headerImage: '',
     startDate: new Date(),
-    endDate: new Date()
+    endDate: new Date(),
+    recurringEndDate: new Date()
   });
 
   const [tagData, setTagData] = useState({
@@ -33,24 +33,25 @@ const Event = () => {
   });
 
   const [startData, setStartData] = useState({
-    startDate: dayjs()
+    startDate:  dayjs().toDate()
   });
 
   const [endData, setEndData] = useState({
-    endDate: dayjs()
+    endDate:  dayjs().toDate()
   });
 
   const [recurringData, setRecurringData] = useState({
     recurring: 'None'
   })
 
+
   const [recurringEndData, setRecurringEndData] = useState({
-    recurringEndDate: dayjs(new Date())
+    recurringEndDate: dayjs().toDate()
   });
 
   const [checkboxData, setCheckboxData] = useState({
-    requireRegistration: false,
-    receiveRegistrationNotification: false
+    requireRegistration: [false],
+    receiveRegistrationNotification: [false]
   })
 
 //Check if the event is recurring or not. If so, render recurringEnd question. If not
@@ -101,7 +102,6 @@ const Event = () => {
   //This will update the input of recurring end date on change 
   const handleRecurringEndInputChange = (e) => {
     setRecurringEndData({date: e.toDate()})
-    console.log(recurringEndData.recurringEndDate)
   }
 
   //This will update the input of require registration and receive reg notif on change 
@@ -114,38 +114,42 @@ const Event = () => {
  // and start end dates are concatenated with the rest of the form and logged in the console
   const handleSubmit = async (e) => {
     e.preventDefault();
+ 
     tagData.tags.push({value: '20', label: 'Event'})  //Event tag added automatically here.
     //iterate through chosen tags and store just the value
       const finalEventTags = []
-      tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
+      tagData.tags.forEach((tag) => finalEventTags.push(tag.label));
       formData.tags = finalEventTags 
     formData.admins = adminData.admins
-    //checks if the start date is changed from default, and stores the data accordingly
-    if (typeof startData == Date) {
+
+    if (typeof startData.startDate == 'undefined') {
       formData.startDate = startData.date
     }
     else {
-      formData.startDate = startData.startDate.toDate()
+      formData.startDate = startData.startDate
 
     }
-
-    if (typeof endData == Date) {
+    if (typeof endData.endDate == 'undefined') {
       formData.endDate = endData.date
     }
     else {
-      formData.endDate = endData.endDate.toDate()
+      formData.endDate = endData.endDate
+
     }
 
-    formData.endDate = endData.date
-    formData.recurring = recurringData.recurring.value
-    //checks if the recurring date is changed from default, and stores the data accordingly
-    if (typeof recurringEndData == Date) {
+    if (typeof recurringEndData.recurringEndDate == 'undefined') {
       formData.recurringEndDate = recurringEndData.date
     }
     else {
-      formData.recurringEndDate = recurringEndData.recurringEndDate.toDate()
+      formData.recurringEndDate = recurringEndData.recurringEndDate
+
     }
-    formData.recurringEndDate = recurringEndData.date
+
+
+    
+    formData.recurring = recurringData.recurring
+
+
     formData.requireRegistration = checkboxData.requireRegistration[0]
     formData.receiveRegistrationNotification = checkboxData.receiveRegistrationNotification[0]
     console.log(formData)
@@ -296,7 +300,7 @@ useEffect(() => {
         <Grid item xs = {9}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker  
-               label="Start Date" value={startData.startDate} minDate={dayjs()} onChange={handleStartInputChange} />
+               label="Start Date" defaultValue={dayjs()} minDate={dayjs()} onChange={handleStartInputChange} />
             </LocalizationProvider>        
         </Grid>
 
@@ -308,7 +312,7 @@ useEffect(() => {
         <Grid item xs = {9}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker 
-            label="End Date" minDate={dayjs(startData.date)} value={endData.endDate} onChange={handleEndInputChange} />
+            label="End Date" minDate={dayjs(startData.date)} onChange={handleEndInputChange} />
           </LocalizationProvider>    
         </Grid>
 
@@ -369,7 +373,7 @@ useEffect(() => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker 
             label="Recurring End Date" defaultValue={dayjs()} minDate={dayjs()} 
-            value={recurringEndData.recurringEndDate} onChange={handleRecurringEndInputChange}
+            onChange={handleRecurringEndInputChange}
             disabled={!isRecurring}
             />
           </LocalizationProvider>    
