@@ -33,7 +33,7 @@ const LongEventCard = (props) => {
     function formatTags(tags) {
         let chips = [];
         tags.forEach((tag) => {
-            if (tag != ":") {
+            if (tag !== ":") {
                 tag = tag.split(":");
                 chips.push(
                     <Chip

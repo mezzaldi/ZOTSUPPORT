@@ -8,8 +8,6 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 
-import NotificationTable from "../../components/NotificationTable";
-import CardCarousel from "../../components/CardCarousel";
 import EventBar from "../../components/EventBar";
 import AdminTable from "../../components/AdminTable";
 import SendIcon from "@mui/icons-material/Send";
@@ -36,7 +34,7 @@ const ProgramDashboardPage = () => {
             console.log("PROGRAM: ", res.data);
         };
         getProgram();
-    }, [userData]);
+    }, [program_id]);
 
     // Get the program's administrators
     const [admins, setAdmins] = useState();

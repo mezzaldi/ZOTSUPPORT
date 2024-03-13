@@ -5,8 +5,6 @@ import EventCard from "./EventCard";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-import axios from "axios";
-
 // Determines the type of cards that will be displayed in the carousel.
 // Will then reference the appropriate json data file to load in the user's
 // followed programs, currently popular events, current upcoming events,
@@ -39,7 +37,6 @@ const CardCarousel = (props) => {
     //props.data contains a list of program IDs
     // Get the program data associated with those IDs.
 
-    const getRequests = [];
     const cards = [];
     let data = props.data;
 
@@ -53,6 +50,7 @@ const CardCarousel = (props) => {
                     program_id={item.program_id}
                 />
             );
+            return cards;
         });
     }
 
@@ -60,8 +58,13 @@ const CardCarousel = (props) => {
         data.map((item) => {
             cards.push(
                 // key prop is needed for the carousel component to work, ignore
-                <EventCard key={item.event_name} title={item.event_name} event_id={item.event_id}/>
+                <EventCard
+                    key={item.event_name}
+                    title={item.event_name}
+                    event_id={item.event_id}
+                />
             );
+            return cards;
         });
     }
 
