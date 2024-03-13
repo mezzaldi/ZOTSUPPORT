@@ -47,20 +47,6 @@ const DashboardPage = () => {
         getNotifications();
     }, [userData]);
 
-    // Get the program's administrators
-    const [admins, setAdmins] = useState();
-    useEffect(() => {
-        const getAdmins = async () => {
-            const res = await axios
-                .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/administrators`
-                )
-                .catch((err) => console.log(err));
-            setAdmins(res.data);
-        };
-        getAdmins();
-    }, [userData]);
-
     // Get user's upcoming events they are registered for
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {

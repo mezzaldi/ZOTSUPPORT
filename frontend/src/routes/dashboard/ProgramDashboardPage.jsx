@@ -87,7 +87,7 @@ const ProgramDashboardPage = () => {
                         </Typography>
 
                         <div>
-                            <Link to="/ProgramEvents">
+                            <Link to={`/ProgramEvents/:${program_id}`}>
                                 <Button
                                     variant="outlined"
                                     sx={{ marginRight: "10px" }}
@@ -95,7 +95,7 @@ const ProgramDashboardPage = () => {
                                     Program events
                                 </Button>
                             </Link>
-                            <Link to="/ProgramHomePage">
+                            <Link to={`/ProgramHomePage/:${program_id}`}>
                                 <Button
                                     variant="outlined"
                                     sx={{ marginRight: "10px" }}

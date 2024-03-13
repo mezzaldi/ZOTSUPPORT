@@ -123,16 +123,9 @@ const ProgramHomePage = () => {
                                 <LongEventCard data={event} event_id={event.event_id}/>
                             )
                         )}
-
-                        {/* <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} /> */}
                     </Box>
-                    {/* Other program details */}
-                    <Typography variant="h2">Other Program Details</Typography>
-                    <Typography variant="body1">Details go here...</Typography>
+            
+
                 </div>
             )}
         </div>

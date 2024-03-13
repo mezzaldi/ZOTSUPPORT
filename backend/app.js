@@ -721,6 +721,36 @@ app.get("/programs/:programId/administrators", async (req, res) => {
     }
 });
 
+//GET endpoint to fetch administrators for a specific event
+app.get("/events/:eventId/administrators", async (req, res) => {
+    const eventId = req.params.eventId.replace(":", "");
+
+    try {
+        // Query to fetch administrators for the specified program
+        const query = `
+            SELECT
+                u.ucinetid,
+                u.user_emailaddress,
+                u.profileimage,
+                u.firstname,
+                u.lastname
+            FROM
+                eventadmins ea
+            JOIN
+                users u ON ea.ucinetid = u.ucinetid
+            WHERE
+                ea.event_id = $1
+        `;
+        const { rows } = await pool.query(query, [eventId]);
+
+        // Send the retrieved administrators as the response
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error fetching administrators:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // GET endpoint for retrieving specific events
 app.get("/events/:id", async (req, res) => {
     const eventId = req.params.id.replace(":","");
@@ -729,31 +759,9 @@ app.get("/events/:id", async (req, res) => {
         // Connect to the database
         try {
             // Retrieve the event details from the database based on the event ID
-            const eventQuery = `SELECT e.event_id,
-                                    e.event_name,
-                                    e.description,
-                                    e.date,
-                                    e.starttime,
-                                    e.endtime,
-                                    e.requireregistration,
-                                    p.program_name,
-                                    ARRAY_AGG(DISTINCT CONCAT(u.firstname, ' ', u.lastname)) AS admins,
-                                    ARRAY_AGG(DISTINCT CONCAT(t.tag_name, ':', t.tag_color)) AS tags
-
-                                FROM events e
-                                JOIN 
-                                    programs p ON e.program_id = p.program_id
-                                LEFT JOIN
-                                    eventadmins ea ON ea.event_id = e.event_id
-                                LEFT JOIN
-                                    users u ON u.ucinetid = ea.ucinetid
-                                LEFT JOIN
-                                    eventtags et on et.event_id = e.event_id
-                                LEFT JOIN
-                                    tags t on et.tag_id = t.tag_id
-
-                                WHERE e.event_id = $1
-                                GROUP BY e.event_id, e.event_name, e.description, e.date, e.starttime, e.endtime, e.requireregistration, p.program_name`;
+            const eventQuery = `SELECT *
+                                FROM events
+                                WHERE event_id = $1`
                             
 
             const eventResult = await pool.query(eventQuery, [eventId]);
@@ -764,23 +772,38 @@ app.get("/events/:id", async (req, res) => {
                 return res.status(404).json({ error: "Event not found" });
             }
 
-            // Retrieve admin email associated with the event
-            // const adminQuery =
-            //     "SELECT user_emailaddress FROM eventadmins INNER JOIN users ON eventadmins.ucinetid = users.ucinetid WHERE event_id = $1";
-            // const adminResult = await pool.query(adminQuery, [eventId]);
-            // const adminEmail = adminResult.rows[0]?.user_emailaddress;
+            const tagsQuery = `SELECT t.tag_name, t.tag_color FROM tags t
+                            INNER JOIN eventtags et ON t.tag_id = et.tag_id
+                            WHERE et.event_id = $1`
+        ;
+            const tagsResult = await pool.query(tagsQuery, [eventId]);
 
-            // Retrieve tags associated with the event
-            // const tagsQuery =
-            //     "SELECT tag_name FROM eventtags INNER JOIN tags ON eventtags.tag_id = tags.tag_id WHERE event_id = $1";
-            // const tagsResult = await pool.query(tagsQuery, [eventId]);
-            // const tags = tagsResult.rows.map((row) => row.tag_name);
+            const programQuery = `SELECT p.program_name FROM programs p
+                                INNER JOIN events e ON p.program_id = e.program_id
+                                WHERE e.event_id = $1`
 
-            // Combine event details, admin email, and tags into a single object
-            const eventData = { ...event };
+            const programResult = await pool.query(programQuery, [eventId]);
+
+            const adminsQuery = `SELECT u.program_name FROM programs p
+                                INNER JOIN events e ON p.program_id = e.program_id
+                                WHERE e.event_id = $1`
+
+            const eventDetails = {
+                event_id: eventResult.rows[0].event_id,
+                name: eventResult.rows[0].event_name,
+                description: eventResult.rows[0].description,
+                headerImage: eventResult.rows[0].headerimage,
+                date: eventResult.rows[0].date,
+                starttime: eventResult.rows[0].starttime,
+                endtime: eventResult.rows[0].endtime,
+                location: eventResult.rows[0].location,
+                program_id: eventResult.rows[0].program_id,
+                program_name: programResult.rows[0].program_name,
+                tags: tagsResult.rows
+            };
 
             // Return the event details in the response
-            res.status(200).json(eventData);
+            res.status(200).json(eventDetails);
         } catch (error) {
             // Handle database query errors
             console.error("Error fetching event:", error);
@@ -1046,7 +1069,6 @@ app.get("/students/:ucinetid/events", async (req, res) => {
 app.get("/users/:ucinetid/programs", async (req, res) => {
     const ucinetid = req.params.ucinetid.replace(":", "");
     const client = await pool.connect();
-
     try {
         await client.query("BEGIN");
         // Query the database to get the list of programs the user is an administrator for
@@ -1601,6 +1623,7 @@ app.get("/tags", async (req, res) => {
 
         // Return the upcoming events
         const tags = result.rows;
+        console.log(tags)
         res.status(200).json(tags);
     } catch (error) {
         console.error("Error fetching tags:", error);

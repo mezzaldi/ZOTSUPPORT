@@ -57,7 +57,7 @@ const ProgramForm = () => {
       description: formData.description,
       headerImage: formData.headerImage,
       color: colorData.color.value,
-      tags: tagData.tags.map(tag => String(tag.label)) 
+      tags: tagData.tags.map(tag => String(tag.value)) 
     };
 
     console.log(postData)
@@ -85,10 +85,11 @@ const ProgramForm = () => {
             const res = await axios
                 .get(`http://localhost:3001/tags`)
                 .catch((err) => console.log(err));
+            console.log(res.data)
+
             setTags(res.data);
         };
         getTags();
-        console.log(tags)
 
     }, []);
 
