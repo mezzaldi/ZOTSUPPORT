@@ -4,6 +4,7 @@ import { Box, Button, Chip, Stack } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import UserContext from "../../user/UserContext";
+import LongEventCard from "../../components/LongEventCard";
 
 const ProgramHomePage = () => {
     let { program_id } = useParams();
@@ -42,7 +43,6 @@ const ProgramHomePage = () => {
         getUpcomingEvents();
     }, [userData]);
 
-    }, [program_id]);
 
     return (
         <div className="pageContent">
@@ -87,7 +87,7 @@ const ProgramHomePage = () => {
                         direction="row"
                         spacing={1}
                         sx={{ marginTop: "1rem" }}
-                    >
+                    />
                 
                         {program.tags && (
                             program.tags.map(tag => 
