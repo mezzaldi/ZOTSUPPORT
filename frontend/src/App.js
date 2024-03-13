@@ -5,9 +5,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import CreateNewProgramPage from "./routes/program/CreateNewProgramPage";
 import CreateNewEventPage from "./routes/event/CreateNewEventPage";
 import CreateNewNotificationPage from "./routes/notifications/CreateNewNotificationPage";
-import LandingPage from "./routes/LandingPage";
+import LandingPage from "./routes/landing/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
-import SignInPage from "./routes/SignInPage";
+import SignInPage from "./routes/sign in/SignInPage";
 import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
 import UserDashboardPage from "./routes/dashboard/UserDashboardPage";
@@ -27,7 +27,7 @@ import {
     ThemeProvider,
     responsiveFontSizes,
 } from "@mui/material/styles";
-import UserSetting from "./routes/UserSetting";
+import UserSetting from "./routes/usersettings/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/program/EditProgramForm";
@@ -92,19 +92,19 @@ const App = () => {
     const ucinetid = "5";
 
     // load in the user's data from the database based on UCINetID
-    const [userData2, setUserData] = useState();
-    useEffect(() => {
-        const getUserData = async () => {
-            const res = await axios
-                .get(`http://localhost:3001/userData/:${ucinetid}`)
-                .catch((err) => console.log(err));
+    // const [userData2, setUserData] = useState();
+    // useEffect(() => {
+    //     const getUserData = async () => {
+    //         const res = await axios
+    //             .get(`http://localhost:3001/userData/:${ucinetid}`)
+    //             .catch((err) => console.log(err));
 
-            const userobject = res.data[0];
+    //         const userobject = res.data[0];
 
-            setUserData(res.data);
-        };
-        getUserData();
-    }, [ucinetid]);
+    //         setUserData(res.data);
+    //     };
+    //     getUserData();
+    // }, [ucinetid]);
 
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {

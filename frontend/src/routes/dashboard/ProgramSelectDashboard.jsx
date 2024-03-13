@@ -4,7 +4,6 @@ import {
     Typography,
     Card,
     CardActionArea,
-    CardMedia,
     CardContent,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -13,9 +12,7 @@ import { useContext, useEffect } from "react";
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
-import CardCarousel from "../../components/CardCarousel";
 import ProgramCard from "../../components/ProgramCard";
-import NotificationTable from "../../components/NotificationTable";
 
 const ProgramSelectDashboard = () => {
     const userData = useContext(UserContext);

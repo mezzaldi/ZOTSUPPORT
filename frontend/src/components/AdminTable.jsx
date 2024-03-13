@@ -95,14 +95,6 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-function isSuperAdmin(isSA) {
-    if (isSA === "True") {
-        return <i>Super Admin</i>;
-    } else {
-        return <p></p>;
-    }
-}
-
 export default function AdminTable(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
