@@ -141,7 +141,7 @@ const App = () => {
                                 element={<CreateNewProgramPage />}
                             />
                             <Route
-                                path="/CreateNewEvent"
+                                path="/CreateNewEvent/:program_id"
                                 element={<CreateNewEventPage />}
                             />
 
