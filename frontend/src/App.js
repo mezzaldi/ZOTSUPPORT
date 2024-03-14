@@ -136,7 +136,7 @@ const App = () => {
                             />
 
                             <Route
-                                path="/CreateNewNotification"
+                                path="/CreateNewNotification/:program_id"
                                 element={<CreateNewNotificationPage />}
                             />
 

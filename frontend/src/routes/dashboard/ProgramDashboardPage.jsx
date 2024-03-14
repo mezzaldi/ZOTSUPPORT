@@ -21,6 +21,7 @@ import AddAdminModal from "../../components/AddAdminModal";
 import RemoveAdminModal from "../../components/RemoveAdminModal";
 import { useParams } from "react-router-dom";
 
+
 const ProgramDashboardPage = () => {
     let { program_id } = useParams();
     program_id = program_id.replace(":", "");
@@ -104,9 +105,8 @@ const ProgramDashboardPage = () => {
                                 </Button>
                             </Link>
 
-                            <Link to="/CreateNewNotification">
+                            <Link to={`/CreateNewNotification/:${program_id}`}>
                                 <Button
-                                    href="/CreateNewNotification"
                                     startIcon={<SendIcon />}
                                     variant="outlined"
                                     sx={{ marginRight: "10px" }}
