@@ -8,15 +8,14 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
-
 const EventCard = (props) => {
     const navigate = useNavigate();
-    
-    return (
-        <Card sx={{ marginRight: "1.5rem" }}
-              onClick={() => navigate(`/EventHomePage/:${props.event_id}`)}
-        >
 
+    return (
+        <Card
+            sx={{ width: "17rem" }}
+            onClick={() => navigate(`/EventHomePage/:${props.event_id}`)}
+        >
             {/* The program header image */}
             <CardMedia
                 sx={{ height: 140 }}
@@ -24,9 +23,17 @@ const EventCard = (props) => {
                 title="program header image"
             />
 
-            <CardContent>
+            <CardContent sx={{ height: "2rem" }}>
                 <div className="cardText">
-                    <Typography variant="h3">{props.title}</Typography>
+                    <Typography
+                        variant="body1"
+                        style={{
+                            display: "inline-block",
+                            whiteSpace: "pre-line",
+                        }}
+                    >
+                        {props.title}
+                    </Typography>
                 </div>
             </CardContent>
 
