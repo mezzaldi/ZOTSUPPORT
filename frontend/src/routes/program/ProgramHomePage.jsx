@@ -1,18 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
-import LongEventCard from "../../components/LongEventCard";
-import { Box } from "@mui/material";
-
-import { Button } from "@mui/material";
-
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-
-import { useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
-import UserContext from "../../user/UserContext";
+import { Box, Button, Chip, Stack } from "@mui/material";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import UserContext from "../../user/UserContext";
+import LongEventCard from "../../components/LongEventCard";
 
 const ProgramHomePage = () => {
     let { program_id } = useParams();
@@ -21,8 +13,8 @@ const ProgramHomePage = () => {
     console.log("CREATED PROGRAM PAGE");
 
     const userData = useContext(UserContext);
-
     const [program, setProgram] = useState();
+
     useEffect(() => {
         const getProgram = async () => {
             const res = await axios
@@ -50,7 +42,7 @@ const ProgramHomePage = () => {
 
 
     return (
-        <div class="pageContent">
+        <div className="pageContent">
             {program && (
                 <div>
                     <img
@@ -59,8 +51,7 @@ const ProgramHomePage = () => {
                         width="100%"
                         height="250px"
                         style={{ objectFit: "cover", objectPosition: "center" }}
-                    ></img>
-
+                    />
                     <Box
                         sx={{
                             display: "flex",
@@ -73,16 +64,22 @@ const ProgramHomePage = () => {
                         <Typography variant="h1">
                             {program.name}
                         </Typography>
-
                         {userData.role === "superadmin" && (
-                            <Button variant="contained">Edit</Button>
+                            <Box>
+                                <Link to={`/EditProgramForm/${program_id}`}>
+                                     <Button variant="contained">Edit</Button>
+                             </Link>
+                            </Box>
+                        )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Follow</Button>
                         )}
 
                         {userData.role === "student" && (
                             <Button variant="contained">Follow</Button>
                         )}
                     </Box>
-
                     <Typography variant="body1">
                         {program.description}
                     </Typography>
@@ -100,14 +97,9 @@ const ProgramHomePage = () => {
                             )
                         )}
                     </Stack>
-
-                    <Typography
-                        variant="h2"
-                        sx={{ marginTop: "3rem", marginBottom: "2rem" }}
-                    >
+                    <Typography variant="h2" sx={{ marginTop: "3rem", marginBottom: "2rem" }}>
                         Upcoming events
                     </Typography>
-
                     <Box>
                         {upcomingEvents && (
                             upcomingEvents.map(event =>

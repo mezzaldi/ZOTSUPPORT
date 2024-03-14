@@ -357,7 +357,7 @@ const Navbar = ({ userData }) => {
                                 </>
                             )}
                             {!isLandingPage && (
-                                <Button sx={{ color: "white" }}>
+                                <Button sx={{ color: "white" }} href="/UserSetting">
                                     <img
                                         src="/images/placeholder.jpg"
                                         className="profileImg"

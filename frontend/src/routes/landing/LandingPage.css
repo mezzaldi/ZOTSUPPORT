@@ -8,31 +8,31 @@
   color: #fff;
   padding-top: 60px;
   padding-bottom: 60px;
-  height: 400px; /* Adjust this value to make the header larger */
+  height: 400px; 
   position: relative;
 }
 
 .welcome-text-container {
   position: absolute;
-  top: 40px; /* Increase this value to move the text further down */
+  top: 40px; 
   left: 10px;
-  text-align: left;  /* Adjust as needed for left spacing */
+  text-align: left;  
 }
 
 .sign-in-box {
   position: absolute;
-  bottom: -20px; /* Adjust this value to half the height of your sign-in button */
+  bottom: -20px; 
   left: 50%;
   transform: translateX(-50%);
-  background-color: white; /* The color of the rectangle box */
-  padding: 20px; /* Increased padding for more space inside the box */
-  border-radius: 4px; /* Rounded corners for the box */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for depth */
-  display: flex; /* Align items in a row */
-  align-items: center; /* Center align the items vertically */
-  justify-content: space-around; /* Evenly distribute the available space */
-  width: 70%; /* Increased width for a larger box */
-  max-width: 600px; /* Increased max-width for a larger box */
+  background-color: white; 
+  padding: 20px; 
+  border-radius: 4px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-around; 
+  width: 70%; 
+  max-width: 600px; 
 }
 
 
@@ -41,19 +41,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 20px; /* Centers the icon and adds space below */
-  width: 100px; /* Adjust size as needed */
-  height: 100px; /* Adjust size as needed */
-  border-radius: 50%; /* Creates a circle */
-  background-color: #2744A6; /* primary color */
-  color: white; /* Icon color */
+  margin: 0 auto 20px; 
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%;
+  background-color: #2744A6; 
+  color: white; 
 }
 .body-text {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 100%; /* Make sure the container is as tall as its parent to align text properly */
+  height: 100%; 
 }
 
 
@@ -61,41 +61,40 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; /* Adjusts space between bullet items */
+  gap: 30px; 
 }
 
 .bullet {
   text-align: center;
-  max-width: 300px; /* Adjust based on content */
+  max-width: 300px; 
 }
 
 .image-box {
   display: block;
-  max-width: 98%; /* Adjusted to match the page width */
+  max-width: 90%; 
   margin: 20px auto;
   padding: 0;
   border-radius: 10px;
-  overflow: hidden; /* This will ensure the image doesn't overflow the rounded corners */
-  height: 420px; /* Set a fixed height to make the box vertically smaller */
+  overflow: hidden; 
+  height: 600px; 
 }
 
 .image-box img {
-  width: 100%; /* This will maintain the full width of the image box */
-  height: 100%; /* This will make the image take the full height of the image box */
-  object-fit: cover; /* This will ensure the image covers the box area, cropping if necessary */
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
 }
 
 
 .section-divider {
-  border: none; /* Remove the default border */
-  height: 2px; /* Set the thickness of the line */
-  width: 20%; /* Set the width of the line to match the design */
-  background-color: #333; /* Set the color of the line */
-  margin: 20px auto; /* Center the line horizontally with a margin */
+  border: none; 
+  height: 2px; 
+  width: 20%; 
+  background-color: #333; 
+  margin: 20px auto; 
 }
 
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .info-bullets {
     flex-direction: column;
