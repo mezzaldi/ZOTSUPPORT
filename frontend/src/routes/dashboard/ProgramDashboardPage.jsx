@@ -99,9 +99,8 @@ const ProgramDashboardPage = () => {
                                         Program home
                                     </Button>
                                 </Link>
-                                <Link to="/CreateNewNotification">
+                                <Link to={`/CreateNewNotification/:${program_id}`}>
                                     <Button
-                                        href="/CreateNewNotification"
                                         startIcon={<SendIcon />}
                                         variant="outlined"
                                         sx={{ marginRight: "10px" }}

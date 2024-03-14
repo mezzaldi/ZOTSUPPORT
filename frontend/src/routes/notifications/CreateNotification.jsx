@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Typography, TextField, Button, Grid } from "@mui/material";
 import Select from "react-select";
+import { useParams } from "react-router-dom";
 
 const Notification = () => {
+
+    let { program_id } = useParams();
+    program_id = program_id.replace(":", "");
+
     const recipientOptions = [
         { value: "programFollowers", label: "All Followers" },
 
