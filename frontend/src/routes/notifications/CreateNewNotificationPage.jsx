@@ -1,5 +1,5 @@
 import React from "react";
-import Notification from "../../CreateNotification";
+import Notification from "./CreateNotification";
 import { Typography } from "@mui/material";
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';

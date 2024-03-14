@@ -7,10 +7,10 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 
-// function makeDate(dateString) {
-//     const date = new Date(dateString);
-//     return date;
-// }
+//function makeDate(dateString) {
+//    const date = new Date(dateString);
+//   return date;
+//}
 
 const LongEventCard = (props) => {
     const data = props.data;
@@ -33,7 +33,7 @@ const LongEventCard = (props) => {
     function formatTags(tags) {
         let chips = [];
         tags.forEach((tag) => {
-            if (tag != ":") {
+            if (tag !== ":") {
                 tag = tag.split(":");
                 chips.push(
                     <Chip

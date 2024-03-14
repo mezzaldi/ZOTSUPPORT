@@ -70,7 +70,6 @@ const UserSetting = () => {
             onChange={handleProfilePictureChange}
             style={{ display: 'none' }}
           />
-          {/* Replace Button with Typography for a clickable line */}
           <Typography
             variant="body1"
             component="span"

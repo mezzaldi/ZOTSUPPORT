@@ -95,14 +95,6 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-function isSuperAdmin(isSA) {
-    if (isSA === "True") {
-        return <i>Super Admin</i>;
-    } else {
-        return <p></p>;
-    }
-}
-
 export default function AdminTable(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
@@ -134,8 +126,11 @@ export default function AdminTable(props) {
     };
 
     return (
-        <TableContainer component={Paper} sx={{ width: "100%" }}>
-            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <TableContainer component={Paper}>
+            <Table
+                aria-label="custom pagination table"
+                sx={{ tableLayout: "fixed", whiteSpace: "nowrap" }}
+            >
                 <TableBody>
                     {(rowsPerPage > 0
                         ? rows.slice(
@@ -145,29 +140,23 @@ export default function AdminTable(props) {
                         : rows
                     ).map((row, index) => (
                         <TableRow key={index}>
-                            <TableCell style={{ width: 10 }} align="left">
-                                <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {row.profileImage}
-                                    </Typography>
-                                </div>
+                            <TableCell style={{ width: "20%" }} align="left">
+                                <Typography variant="body1">
+                                    {row.profileImage}
+                                </Typography>
                             </TableCell>
-                            <TableCell style={{ width: 300 }} align="left">
-                                <div className="tableCellTextContainer">
-                                    <Typography variant="body1">
-                                        {row.name}
-                                    </Typography>
-                                </div>
+                            <TableCell style={{ width: "30%" }} align="left">
+                                <Typography variant="body1">
+                                    {row.name}
+                                </Typography>
                             </TableCell>
-                            <TableCell style={{ width: 200 }} align="right">
-                                <div className="tableCellTextContainer">
-                                    <Typography
-                                        variant="body1"
-                                        sx={{ fontStyle: "italic" }}
-                                    >
-                                        {row.isSuperAdmin ? "Super admin" : ""}
-                                    </Typography>
-                                </div>
+                            <TableCell style={{ width: "50%" }} align="right">
+                                <Typography
+                                    variant="body1"
+                                    sx={{ fontStyle: "italic" }}
+                                >
+                                    {row.isSuperAdmin ? "Super admin" : ""}
+                                </Typography>
                             </TableCell>
                             <TableCell style={{ width: 200 }} align="right">
                                 <div className="tableCellTextContainer">
