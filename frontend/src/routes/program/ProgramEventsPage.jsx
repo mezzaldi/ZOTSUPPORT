@@ -1,41 +1,38 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import LongEventCard from "../../components/LongEventCard";
 import { Box, Button, IconButton, InputBase, Paper, Tab, Tabs } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useState } from "react";
 import axios from "axios";
 
 const ProgramEventsPage = () => {
     let { program_id } = useParams();
-    program_id = program_id.replace(":", "");
+    program_id = program_id.replace(":", ""); // Remove the colon if present
     const [searchTerm, setSearchTerm] = useState('');
 
-    const [previousEvents, setPreviousEvents] = useState();
+    const [previousEvents, setPreviousEvents] = useState([]);
     useEffect(() => {
         const getPreviousEvents = async () => {
-            const res = await axios
-                .get(
-                    `http://localhost:3001/programs/:${program_id}/events/past`
-                )
-                .catch((err) => console.log(err));
-            setPreviousEvents(res.data);
+            try {
+                const res = await axios.get(`http://localhost:3001/programs/${program_id}/events/past`);
+                setPreviousEvents(res.data);
+            } catch (err) {
+                console.log(err);
+            }
         };
         getPreviousEvents();
     }, [program_id]);
 
-    const [upcomingEvents, setUpcomingEvents] = useState();
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
     useEffect(() => {
         const getUpcomingEvents = async () => {
-            const res = await axios
-                .get(
-                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
-                )
-                .catch((err) => console.log(err));
-            setUpcomingEvents(res.data);
+            try {
+                const res = await axios.get(`http://localhost:3001/programs/${program_id}/events/upcoming`);
+                setUpcomingEvents(res.data);
+            } catch (err) {
+                console.log(err);
+            }
         };
         getUpcomingEvents();
     }, [program_id]);
@@ -49,6 +46,7 @@ const ProgramEventsPage = () => {
         setSearchTerm(event.target.value);
     };
 
+    // Filter events based on the search term
     const filterEvents = (events) => {
         if (!events) return [];
         return events.filter((event) =>
@@ -56,7 +54,9 @@ const ProgramEventsPage = () => {
             (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase().trim()))
         );
     };
-    
+
+    // Apply filtering to the events based on the current tab
+    const displayedEvents = currentTab === 1 ? filterEvents(upcomingEvents) : filterEvents(previousEvents);
 
     return (
         <div className="pageContent">
@@ -97,34 +97,13 @@ const ProgramEventsPage = () => {
             </Box>
 
             <Box>
-                {currentTab === 1 && (
-                    <Box>
-                        {upcomingEvents &&
-                            upcomingEvents.map((eventData) => {
-                                console.log(eventData);
-                                return (
-                                    <LongEventCard
-                                        data={eventData}
-                                        event_id={eventData.event_id}
-                                    />
-                                );
-                            })}
-                    </Box>
-                )}
-                {currentTab === 2 && (
-                    <Box>
-                        {previousEvents &&
-                            previousEvents.map((eventData) => {
-                                console.log(eventData);
-                                return (
-                                    <LongEventCard
-                                        data={eventData}
-                                        event_id={eventData.event_id}
-                                    />
-                                );
-                            })}
-                    </Box>
-                )}
+                {displayedEvents.map((eventData) => (
+                    <LongEventCard
+                        key={eventData.event_id}
+                        data={eventData}
+                        event_id={eventData.event_id}
+                    />
+                ))}
             </Box>
         </div>
     );

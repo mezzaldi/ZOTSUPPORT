@@ -32,7 +32,7 @@ import UserSetting from "./routes/usersettings/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/program/EditProgramForm";
-import EventHomePage from "./routes/event/EventHomePage";
+
 
 import EditEventForm  from "./routes/EditEventForm";
 
