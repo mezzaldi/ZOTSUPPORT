@@ -95,7 +95,7 @@ const EventHomePage = () => {
                                 </Button>
 
                                 {userData.role === "superadmin" && (
-                                    <Button variant="contained">Edit</Button>
+                                    <Button variant="contained" onClick={() => navigate(`/EditEventForm/${event_id}`, { state: { event } })}>Edit</Button>
                                 )}
 
                                 {userData.role === "student" &&

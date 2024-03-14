@@ -15,6 +15,7 @@ import ProgramDashboardPage from "./routes/dashboard/ProgramDashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
+import SearchResultsPage from "./routes/discover/SearchResultsPage";
 import EventHomePage from "./routes/event/EventHomePage";
 
 // global stylesheet
@@ -31,10 +32,15 @@ import UserSetting from "./routes/usersettings/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/program/EditProgramForm";
+import EventHomePage from "./routes/event/EventHomePage";
+
+import EditEventForm  from "./routes/EditEventForm";
 
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import UserImg from "./UserImg.jpeg";
+
 
 const primaryTextColor = "#242424";
 
@@ -113,6 +119,7 @@ const App = () => {
         lastname: "Anteater",
         program_id: 1,
         ucinetid: 5,
+        profileimage: UserImg,
     };
 
     return (
@@ -184,9 +191,26 @@ const App = () => {
                                 path="/ProgramSelectDashboard"
                                 element={<ProgramSelectDashboard />}
                             />
+                           <Route 
+                                path="/EditProgramForm/:program_id" 
+                                element={<EditProgramForm />} 
+                            />
+
                             <Route
-                                path="/EditProgramForm"
-                                element={<EditProgramForm />}
+                                path="/ProgramHomePage"
+                                element={<ProgramHomePage />}
+                            />
+                             <Route
+                                path="/EditEventForm"
+                                element={<EditEventForm />}
+                            />
+                            <Route 
+                                path="/EditEventForm/:event_id" 
+                                element={<EditEventForm />} 
+                            />
+                            <Route 
+                                path="/search-results" 
+                                element={<SearchResultsPage />} 
                             />
                         </Routes>
                     </Router>
