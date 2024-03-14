@@ -15,7 +15,7 @@ const ProgramCard = (props) => {
         <Card
             sx={{ width: "17rem", cursor: "pointer", marginRight: "3rem" }}
             onClick={() => {
-                if (props.linkType == "dashboard") {
+                if (props.linkType === "dashboard") {
                     navigate(`/ProgramDashboardPage/:${props.program_id}`);
                 } else {
                     navigate(`/ProgramHomePage/:${props.program_id}`);

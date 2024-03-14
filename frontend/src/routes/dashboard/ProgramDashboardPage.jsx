@@ -8,8 +8,6 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 
-import NotificationTable from "../../components/NotificationTable";
-import CardCarousel from "../../components/CardCarousel";
 import EventBar from "../../components/EventBar";
 import AdminTable from "../../components/AdminTable";
 import SendIcon from "@mui/icons-material/Send";
@@ -20,6 +18,7 @@ import { useState } from "react";
 import AddAdminModal from "../../components/AddAdminModal";
 import RemoveAdminModal from "../../components/RemoveAdminModal";
 import { useParams } from "react-router-dom";
+import Grid from "@mui/material/Grid";
 
 const ProgramDashboardPage = () => {
     let { program_id } = useParams();
@@ -36,7 +35,7 @@ const ProgramDashboardPage = () => {
             console.log("PROGRAM: ", res.data);
         };
         getProgram();
-    }, [userData]);
+    }, [program_id]);
 
     // Get the program's administrators
     const [admins, setAdmins] = useState();
@@ -73,69 +72,70 @@ const ProgramDashboardPage = () => {
         <div className="pageContent">
             {program && (
                 <div>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            paddingTop: "1rem",
-                            paddingBottom: "1rem",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <Typography variant="h1">
-                            {program.name} Dashboard
-                        </Typography>
+                    <div className="pageRow">
+                        <Grid container spacing={1}>
+                            {/* PROGRAM NAME */}
+                            <Grid item xs={12} md={6}>
+                                <Typography variant="h1">
+                                    {program.name} Dashboard
+                                </Typography>
+                            </Grid>
+                            {/* BUTTONS */}
+                            <Grid item xs={12} md={6}>
+                                <Link to={`/ProgramEvents/:${program_id}`}>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{ marginRight: "10px" }}
+                                    >
+                                        Program events
+                                    </Button>
+                                </Link>
+                                <Link to={`/ProgramHomePage/:${program_id}`}>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{ marginRight: "10px" }}
+                                    >
+                                        Program home
+                                    </Button>
+                                </Link>
+                                <Link to="/CreateNewNotification">
+                                    <Button
+                                        href="/CreateNewNotification"
+                                        startIcon={<SendIcon />}
+                                        variant="outlined"
+                                        sx={{ marginRight: "10px" }}
+                                    >
+                                        Send new notification
+                                    </Button>
+                                </Link>
+                            </Grid>
+                        </Grid>
+                    </div>
 
-                        <div>
-                            <Link to={`/ProgramEvents/:${program_id}`}>
-                                <Button
-                                    variant="outlined"
-                                    sx={{ marginRight: "10px" }}
-                                >
-                                    Program events
-                                </Button>
-                            </Link>
-                            <Link to={`/ProgramHomePage/:${program_id}`}>
-                                <Button
-                                    variant="outlined"
-                                    sx={{ marginRight: "10px" }}
-                                >
-                                    Program home
-                                </Button>
-                            </Link>
-
-                            <Link to="/CreateNewNotification">
-                                <Button
-                                    href="/CreateNewNotification"
-                                    startIcon={<SendIcon />}
-                                    variant="outlined"
-                                    sx={{ marginRight: "10px" }}
-                                >
-                                    Send new notification
-                                </Button>
-                            </Link>
-                        </div>
-                    </Box>
-
-                    <div className="eventBarsAndCalendar">
-                        <div>
-                            <div className="h2Container">
+                    <div className="pageRow">
+                        <Grid container spacing={1}>
+                            {/* HEADER */}
+                            <Grid item xs={12}>
                                 <Typography variant="h2">
                                     Your upcoming events
                                 </Typography>
-                            </div>
-                            <div>
+                            </Grid>
+                            {/* EVENT BARS */}
+                            <Grid item xs={12} md={6}>
                                 {upcomingEvents &&
                                     upcomingEvents.map((eventData) => {
                                         return <EventBar data={eventData} />;
                                     })}
-                            </div>
-                        </div>
-
-                        {/* calendar widget */}
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DateCalendar />
-                        </LocalizationProvider>
+                            </Grid>
+                            {/* CALENDAR */}
+                            <Grid item xs={12} md={6}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                >
+                                    <DateCalendar />
+                                </LocalizationProvider>
+                            </Grid>
+                        </Grid>
                     </div>
 
                     {/* Program admin table only shownt to admin or superadmin */}
@@ -162,8 +162,6 @@ const ProgramDashboardPage = () => {
                             <RemoveAdminModal />
                         </div>
                     )}
-
-                    <div></div>
                 </div>
             )}
         </div>

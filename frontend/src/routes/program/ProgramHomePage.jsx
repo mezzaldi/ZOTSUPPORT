@@ -17,13 +17,10 @@ const ProgramHomePage = () => {
 
     useEffect(() => {
         const getProgram = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/programs/${program_id}`);
-                setProgram(res.data);
-                console.log(res.data);
-            } catch (err) {
-                console.log(err);
-            }
+            const res = await axios
+                .get(`http://localhost:3001/programs/:${program_id}`)
+                .catch((err) => console.log(err));
+            setProgram(res.data);
         };
         getProgram();
     }, [userData]);
@@ -78,6 +75,10 @@ const ProgramHomePage = () => {
                         {userData.role === "student" && (
                             <Button variant="contained">Follow</Button>
                         )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Follow</Button>
+                        )}
                     </Box>
                     <Typography variant="body1">
                         {program.description}
@@ -87,7 +88,7 @@ const ProgramHomePage = () => {
                         direction="row"
                         spacing={1}
                         sx={{ marginTop: "1rem" }}
-                    />
+                    >
                 
                         {program.tags && (
                             program.tags.map(tag => 
@@ -95,24 +96,6 @@ const ProgramHomePage = () => {
                                 sx={{ backgroundColor: tag.tag_color, color: "white" }} />
                             )
                         )}
-                    <Stack direction="row" spacing={1} sx={{ marginTop: "1rem" }}>
-                        {/* Later load in these tags from the database!! */}
-                        <Chip
-                            label="Undergrad"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
-                        <Chip
-                            label="Math"
-                            sx={{ backgroundColor: "purple", color: "white" }}
-                        />
-                        <Chip
-                            label="Biology"
-                            sx={{ backgroundColor: "orange", color: "white" }}
-                        />
-                        <Chip
-                            label="Walk-in"
-                            sx={{ backgroundColor: "red", color: "white" }}
-                        />
                     </Stack>
                     <Typography variant="h2" sx={{ marginTop: "3rem", marginBottom: "2rem" }}>
                         Upcoming events

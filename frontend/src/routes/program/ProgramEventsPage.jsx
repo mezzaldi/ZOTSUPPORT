@@ -3,9 +3,9 @@ import Typography from "@mui/material/Typography";
 import LongEventCard from "../../components/LongEventCard";
 import { Box, Button, IconButton, InputBase, Paper, Tab, Tabs } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import UserContext from "../../user/UserContext";
+
 import { useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 
@@ -18,7 +18,9 @@ const ProgramEventsPage = () => {
     useEffect(() => {
         const getPreviousEvents = async () => {
             const res = await axios
-                .get(`http://localhost:3001/programs/:${userData.program_id}/events/past`)
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/past`
+                )
                 .catch((err) => console.log(err));
             setPreviousEvents(res.data);
         };
@@ -29,7 +31,9 @@ const ProgramEventsPage = () => {
     useEffect(() => {
         const getUpcomingEvents = async () => {
             const res = await axios
-                .get(`http://localhost:3001/programs/:${userData.program_id}/events/upcoming`)
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
+                )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
         };

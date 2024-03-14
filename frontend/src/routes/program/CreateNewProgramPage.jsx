@@ -1,5 +1,5 @@
 import React from "react";
-import Program from "../../CreateProgram";
+import Program from "./CreateProgram";
 import { Typography } from "@mui/material";
 
 const CreateNewProgramPage = () => {

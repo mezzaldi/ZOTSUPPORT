@@ -6,8 +6,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
-const EditEventForm = ({ existingEventData }) => {
+const EditEventForm = () => {
+  const location = useLocation();
+  const existingEventData = location.state?.event;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     eventName: '',

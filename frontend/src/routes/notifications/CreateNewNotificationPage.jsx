@@ -1,5 +1,5 @@
 import React from "react";
-import Notification from "../../CreateNotification";
+import Notification from "./CreateNotification";
 import { Typography } from "@mui/material";
 
 const CreateNewNotificationPage = () => {

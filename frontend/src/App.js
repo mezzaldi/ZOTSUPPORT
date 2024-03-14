@@ -5,9 +5,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import CreateNewProgramPage from "./routes/program/CreateNewProgramPage";
 import CreateNewEventPage from "./routes/event/CreateNewEventPage";
 import CreateNewNotificationPage from "./routes/notifications/CreateNewNotificationPage";
-import LandingPage from "./routes/LandingPage";
+import LandingPage from "./routes/landing/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
-import SignInPage from "./routes/SignInPage";
+import SignInPage from "./routes/sign in/SignInPage";
 import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
 import UserDashboardPage from "./routes/dashboard/UserDashboardPage";
@@ -15,9 +15,9 @@ import ProgramDashboardPage from "./routes/dashboard/ProgramDashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
+import SearchResultsPage from "./routes/discover/SearchResultsPage";
 import EventHomePage from "./routes/event/EventHomePage";
 
-import SearchResultsPage from "./routes/discover/SearchResultsPage";
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -28,16 +28,18 @@ import {
     ThemeProvider,
     responsiveFontSizes,
 } from "@mui/material/styles";
-import UserSetting from "./routes/UserSetting";
+import UserSetting from "./routes/usersettings/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
-import EditProgramForm from "./routes/EditProgramForm";
+import EditProgramForm from "./routes/program/EditProgramForm";
+import EventHomePage from "./routes/event/EventHomePage";
 
 import EditEventForm  from "./routes/EditEventForm";
 
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import UserImg from "./UserImg.jpeg";
 
 
 const primaryTextColor = "#242424";
@@ -96,19 +98,19 @@ const App = () => {
     const ucinetid = "5";
 
     // load in the user's data from the database based on UCINetID
-    const [userData2, setUserData] = useState();
-    useEffect(() => {
-        const getUserData = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/userData/:${ucinetid}`);
-                const userobject = res.data[0]; // This line is likely causing the error
-                setUserData(res.data);
-            } catch (err) {
-                console.log('Error fetching user data:', err);
-            }
-        };
-        getUserData();
-    }, [ucinetid]);
+    // const [userData2, setUserData] = useState();
+    // useEffect(() => {
+    //     const getUserData = async () => {
+    //         const res = await axios
+    //             .get(`http://localhost:3001/userData/:${ucinetid}`)
+    //             .catch((err) => console.log(err));
+
+    //         const userobject = res.data[0];
+
+    //         setUserData(res.data);
+    //     };
+    //     getUserData();
+    // }, [ucinetid]);
 
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {
@@ -117,6 +119,7 @@ const App = () => {
         lastname: "Anteater",
         program_id: 1,
         ucinetid: 5,
+        profileimage: UserImg,
     };
 
     return (
@@ -203,6 +206,10 @@ const App = () => {
                              <Route
                                 path="/EditEventForm"
                                 element={<EditEventForm />}
+                            />
+                            <Route 
+                                path="/EditEventForm/:event_id" 
+                                element={<EditEventForm />} 
                             />
                             <Route 
                                 path="/search-results" 
