@@ -522,7 +522,7 @@ app.post('/events', async (req, res) => {
         description,
         headerImage,
         tags,
-        program_id,
+        program,
     } = req.body;
 
     try {
@@ -548,7 +548,7 @@ app.post('/events', async (req, res) => {
                 formattedDate, // Use formatted date value
                 recurring,
                 formattedRecurringEndDate, // Use formatted recurringEndDate value
-                program_id,
+                program,
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
