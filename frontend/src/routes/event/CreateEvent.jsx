@@ -118,7 +118,7 @@ const Event = () => {
         tagData.tags.push({ value: "20", label: "Event" }); //Event tag added automatically here.
         //iterate through chosen tags and store just the value
         const finalEventTags = [];
-        tagData.tags.forEach((tag) => finalEventTags.push(tag.label));
+        tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
         formData.tags = finalEventTags;
         formData.admins = adminData.admins;
 
@@ -148,14 +148,14 @@ const Event = () => {
 
         //back-end to front-end connection here, in progress
 
-        /* try {
-      const response = await axios.post('http://localhost:3001/programs', formData);
+        try {
+      const response = await axios.post('http://localhost:3001/events', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
-    }*/
+    }
     };
 
     const recurringOptions = [
