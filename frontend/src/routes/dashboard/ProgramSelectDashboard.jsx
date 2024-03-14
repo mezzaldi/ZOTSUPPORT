@@ -41,7 +41,7 @@ const ProgramSelectDashboard = () => {
             </Typography>
             {programs && (
                 <div>
-                    <Grid container>
+                    <Grid container columnSpacing={5} rowSpacing={5}>
                         {programs.map((program, index) => {
                             return (
                                 <Grid item key={index}>
@@ -53,7 +53,7 @@ const ProgramSelectDashboard = () => {
                                 </Grid>
                             );
                         })}
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <Grid item>
                             <Card>
                                 <CardActionArea
                                     onClick={() =>
@@ -65,6 +65,7 @@ const ProgramSelectDashboard = () => {
                                         flexDirection: "column",
                                         justifyContent: "center",
                                         alignItems: "center",
+                                        width: "17rem",
                                     }}
                                 >
                                     <CardContent>

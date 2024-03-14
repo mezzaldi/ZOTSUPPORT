@@ -24,7 +24,7 @@ const ProgramCard = (props) => {
         >
             {/* The program header image */}
             <CardMedia
-                sx={{ height: 140 }}
+                sx={{ height: "9rem" }}
                 image="/images/placeholder.jpg"
                 title="program header image"
             />

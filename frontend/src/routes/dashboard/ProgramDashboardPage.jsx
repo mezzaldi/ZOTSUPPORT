@@ -89,7 +89,6 @@ const ProgramDashboardPage = () => {
                                     },
                                     flexWrap: "nowrap",
                                     overflowX: "auto",
-                                    justifyContent: "flex-end",
                                 }}
                             >
                                 {/* inner container than contains the program home, events, and notifcation buttons */}
