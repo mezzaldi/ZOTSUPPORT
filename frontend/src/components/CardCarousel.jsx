@@ -12,20 +12,20 @@ import "react-multi-carousel/lib/styles.css";
 
 const responsive = {
     superLargeDesktop: {
-        breakpoint: { max: 4000, min: 1500 },
-        items: 5,
-    },
-    desktop: {
-        breakpoint: { max: 1500, min: 1024 },
+        breakpoint: { max: 4000, min: 1400 },
         items: 4,
     },
-    tablet: {
-        breakpoint: { max: 1024, min: 464 },
+    desktop: {
+        breakpoint: { max: 1400, min: 950 },
         items: 3,
     },
-    mobile: {
-        breakpoint: { max: 464, min: 0 },
+    tablet: {
+        breakpoint: { max: 950, min: 660 },
         items: 2,
+    },
+    mobile: {
+        breakpoint: { max: 660, min: 0 },
+        items: 1,
     },
 };
 
@@ -76,8 +76,10 @@ const CardCarousel = (props) => {
             <Carousel
                 responsive={responsive}
                 showDots={true}
-                removeArrowOnDeviceType={["tablet", "mobile"]}
+                infinite={true}
+                // removeArrowOnDeviceType={["tablet", "mobile"]}
                 className="card-carousel"
+                itemClass="carousel-item"
             >
                 {cards}
             </Carousel>

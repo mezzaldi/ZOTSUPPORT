@@ -6,6 +6,7 @@ import CardCarousel from "../../components/CardCarousel";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import Grid from "@mui/material/Grid";
 
 const DiscoverPage = () => {
     // Get upcoming events
@@ -49,24 +50,22 @@ const DiscoverPage = () => {
 
     return (
         <div class="pageContent">
+            <Typography variant="h1">Discover Events & Programs</Typography>
+
             <div className="h2Container">
                 <Typography variant="h2">Upcoming events</Typography>
                 {upcomingEvents && (
                     <CardCarousel cardType="event" data={upcomingEvents} />
                 )}
             </div>
-
             {/* <CardCarousel cardType="event" /> */}
-
             <div className="h2Container">
                 <Typography variant="h2">Popular events</Typography>
                 {popularEvents && (
                     <CardCarousel cardType="event" data={popularEvents} />
                 )}
             </div>
-
             {/* <CardCarousel cardType="event" /> */}
-
             <div className="h2Container">
                 <Typography variant="h2">
                     Popular learning support programs
@@ -75,7 +74,6 @@ const DiscoverPage = () => {
                     <CardCarousel cardType="program" data={popularPrograms} />
                 )}
             </div>
-
             {/* <CardCarousel cardType="program" /> */}
         </div>
     );

@@ -5,20 +5,17 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { Button } from "@mui/material";
-import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
-
 import EventBar from "../../components/EventBar";
 import AdminTable from "../../components/AdminTable";
 import SendIcon from "@mui/icons-material/Send";
-
+import Grid from "@mui/material/Grid";
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
 import AddAdminModal from "../../components/AddAdminModal";
 import RemoveAdminModal from "../../components/RemoveAdminModal";
 import { useParams } from "react-router-dom";
-import Grid from "@mui/material/Grid";
 
 const ProgramDashboardPage = () => {
     let { program_id } = useParams();
@@ -32,7 +29,6 @@ const ProgramDashboardPage = () => {
                 .get(`http://localhost:3001/programs/:${program_id}`)
                 .catch((err) => console.log(err));
             setProgram(res.data);
-            console.log("PROGRAM: ", res.data);
         };
         getProgram();
     }, [program_id]);
@@ -73,37 +69,76 @@ const ProgramDashboardPage = () => {
             {program && (
                 <div>
                     <div className="pageRow">
-                        <Grid container spacing={1}>
+                        <Grid container spacing={0.5}>
                             {/* PROGRAM NAME */}
-                            <Grid item xs={12} md={6}>
+                            <Grid item md={12} lg={5}>
                                 <Typography variant="h1">
                                     {program.name} Dashboard
                                 </Typography>
                             </Grid>
                             {/* BUTTONS */}
-                            <Grid item xs={12} md={6}>
-                                <Link to={`/ProgramEvents/:${program_id}`}>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ marginRight: "10px" }}
-                                    >
-                                        Program events
-                                    </Button>
-                                </Link>
+                            <Grid
+                                item
+                                md={12}
+                                lg={7}
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: {
+                                        xs: "column",
+                                        sm: "row",
+                                    },
+                                    flexWrap: "nowrap",
+                                    overflowX: "auto",
+                                    justifyContent: "flex-end",
+                                }}
+                            >
+                                {/* inner container than contains the program home, events, and notifcation buttons */}
+
                                 <Link to={`/ProgramHomePage/:${program_id}`}>
                                     <Button
                                         variant="outlined"
-                                        sx={{ marginRight: "10px" }}
+                                        sx={{
+                                            marginRight: "10px",
+                                            marginBottom: {
+                                                xs: "0.4rem",
+                                                sm: "0rem",
+                                            },
+                                            whiteSpace: "nowrap",
+                                        }}
                                     >
                                         Program home
                                     </Button>
                                 </Link>
+
+                                <Link to={`/ProgramEvents/:${program_id}`}>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{
+                                            marginRight: "10px",
+                                            marginBottom: {
+                                                xs: "0.4rem",
+                                                sm: "0rem",
+                                            },
+                                            whiteSpace: "nowrap",
+                                        }}
+                                    >
+                                        Program events
+                                    </Button>
+                                </Link>
+
                                 <Link to="/CreateNewNotification">
                                     <Button
                                         href="/CreateNewNotification"
                                         startIcon={<SendIcon />}
                                         variant="outlined"
-                                        sx={{ marginRight: "10px" }}
+                                        sx={{
+                                            marginRight: "10px",
+                                            marginBottom: {
+                                                xs: "0.4rem",
+                                                sm: "0rem",
+                                            },
+                                            whiteSpace: "nowrap",
+                                        }}
                                     >
                                         Send new notification
                                     </Button>

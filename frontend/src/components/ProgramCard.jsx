@@ -13,7 +13,7 @@ const ProgramCard = (props) => {
 
     return (
         <Card
-            sx={{ width: "17rem", cursor: "pointer", marginRight: "3rem" }}
+            sx={{ width: "17rem", cursor: "pointer" }}
             onClick={() => {
                 if (props.linkType === "dashboard") {
                     navigate(`/ProgramDashboardPage/:${props.program_id}`);
@@ -29,9 +29,9 @@ const ProgramCard = (props) => {
                 title="program header image"
             />
 
-            <CardContent className="cardText">
+            <CardContent className="cardText" sx={{ height: "2rem" }}>
                 <div className="cardText">
-                    <Typography variant="h3">{props.title}</Typography>
+                    <Typography variant="body1">{props.title}</Typography>
                 </div>
             </CardContent>
 
