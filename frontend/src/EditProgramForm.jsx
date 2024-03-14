@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Button, Grid } from '@mui/material';
 import Select from 'react-select';
 import axios from 'axios';
 
-const ProgramForm = () => {
+const EditProgramForm = ({ programId }) => {
   const programColors = [
     { value: '#C41E3A', label: "Red" },
     { value: '#11007B', label: "Blue" }
@@ -20,8 +20,35 @@ const ProgramForm = () => {
   });
 
   const [colorData, setColorData] = useState({
-    color: programColors[1]
+    color: programColors[0] // Default color
   });
+
+  useEffect(() => {
+    const fetchProgram = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/programs/${programId}`);
+        const programData = response.data;
+
+        setFormData({
+          programName: programData.name,
+          headerImage: programData.headerImage,
+          description: programData.description
+        });
+
+        setColorData({ color: programColors.find(color => color.value === programData.color) });
+        setTagData({
+          tags: programData.tags.map(tag => ({
+            value: tag,
+            label: allTags.find(category => category.options.some(option => option.value === tag)).options.find(option => option.value === tag).label
+          }))
+        });
+      } catch (error) {
+        console.error('Error fetching program:', error);
+      }
+    };
+
+    fetchProgram();
+  }, [programId]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,7 +59,7 @@ const ProgramForm = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData({ ...formData, headerImage: reader.result });
-      e.target.value = ''; // Clear the input field after uploading
+      e.target.value = '';
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -50,7 +77,7 @@ const ProgramForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const postData = {
+    const putData = {
       name: formData.programName,
       description: formData.description,
       headerImage: formData.headerImage,
@@ -59,12 +86,19 @@ const ProgramForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3001/programs', postData);
-      console.log('Program created successfully:', response.data);
-      // You can handle the success response accordingly
+      const response = await axios.put(`http://localhost:3001/programs/${programId}`, putData);
+      console.log('Program updated successfully:', response.data);
     } catch (error) {
-      console.error('Error creating program:', error);
-      // Handle the error appropriately
+      console.error('Error updating program:', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/programs/${programId}`);
+      console.log('Program deleted successfully');
+    } catch (error) {
+      console.error('Error deleting program:', error);
     }
   };
 
@@ -101,30 +135,23 @@ const ProgramForm = () => {
   return (
     <div className='h2Container'>
       <form onSubmit={handleSubmit}>
-
         <Grid container align-items='center' paddingBottom='3rem' columnSpacing={2} rowSpacing={6}>
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Program Name:
-          </Typography>
+            <Typography variant="h2">Program Name:</Typography>
           </Grid>
           <Grid item xs={9}>
             <TextField required fullWidth label="Name" type="text" name="programName" value={formData.programName} onChange={handleInputChange} />
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Description:
-          </Typography>
+            <Typography variant="h2">Description:</Typography>
           </Grid>
           <Grid item xs={9}>
             <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange} />
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Header Image:
-          </Typography>
+            <Typography variant="h2">Header Image:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Button variant="outlined" component='label'>
@@ -135,18 +162,14 @@ const ProgramForm = () => {
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Color:
-          </Typography>
+            <Typography variant="h2">Color:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
           </Grid>
 
           <Grid item xs={3}>
-            <Typography variant="h2">
-              Tags:
-          </Typography>
+            <Typography variant="h2">Tags:</Typography>
           </Grid>
           <Grid item xs={9}>
             <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
@@ -154,9 +177,12 @@ const ProgramForm = () => {
 
         </Grid>
 
-        <Grid container justifyContent="center">
+        <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button variant="contained" type="submit">Publish new program page</Button>
+            <Button variant="contained" type="submit">Update program</Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="error" onClick={handleDelete}>Delete program</Button>
           </Grid>
         </Grid>
 
@@ -165,4 +191,4 @@ const ProgramForm = () => {
   );
 };
 
-export default ProgramForm;
+export default EditProgramForm;

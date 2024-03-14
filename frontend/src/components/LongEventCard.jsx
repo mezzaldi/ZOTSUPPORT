@@ -5,6 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import { useNavigate } from "react-router-dom";
 
 //function makeDate(dateString) {
 //    const date = new Date(dateString);
@@ -13,6 +14,7 @@ import Stack from "@mui/material/Stack";
 
 const LongEventCard = (props) => {
     const data = props.data;
+    const navigate = useNavigate();
 
     let date = new Date(data.date).toLocaleDateString("en-US");
 
@@ -51,7 +53,9 @@ const LongEventCard = (props) => {
                     width: "100%",
                     borderTop: "2rem solid green",
                     marginBottom: "1.5rem",
+                    cursor: "pointer",
                 }}
+                onClick={() => navigate(`/EventHomePage/:${props.event_id}`)}
             >
                 <CardContent>
                     <div className="cardText">

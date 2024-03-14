@@ -2,19 +2,22 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // pages
-import CreateNewProgramPage from "./routes/CreateNewProgramPage";
-import CreateNewEventPage from "./routes/CreateNewEventPage";
-import CreateNewNotificationPage from "./routes/CreateNewNotificationPage";
-import LandingPage from "./routes/LandingPage";
+import CreateNewProgramPage from "./routes/program/CreateNewProgramPage";
+import CreateNewEventPage from "./routes/event/CreateNewEventPage";
+import CreateNewNotificationPage from "./routes/notifications/CreateNewNotificationPage";
+import LandingPage from "./routes/landing/LandingPage";
 import AboutUsPage from "./routes/about/AboutUsPage";
-import SignInPage from "./routes/SignInPage";
+import SignInPage from "./routes/sign in/SignInPage";
 import NotificationsPage from "./routes/notifications/NotificationsPage";
 import DiscoverPage from "./routes/discover/DiscoverPage";
-import DashboardPage from "./routes/dashboard/DashboardPage";
+import UserDashboardPage from "./routes/dashboard/UserDashboardPage";
+import ProgramDashboardPage from "./routes/dashboard/ProgramDashboardPage";
 import Navbar from "./components/Navbar";
 import ProgramEventsPage from "./routes/program/ProgramEventsPage";
 import ProgramHomePage from "./routes/program/ProgramHomePage";
 import SearchResultsPage from "./routes/discover/SearchResultsPage";
+import EventHomePage from "./routes/event/EventHomePage";
+
 // global stylesheet
 import "./styles.scss";
 // user role
@@ -25,15 +28,15 @@ import {
     ThemeProvider,
     responsiveFontSizes,
 } from "@mui/material/styles";
-import UserSetting from "./routes/UserSetting";
+import UserSetting from "./routes/usersettings/UserSetting";
 import ViewNotification from "./routes/notifications/ViewNotification";
-import ProgramDashboard from "./routes/dashboard/ProgramDashboard";
-import EditProgramForm from "./routes/EditProgramForm";
+import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
+import EditProgramForm from "./routes/program/EditProgramForm";
 import EventHomePage from "./routes/event/EventHomePage";
 
 import EditEventForm  from "./routes/EditEventForm";
 
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
 import UserImg from "./UserImg.jpeg";
@@ -95,19 +98,19 @@ const App = () => {
     const ucinetid = "5";
 
     // load in the user's data from the database based on UCINetID
-    const [userData2, setUserData] = useState();
-    useEffect(() => {
-        const getUserData = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/userData/:${ucinetid}`);
-                const userobject = res.data[0]; // This line is likely causing the error
-                setUserData(res.data);
-            } catch (err) {
-                console.log('Error fetching user data:', err);
-            }
-        };
-        getUserData();
-    }, [ucinetid]);
+    // const [userData2, setUserData] = useState();
+    // useEffect(() => {
+    //     const getUserData = async () => {
+    //         const res = await axios
+    //             .get(`http://localhost:3001/userData/:${ucinetid}`)
+    //             .catch((err) => console.log(err));
+
+    //         const userobject = res.data[0];
+
+    //         setUserData(res.data);
+    //     };
+    //     getUserData();
+    // }, [ucinetid]);
 
     // userRole could be 'student' 'admin' or 'superadmin'
     const userData = {
@@ -127,10 +130,7 @@ const App = () => {
                         {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
                         <Navbar userData={userData} />
                         <Routes>
-                            <Route
-                                path="/"
-                                element={<LandingPage />}
-                            />
+                            <Route path="/" element={<LandingPage />} />
                             <Route path="/SignIn" element={<SignInPage />} />
                             <Route path="/About" element={<AboutUsPage />} />
                             <Route
@@ -142,8 +142,8 @@ const App = () => {
                                 element={<CreateNewEventPage />}
                             />
 
-                            <Route 
-                                path='/CreateNewNotification'
+                            <Route
+                                path="/CreateNewNotification"
                                 element={<CreateNewNotificationPage />}
                             />
 
@@ -153,32 +153,31 @@ const App = () => {
                             />
                             <Route
                                 path="/Dashboard"
-                                element={<DashboardPage />}
+                                element={<UserDashboardPage />}
                             />
                             <Route
                                 path="/Notifications"
                                 element={<NotificationsPage />}
                             />
                             <Route
-                                path="/ProgramEvents"
+                                path="/ProgramEvents/:program_id"
                                 element={<ProgramEventsPage />}
-                            />
-                            {/* GET RID OF THIS LATER SINCE ITS A BLANK TEMPLATE */}
-                            <Route
-                                path="/ProgramHomePage"
-                                element={<ProgramHomePage />}
                             />
                             <Route
                                 path="/ProgramHomePage/:program_id"
                                 element={<ProgramHomePage />}
                             />
-                             <Route
+                            <Route
                                 path="/EventHomePage"
                                 element={<EventHomePage />}
                             />
                             <Route
                                 path="/EventHomePage/:event_id"
                                 element={<EventHomePage />}
+                            />
+                            <Route
+                                path="/ProgramDashboardPage/:program_id"
+                                element={<ProgramDashboardPage />}
                             />
                             <Route
                                 path="/UserSetting"
@@ -189,8 +188,8 @@ const App = () => {
                                 element={<ViewNotification />}
                             />
                             <Route
-                                path="/ProgramDashboard"
-                                element={<ProgramDashboard />}
+                                path="/ProgramSelectDashboard"
+                                element={<ProgramSelectDashboard />}
                             />
                            <Route 
                                 path="/EditProgramForm/:program_id" 

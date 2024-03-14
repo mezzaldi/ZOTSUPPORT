@@ -1,5 +1,8 @@
 .pageContent {
-    margin: 3rem 5rem 5rem 5rem;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
 }
 
 .h1Container {
@@ -51,7 +54,6 @@
 
 .upcomingEventBar {
     background-color: #dadeff;
-    width: 40rem;
     padding: 1rem;
     border-left: 0.2rem solid #11007b;
     display: flex;
@@ -91,13 +93,21 @@
 .tagContainer {
     //padding-top: 1rem;
     //padding-bottom: 3rem;
-    font-family: "Open Sans"
+    font-family: "Open Sans";
 }
 
 .datePickerQuestion {
     display: flex;
     flex-direction: row;
-    width: 100%
-
+    width: 100%;
 }
 
+.eventTitle {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 1rem;
+}
+
+.pageRow {
+    margin-bottom: 5vh;
+}

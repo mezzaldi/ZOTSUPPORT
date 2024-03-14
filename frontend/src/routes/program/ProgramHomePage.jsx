@@ -16,16 +16,29 @@ const ProgramHomePage = () => {
 
     useEffect(() => {
         const getProgram = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/programs/${program_id}`);
-                setProgram(res.data);
-                console.log(res.data);
-            } catch (err) {
-                console.log(err);
-            }
+            const res = await axios
+                .get(`http://localhost:3001/programs/:${program_id}`)
+                .catch((err) => console.log(err));
+            setProgram(res.data);
         };
         getProgram();
-    }, [program_id]);
+    }, [userData]);
+
+    // Get upcoming events
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+            console.log(res.data)
+        };
+        getUpcomingEvents();
+    }, [userData]);
+
 
     return (
         <div className="pageContent">
@@ -48,7 +61,7 @@ const ProgramHomePage = () => {
                         }}
                     >
                         <Typography variant="h1">
-                            {program.program_name}
+                            {program.name}
                         </Typography>
                         {userData.role === "superadmin" && (
                             <Box>
@@ -57,42 +70,44 @@ const ProgramHomePage = () => {
                              </Link>
                             </Box>
                         )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Follow</Button>
+                        )}
+
+                        {userData.role === "student" && (
+                            <Button variant="contained">Follow</Button>
+                        )}
                     </Box>
                     <Typography variant="body1">
                         {program.description}
                     </Typography>
-                    <Stack direction="row" spacing={1} sx={{ marginTop: "1rem" }}>
-                        {/* Later load in these tags from the database!! */}
-                        <Chip
-                            label="Undergrad"
-                            sx={{ backgroundColor: "green", color: "white" }}
-                        />
-                        <Chip
-                            label="Math"
-                            sx={{ backgroundColor: "purple", color: "white" }}
-                        />
-                        <Chip
-                            label="Biology"
-                            sx={{ backgroundColor: "orange", color: "white" }}
-                        />
-                        <Chip
-                            label="Walk-in"
-                            sx={{ backgroundColor: "red", color: "white" }}
-                        />
+
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ marginTop: "1rem" }}
+                    >
+                
+                        {program.tags && (
+                            program.tags.map(tag => 
+                                <Chip label={tag.tag_name}
+                                sx={{ backgroundColor: tag.tag_color, color: "white" }} />
+                            )
+                        )}
                     </Stack>
                     <Typography variant="h2" sx={{ marginTop: "3rem", marginBottom: "2rem" }}>
                         Upcoming events
                     </Typography>
                     <Box>
-                        {/* <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} />
-                        <LongEventCard title={"Upcoming Event name"} /> */}
+                        {upcomingEvents && (
+                            upcomingEvents.map(event =>
+                                <LongEventCard data={event} event_id={event.event_id}/>
+                            )
+                        )}
                     </Box>
-                    {/* Other program details */}
-                    <Typography variant="h2">Other Program Details</Typography>
-                    <Typography variant="body1">Details go here...</Typography>
+            
+
                 </div>
             )}
         </div>

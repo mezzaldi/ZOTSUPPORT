@@ -4,7 +4,6 @@ import {
     Typography,
     Card,
     CardActionArea,
-    CardMedia,
     CardContent,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -13,11 +12,9 @@ import { useContext, useEffect } from "react";
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
-import CardCarousel from "../../components/CardCarousel";
 import ProgramCard from "../../components/ProgramCard";
-import NotificationTable from "../../components/NotificationTable";
 
-const ProgramDashboard = () => {
+const ProgramSelectDashboard = () => {
     const userData = useContext(UserContext);
 
     // Get the programs the user is an admin for
@@ -51,6 +48,7 @@ const ProgramDashboard = () => {
                                     <ProgramCard
                                         title={program.program_name}
                                         program_id={program.program_id}
+                                        linkType={"dashboard"}
                                     ></ProgramCard>
                                 </Grid>
                             );
@@ -87,4 +85,4 @@ const ProgramDashboard = () => {
     );
 };
 
-export default ProgramDashboard;
+export default ProgramSelectDashboard;

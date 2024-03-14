@@ -1,87 +1,161 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Box, Button, Chip, Stack, Typography } from "@mui/material";
+import React from "react";
+import Typography from "@mui/material/Typography";
+import { Box } from "@mui/material";
+import AdminTable from "../../components/AdminTable";
+
+import { Button } from "@mui/material";
+
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+
+import { useParams } from "react-router-dom";
+import { useContext, useEffect } from "react";
 import UserContext from "../../user/UserContext";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const EventHomePage = () => {
-    let { event_id } = useParams(); // Retrieve event ID from URL parameters
-    event_id = event_id.replace(":", ""); // Remove any colon prefix
-    const navigate = useNavigate(); // Initialize navigate function for redirection
+    let { event_id } = useParams();
+    event_id = event_id.replace(":", "");
+    const navigate = useNavigate();
 
-    const userData = useContext(UserContext); // Access user data from context
+    const userData = useContext(UserContext);
 
-    const [event, setEvent] = useState(null); // State for holding event data
-
-    // Effect hook to fetch event data when component mounts or event_id/userData changes
+    const [event, setEvent] = useState();
     useEffect(() => {
         const getEvent = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/events/${event_id}`);
-                setEvent(res.data); // Set fetched event data to state
-            } catch (err) {
-                console.log(err); // Log any errors
-            }
+            const res = await axios
+                .get(`http://localhost:3001/events/:${event_id}`)
+                .catch((err) => console.log(err));
+            setEvent(res.data);
         };
         getEvent();
-    }, [event_id, userData]);
+    }, [event_id]);
+
+    const [admins, setAdmins] = useState();
+    useEffect(() => {
+        const getAdmins = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/events/:${event_id}/administrators`)
+                .catch((err) => console.log(err));
+            setAdmins(res.data);
+            console.log(res.data);
+        };
+        getAdmins();
+    }, [event_id]);
+
+    console.log(event);
 
     return (
-        <div className="pageContent">
+        <div class="pageContent">
             {event && (
                 <div>
                     <img
                         src={"/images/placeholder.jpg"}
-                        alt="Event Header"
+                        alt="program header"
                         width="100%"
                         height="250px"
                         style={{ objectFit: "cover", objectPosition: "center" }}
-                    />
+                    ></img>
 
-                    <Box sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingTop: "2rem",
-                        paddingBottom: "2rem",
-                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingTop: "2rem",
+                            paddingBottom: "2rem",
+                        }}
+                    >
                         <div>
-                            <Typography variant="h1">{event.name}</Typography>
-                            <Typography variant="h3">Hosted by: {event.program_name}</Typography>
+                            <div>
+                                <Typography variant="h1">
+                                    {event.name}
+                                </Typography>
+                            </div>
+                            <div>
+                                <Typography variant="h3">
+                                    Hosted by: {event.program_name}
+                                </Typography>
+                            </div>
                         </div>
 
-                        <Box> 
+                        <Box>
                             <div className="eventTitle">
-                                <Button variant="outlined">View Program Page</Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() =>
+                                        navigate(
+                                            `/ProgramHomePage/:${event.program_id}`
+                                        )
+                                    }
+                                >
+                                    View Program Page
+                                </Button>
 
                                 {userData.role === "superadmin" && (
                                     <Button variant="contained" onClick={() => navigate(`/EditEventForm/${event_id}`, { state: { event } })}>Edit</Button>
                                 )}
 
-                                {userData.role === "student" && event.requireregistration && (
-                                     <Button variant="contained">Register</Button>
-                                )}
+                                {userData.role === "student" &&
+                                    event.requireregistration === true && (
+                                        <Button variant="contained">
+                                            Register
+                                        </Button>
+                                    )}
                             </div>
                         </Box>
                     </Box>
-                
-                    <div className="h2Container">
-                        <Typography variant="h2">Start Time: {event.starttime}</Typography>
-                    </div>
 
-                    <div className="h2Container"> 
-                        <Typography variant="h2">End Time: {event.endtime}</Typography>
+                    <div className="h2Container">
+                        <Typography variant="h2">
+                            Start Time: {event.starttime}
+                        </Typography>
                     </div>
 
                     <div className="h2Container">
-                        <Typography variant="body1">{event.description}</Typography>
-                    </div>    
+                        <Typography variant="h2">
+                            End Time: {event.endtime}
+                        </Typography>
+                    </div>
 
-                    <Stack direction="row" spacing={1} sx={{ marginTop: "1rem" }}>
-                        {event.tags && event.tags.map(tag => (
-                            <Chip key={tag.tag_name} label={tag.tag_name} sx={{ backgroundColor: tag.tag_color, color: "white" }} />
-                        ))}
+                    <div className="h2Container">
+                        <Typography variant="h2">
+                            Location: {event.location}
+                        </Typography>
+                    </div>
+
+                    <div className="h2Container">
+                        <Typography variant="body1">
+                            {event.description}
+                        </Typography>
+                    </div>
+
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ marginTop: "1rem" }}
+                    >
+                        {event.tags &&
+                            event.tags.map((tag) => (
+                                <Chip
+                                    label={tag.tag_name}
+                                    sx={{
+                                        backgroundColor: tag.tag_color,
+                                        color: "white",
+                                    }}
+                                />
+                            ))}
                     </Stack>
+
+                    <Typography variant="h2" sx={{ marginTop: "3rem" }}>
+                        Staff:
+                    </Typography>
+
+                    <div className="tableContainer">
+                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
+                    </div>
                 </div>
             )}
         </div>

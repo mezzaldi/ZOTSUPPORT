@@ -3,34 +3,42 @@ import Typography from "@mui/material/Typography";
 import LongEventCard from "../../components/LongEventCard";
 import { Box, Button, IconButton, InputBase, Paper, Tab, Tabs } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import UserContext from "../../user/UserContext";
+
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 
 const ProgramEventsPage = () => {
-    const userData = useContext(UserContext);
+    let { program_id } = useParams();
+    program_id = program_id.replace(":", "");
     const [searchTerm, setSearchTerm] = useState('');
 
     const [previousEvents, setPreviousEvents] = useState();
     useEffect(() => {
         const getPreviousEvents = async () => {
             const res = await axios
-                .get(`http://localhost:3001/programs/:${userData.program_id}/events/past`)
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/past`
+                )
                 .catch((err) => console.log(err));
             setPreviousEvents(res.data);
         };
         getPreviousEvents();
-    }, [userData.program_id]);
+    }, [program_id]);
 
     const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
         const getUpcomingEvents = async () => {
             const res = await axios
-                .get(`http://localhost:3001/programs/:${userData.program_id}/events/upcoming`)
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
+                )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
         };
         getUpcomingEvents();
-    }, [userData.program_id]);
+    }, [program_id]);
 
     const [currentTab, setCurrentTab] = useState(1);
     const handleTabChange = (event, newTab) => {
@@ -91,16 +99,30 @@ const ProgramEventsPage = () => {
             <Box>
                 {currentTab === 1 && (
                     <Box>
-                        {filterEvents(upcomingEvents).map((eventData) => (
-                            <LongEventCard key={eventData.id} data={eventData} />
-                        ))}
+                        {upcomingEvents &&
+                            upcomingEvents.map((eventData) => {
+                                console.log(eventData);
+                                return (
+                                    <LongEventCard
+                                        data={eventData}
+                                        event_id={eventData.event_id}
+                                    />
+                                );
+                            })}
                     </Box>
                 )}
                 {currentTab === 2 && (
                     <Box>
-                        {filterEvents(previousEvents).map((eventData) => (
-                            <LongEventCard key={eventData.id} data={eventData} />
-                        ))}
+                        {previousEvents &&
+                            previousEvents.map((eventData) => {
+                                console.log(eventData);
+                                return (
+                                    <LongEventCard
+                                        data={eventData}
+                                        event_id={eventData.event_id}
+                                    />
+                                );
+                            })}
                     </Box>
                 )}
             </Box>

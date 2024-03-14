@@ -4,20 +4,15 @@ import Typography from "@mui/material/Typography";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Link } from "react-router-dom";
 
 import NotificationTable from "../../components/NotificationTable";
 import CardCarousel from "../../components/CardCarousel";
 import EventBar from "../../components/EventBar";
-import AdminTable from "../../components/AdminTable";
 
 import UserContext from "../../user/UserContext";
 import axios from "axios";
 import { useState } from "react";
-import AddAdminModal from "../../components/AddAdminModal";
-import RemoveAdminModal from "../../components/RemoveAdminModal";
 
 const DashboardPage = () => {
     const userData = useContext(UserContext);
@@ -32,7 +27,6 @@ const DashboardPage = () => {
                 )
                 .catch((err) => console.log(err));
             setFollowedPrograms(res.data);
-            console.log("FOLLOWED PROGRAMS: ", res.data);
         };
         getFollowedPrograms();
     }, [userData]);
@@ -51,18 +45,19 @@ const DashboardPage = () => {
         getNotifications();
     }, [userData]);
 
-    // Get the program's administrators
-    const [admins, setAdmins] = useState();
+    // Get user's upcoming events they are registered for
+    const [upcomingEvents, setUpcomingEvents] = useState();
     useEffect(() => {
-        const getAdmins = async () => {
+        const getUpcomingEvents = async () => {
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/administrators`
+                    `http://localhost:3001/users/:${userData.ucinetid}/events/upcoming`
                 )
                 .catch((err) => console.log(err));
-            setAdmins(res.data);
+            setUpcomingEvents(res.data);
+            console.log(res.data);
         };
-        getAdmins();
+        getUpcomingEvents();
     }, [userData]);
 
     return (
@@ -79,17 +74,6 @@ const DashboardPage = () => {
                 <Typography variant="h1">
                     {userData.firstname}'s Dashboard
                 </Typography>
-
-                <div>
-                    <Link to="/ProgramEvents">
-                        <Button variant="outlined" sx={{ marginRight: "10px" }}>
-                            Program events
-                        </Button>
-                    </Link>
-                    <Link to="/ProgramHomePage">
-                        <Button variant="outlined">Program home</Button>
-                    </Link>
-                </div>
             </Box>
 
             <div className="eventBarsAndCalendar">
@@ -100,11 +84,10 @@ const DashboardPage = () => {
                         </Typography>
                     </div>
                     <div>
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
-                        <EventBar />
+                        {upcomingEvents &&
+                            upcomingEvents.map((eventData) => {
+                                return <EventBar data={eventData} />;
+                            })}
                     </div>
                 </div>
 
@@ -128,28 +111,6 @@ const DashboardPage = () => {
                     </div>
                 )}
             </div>
-
-            {/* Program admin table only shownt to admin or superadmin */}
-            {(userData.role === "admin" || userData.role === "superadmin") && (
-                <div>
-                    <div className="h2Container">
-                        <Typography variant="h2">
-                            Program administrators
-                        </Typography>
-                    </div>
-                    <div className="tableContainer">
-                        {admins && <AdminTable rowsPerPage={5} data={admins} />}
-                    </div>
-                </div>
-            )}
-
-            {/* Buttons to change admins only shown to superadmin */}
-            {userData.role === "superadmin" && (
-                <div>
-                    <AddAdminModal />
-                    <RemoveAdminModal />
-                </div>
-            )}
 
             <div>
                 <div className="h2Container">
