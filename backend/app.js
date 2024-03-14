@@ -61,18 +61,8 @@ app.get("/followedPrograms/:ucinetid", async (req, res) => {
     }
 });
 
-// POST endpoint for creating programs
 app.post("/programs", async (req, res) => {
     const { name, description, headerImage, color, tags } = req.body;
-
-    // Define a mapping for tag values to labels
-    const tagValueToLabel = {
-        1: "Undergraduate",
-        2: "Graduate",
-        3: "Art",
-        4: "Biology",
-        // Add more mappings as needed
-    };
 
     // Validate input data
     if (!name || !description) {
@@ -86,10 +76,8 @@ app.post("/programs", async (req, res) => {
             await client.query("BEGIN");
 
             // 1. Create a new program entry
-            const programInsertQuery = `
-                INSERT INTO programs (program_name, description, headerimage, color) 
-                VALUES ($1, $2, $3, $4) 
-                RETURNING program_id`;
+            const programInsertQuery =
+                "INSERT INTO programs (program_name, description, headerimage, color) VALUES ($1, $2, $3, $4) RETURNING program_id";
             const programInsertValues = [name, description, headerImage, color];
             const programInsertResult = await client.query(
                 programInsertQuery,
@@ -97,19 +85,9 @@ app.post("/programs", async (req, res) => {
             );
             const programId = programInsertResult.rows[0].program_id;
 
-            // 2. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
-            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
-
-            // 3. Add only valid tags associated with the program
-            if (parsedTags.length > 0) {
-                for (const tagName of parsedTags) {
-                    // Fetch tag_id for the current tag name
-                    const tagQuery =
-                        "SELECT tag_id FROM tags WHERE tag_name = $1";
-                    const tagResult = await client.query(tagQuery, [tagName]);
-                    const tagId = tagResult.rows[0].tag_id;
-
+            // 2. Add tags associated with the program
+            if (tags && Array.isArray(tags) && tags.length > 0) {
+                for (const tagId of tags) { // Assuming tags contain tag IDs
                     // Insert into program_tags
                     const programTagInsertQuery =
                         "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)";
@@ -127,16 +105,18 @@ app.post("/programs", async (req, res) => {
         } catch (error) {
             // Rollback transaction if any error occurs
             await client.query("ROLLBACK");
-            throw error;
+            console.error("Error creating program:", error);
+            res.status(500).json({ error: "Internal server error" });
         } finally {
             // Release the client back to the pool
             client.release();
         }
     } catch (error) {
-        console.error("Error creating program:", error);
+        console.error("Error connecting to database:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
 
 // edit/ PUT endpoint for updating programs
 // PUT endpoint for updating programs
