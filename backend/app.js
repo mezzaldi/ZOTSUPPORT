@@ -522,6 +522,8 @@ app.post('/events', async (req, res) => {
         description,
         headerImage,
         tags,
+        requireRegistration,
+        receiveRegistrationNotification,
         program,
     } = req.body;
 
@@ -537,8 +539,8 @@ app.post('/events', async (req, res) => {
 
             // Insert into events table
             const eventInsertQuery = `
-                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id, requireRegistration, receiveRegistreeNotifications)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 RETURNING event_id`;
             const eventInsertValues = [
                 eventName,
@@ -549,6 +551,8 @@ app.post('/events', async (req, res) => {
                 recurring,
                 formattedRecurringEndDate, // Use formatted recurringEndDate value
                 program,
+                requireRegistration,
+                receiveRegistrationNotification,
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
