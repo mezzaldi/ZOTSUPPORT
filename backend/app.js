@@ -515,7 +515,8 @@ app.post('/events', async (req, res) => {
     const {
         eventName,
         location,
-        date,
+        startDate,
+        endDate,
         recurring,
         recurringEndDate,
         admins,
@@ -534,13 +535,14 @@ app.post('/events', async (req, res) => {
             await client.query("BEGIN");
 
             // Format date strings using Moment.js
-            const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            const formattedDate = moment(startDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndDate = moment(endDate).format('YYYY-MM-DD HH:mm:ss');
             const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
             // Insert into events table
             const eventInsertQuery = `
-                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id, requireRegistration, receiveRegistreeNotifications)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id, requireRegistration, receiveRegistreeNotifications, enddate)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING event_id`;
             const eventInsertValues = [
                 eventName,
@@ -553,6 +555,7 @@ app.post('/events', async (req, res) => {
                 program,
                 requireRegistration,
                 receiveRegistrationNotification,
+                formattedEndDate
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,

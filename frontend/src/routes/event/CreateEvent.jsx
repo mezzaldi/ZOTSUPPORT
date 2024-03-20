@@ -143,7 +143,7 @@ const Event = () => {
             formData.recurringEndDate = recurringEndData.recurringEndDate;
         }
 
-        formData.recurring = recurringData.recurring;
+        formData.recurring = recurringData.recurring.value;
 
         formData.requireRegistration = checkboxData.requireRegistration[0];
         formData.receiveRegistrationNotification =
