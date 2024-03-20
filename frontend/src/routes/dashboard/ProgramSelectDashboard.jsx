@@ -57,7 +57,7 @@ const ProgramSelectDashboard = () => {
                             <Card>
                                 <CardActionArea
                                     onClick={() =>
-                                        navigate("/CreateNewProgramPage")
+                                        navigate("/createnewprogram")
                                     }
                                     style={{
                                         height: "100%",
