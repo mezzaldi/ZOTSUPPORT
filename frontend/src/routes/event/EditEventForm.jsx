@@ -22,15 +22,31 @@ const EditEventForm = () => {
         const fetchEventDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:3001/events/${event_id}`);
-                const { program_id } = response.data;
-                setProgramId(program_id);  // Assuming the response includes program_id
+                const { program_id, name, location, description } = response.data;
+    
+                //console.log("Fetched Event Details:", {program_id, name, location, description}); // Debug log
+    
+                setProgramId(program_id);
+    
+                setFormData(prevFormData => {
+                   // console.log("Previous FormData:", prevFormData); // Debug log
+                    return {
+                        ...prevFormData,
+                        eventName: name,  
+                        location: location,  
+                        description: description,  
+                    };
+                });
+    
             } catch (error) {
                 console.error('Error fetching event details:', error);
             }
         };
-
+    
         fetchEventDetails();
     }, [event_id]);
+    
+    
 
     const [formData, setFormData] = useState({
         eventName: "",
@@ -85,6 +101,17 @@ const EditEventForm = () => {
     } else {
         isRecurring = false;
     }
+
+    const handleCancelEvent = async () => {
+        try {
+            // Make a DELETE request to cancel the event
+            const response = await axios.delete(`http://localhost:3001/events/${event_id}`);
+            console.log('Event canceled successfully:', response.data);
+        } catch (error) {
+            console.error('Error canceling event:', error);
+        }
+    };
+    
 
     //This will update the input of program name, admin email, header image, description,
     //registration requirement, and registration notifications on change
@@ -290,7 +317,12 @@ const EditEventForm = () => {
     }
 
     return (
-        <div className="h2Container">
+        <div className="pageContent">
+            
+            <div className="h1Container">
+                <Typography variant="h1">Edit Event</Typography>
+            </div>
+
             <form onSubmit={handleSubmit}>
                 <Grid
                     container
@@ -309,7 +341,7 @@ const EditEventForm = () => {
                             label="Name"
                             type="text"
                             name="eventName"
-                            value={formData.eventmName}
+                            value={formData.eventName}
                             onChange={handleInputChange}
                         />
                     </Grid>
@@ -466,12 +498,17 @@ const EditEventForm = () => {
                     </Grid>
                 </Grid>
 
-                <Grid container justifyContent="center">
+                <Grid container justifyContent="center" spacing={2}>
                     <Grid item>
                         <Button variant="contained" type="submit">
-                            Publish new program page
-                        </Button>
+                            Update Event
+                         </Button>
                     </Grid>
+                    <Grid item>
+                        <Button variant="outlined" color="error" onClick={handleCancelEvent}>
+                            Cancel Event
+                         </Button>
+                     </Grid>
                 </Grid>
             </form>
         </div>
