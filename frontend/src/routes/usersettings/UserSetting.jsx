@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import '../../styles.scss'; 
 import { Typography, Button } from "@mui/material";
+import '../../styles.scss'; 
 
 const UserSetting = () => {
   const [userProfilePicture, setUserProfilePicture] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTCB0N0eL8VRom9g4DXmnQZBe_jFmtufHDiw&usqp=CAU');
@@ -17,56 +17,63 @@ const UserSetting = () => {
     fileInputRef.current.click();
   };
 
+  const handleLogout = () => {
+    window.location.href = "/LandingPage"; 
+  };
+
   const [upcomingEvents, setUpcomingEvents] = useState(true);
   const [weeklySummary, setWeeklySummary] = useState(true);
   const [forwardEmail, setForwardEmail] = useState(true);
   const [newMessages, setNewMessages] = useState(true);
   const [newEvents, setNewEvents] = useState(true);
+  const [getEmailUpdates, setGetEmailUpdates] = useState(false); // State for email updates checkbox
 
   const [darkMode, setDarkMode] = useState(false);
   const [colorBlindMode, setColorBlindMode] = useState(false);
   const [highContrastMode, setHighContrastMode] = useState(false);
 
-  const handleLogout = () => {
-    window.location.href = "/LandingPage"; 
-  };
-
   return (
     <div className="pageContent">
       <div className="h1Container">
-        <Typography variant="h4">Settings</Typography>
-      </div>
-
-      <div className="cardContainer settings-profile">
-        <div className="card">
-          <img src={userProfilePicture} alt="Profile" className="profileImg" />
-          <input
-            ref={fileInputRef}
-            type="file"
-            hidden
-            onChange={handleProfilePictureChange}
-          />
-          <Typography
-            variant="body1"
-            component="span"
-            onClick={handleClickChangePhoto}
-            className="cardText"
-            style={{ cursor: 'pointer', textDecoration: 'underline', color: '#0E1C4C', marginLeft: '20px' }}
-          >
-            Change profile photo
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h1">
+            Settings
           </Typography>
-        </div>
-        <div className="settings-info">
-          <Typography variant="body1">
-            Logged in as Peter Anteater
-          </Typography>
-          <Button variant="contained" color="primary" onClick={handleLogout}>
+          <Button variant="contained" color="primary" onClick={handleLogout} style={{ marginLeft: 'auto', marginRight: '20px' }}>
             Log Out
           </Button>
         </div>
       </div>
 
-      <div className="tableContainer settings-notifications">
+      <hr />
+      <br />
+      
+      <div className="settings-profile">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src={userProfilePicture} alt="Profile" className="profileImg" style={{ width: '150px', height: '150px' }}/>
+          <Typography variant="body1" style={{ marginLeft: '20px' }}>
+            Logged in as Peter Anteater
+          </Typography>
+        </div>
+        <Typography
+          variant="body1"
+          component="span"
+          onClick={handleClickChangePhoto}
+          style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue', marginLeft: '20px' }}
+        >
+          Change profile photo
+        </Typography>
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          onChange={handleProfilePictureChange}
+        />
+      </div>
+      
+      <hr />
+
+      <div className="settings-notifications">
         <div className="h2Container">
           <Typography variant="h5">Notifications</Typography>
         </div>
@@ -95,17 +102,21 @@ const UserSetting = () => {
             <input type="checkbox" checked={newEvents} onChange={() => setNewEvents(!newEvents)} /> New events posted by learning programs I follow
           </Typography>
         </div>
-        <Button variant="contained" color="primary" className="upcomingEventBar">
-          Get Email Updates
-        </Button>
+        <div className="checkboxContainer">
+          <Typography component="label">
+            <input type="checkbox" checked={getEmailUpdates} onChange={() => setGetEmailUpdates(!getEmailUpdates)} /> Get Email Updates
+          </Typography>
+        </div>
       </div>
+
+      <hr />
 
       <div className="settings-accessibility">
         <div className="h2Container">
           <Typography variant="h5">Accessibility</Typography>
         </div>
         <div className="checkboxContainer">
-        <Typography component="label">
+          <Typography component="label">
             <input type="checkbox" checked={darkMode} onChange={() => setDarkMode(!darkMode)} /> Dark mode
           </Typography>
         </div>
@@ -121,14 +132,11 @@ const UserSetting = () => {
         </div>
       </div>
 
-      <div className="formQuestion">
-        <Button variant="contained" color="primary" className="btn-save-changes">
-          Save Changes
-        </Button>
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <Button variant="contained" color="primary" className="btn-save-changes">Save Changes</Button>
       </div>
     </div>
   );
 }
-export default UserSetting;
 
-         
+export default UserSetting;
