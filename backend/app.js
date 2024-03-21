@@ -960,25 +960,26 @@ app.get("/search", async (req, res) => {
 });
 
 // Assuming you have an endpoint for adding a student to an event's list of registrees
-app.post("/events/register", async (req, res) => {
-    const { eventId, ucinetid } = req.body;
+app.post("/events/:eventId/register/:ucinetid", async (req, res) => {
+    const eventId = req.params.eventId.replace(":", "");
+    const ucinetid = req.params.ucinetid.replace(":", "");
 
     try {
-        // Verify that the student exists in the users table
-        const studentExistsQuery = "SELECT * FROM users WHERE ucinetid = $1";
-        const studentExistsResult = await pool.query(studentExistsQuery, [
-            ucinetid,
-        ]);
-        if (studentExistsResult.rows.length === 0) {
-            return res.status(404).json({ error: "Student not found" });
-        }
+        // // Verify that the student exists in the users table
+        // const studentExistsQuery = "SELECT * FROM users WHERE ucinetid = $1";
+        // const studentExistsResult = await pool.query(studentExistsQuery, [
+        //     ucinetid,
+        // ]);
+        // if (studentExistsResult.rows.length === 0) {
+        //     return res.status(404).json({ error: "Student not found" });
+        // }
 
-        // Verify that the event exists in the events table
-        const eventExistsQuery = "SELECT * FROM events WHERE event_id = $1";
-        const eventExistsResult = await pool.query(eventExistsQuery, [eventId]);
-        if (eventExistsResult.rows.length === 0) {
-            return res.status(404).json({ error: "Event not found" });
-        }
+        // // Verify that the event exists in the events table
+        // const eventExistsQuery = "SELECT * FROM events WHERE event_id = $1";
+        // const eventExistsResult = await pool.query(eventExistsQuery, [eventId]);
+        // if (eventExistsResult.rows.length === 0) {
+        //     return res.status(404).json({ error: "Event not found" });
+        // }
 
         // Insert a new record into the eventregistree table
         const insertQuery =
@@ -996,6 +997,28 @@ app.post("/events/register", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+//Unregister for an event
+app.delete("/events/:eventId/unregister/:ucinetid", async (req, res) => {
+    const eventId = req.params.eventId.replace(":", "");
+    const ucinetid = req.params.ucinetid.replace(":", "");
+
+    try {
+    // Delete the student from the database
+    const deleteRegistreeQuery = `
+      DELETE FROM eventregistrees
+      WHERE event_id = $1
+      AND ucinetid = $2
+    `;
+        await pool.query(deleteRegistreeQuery, [eventId, ucinetid]);
+
+        res.status(200).json({ message: "Unregistered successfully" });
+    } catch (error) {
+        console.error("Error unregistering:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+})
 
 app.get("/events/:eventId/registrees", async (req, res) => {
     const { eventId } = req.params;
