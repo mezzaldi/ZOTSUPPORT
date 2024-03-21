@@ -224,10 +224,9 @@ app.delete("/notifications/:notificationId", async (req, res) => {
     }
 });
 
-// API endpoint for sending a new notification
+/// API endpoint for sending a new notification
 app.post("/notifications", async (req, res) => {
-    const { title, contents, file, recipients } = req.body;
-    // console.log("NOTIFICATIONS BODY: ", req.body);
+    const { title, contents, file, recipients, program_id } = req.body;
 
     try {
         // Start a transaction
@@ -245,27 +244,46 @@ app.post("/notifications", async (req, res) => {
                 notificationInsertQuery,
                 notificationInsertValues
             );
-            const notificationId =
-                notificationInsertResult.rows[0].notification_id;
+            const notificationId = notificationInsertResult.rows[0].notification_id;
 
-            // Insert recipients into notificationrecipients table
-            for (const recipientEmail of recipients) {
-                // Fetch ucinetid for the current recipient
-                const userQuery = `
-                    SELECT ucinetid FROM users WHERE user_emailaddress = $1`;
-                const userResult = await client.query(userQuery, [
-                    recipientEmail,
-                ]);
-                const ucinetid = userResult.rows[0].ucinetid;
+            if (recipients === "programFollowers") {
+                // Fetch all followers of the program
+                const programFollowersQuery = `
+                    SELECT ucinetid FROM programfollowers WHERE program_id = $1`;
+                const programFollowersResult = await client.query(programFollowersQuery, [program_id]);
 
-                // Insert into notificationrecipients table
-                const recipientInsertQuery = `
-                    INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
-                    VALUES ($1, $2, false)`;
-                await client.query(recipientInsertQuery, [
-                    notificationId,
-                    ucinetid,
-                ]);
+                // Insert notifications for each follower
+                for (const follower of programFollowersResult.rows) {
+                    const recipientInsertQuery = `
+                        INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
+                        VALUES ($1, $2, false)`;
+                    await client.query(recipientInsertQuery, [
+                        notificationId,
+                        follower.ucinetid,
+                    ]);
+                }
+            } else {
+                // If recipients represent an event ID, send notifications to event registrants
+                const eventId = parseInt(recipients);
+                if (!isNaN(eventId)) {
+                    // Fetch all registrants of the event
+                    const eventRegistrantsQuery = `
+                        SELECT ucinetid FROM eventregistrees WHERE event_id = $1`;
+                    const eventRegistrantsResult = await client.query(eventRegistrantsQuery, [eventId]);
+
+                    // Insert notifications for each registrant
+                    for (const registrant of eventRegistrantsResult.rows) {
+                        const recipientInsertQuery = `
+                            INSERT INTO notificationrecipients (notification_id, ucinetid, seen)
+                            VALUES ($1, $2, false)`;
+                        await client.query(recipientInsertQuery, [
+                            notificationId,
+                            registrant.ucinetid,
+                        ]);
+                    }
+                } else {
+                    console.error("Invalid recipients data:", recipients);
+                }
             }
 
             // Commit the transaction
@@ -286,6 +304,8 @@ app.post("/notifications", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
 
 // GET endpoint to fetch program details by ID
 app.get("/programs/:id", async (req, res) => {
