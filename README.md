@@ -7,32 +7,43 @@ Priscilla Widjaja
 Caroline Guzylak
 Qi Liu
 
-Steps to Begin
-1, make sure to clone the repo:
-open your terminal
-Navigate to the Directory Where You Want to Clone the Repository:
-clone the Repository: git clone [https://github.com/username/repository.git](https://github.com/mezzaldi/ZOTSUPPORT.git)https://github.com/mezzaldi/ZOTSUPPORT.git
-Navigate into the Cloned Repository: cd ZOTSUPPORT
+How to start the application:
+- Clone the application to your machine from the github repository.
+- Command ‘npm install’ in the root directory, frontend directory, and backend directory.
+- In the backend directory, create a file called ‘.env’ with the following database configurations - Reach out to the Zot Support team for this
+- Do command “npm start” in both frontend and backend directories (2 separate terminals) to run frontend and backend apps.
+- In the frontend directory App.js, there is a variable ‘ucinetid’.  Since there is no authentication currently in place, update this ucinetid to the ucinetid of a user in the database in order to simulate being logged in as that user.
 
-INSTALLING DEPENDENCIES:
-Must do 'npm install' in root, frontend, and backend directories
 
-2,while in the terminal
-run : npm start
-//Installing firebase
-npm install -g firebase-tools
+Future features / Updates required for deployment:
 
-//Run local host
-npm run dev  
- //Connect to Mysql
-npm install mysql2
-mysql -u root -p
-USE cs122a;
-//CREATE TABLE program ( id INT PRIMARY KEY AUTO_INCREMENT, programName VARCHAR(255) NOT NULL, adminEmail VARCHAR(255) NOT NULL, headerImage VARCHAR(255), description TEXT, tags VARCHAR(255) );
+UCINetID Authentication
+There is no authentication system in place right now. Currently, a single UCINetID variable can be filled out in codebase and used to pull test data from the database. Proper UCINetID authentication will need to be implemented through OIT and according to OIT’s security standards.
 
-//Kill Server
-lsof -i :5003
-kill -9 PID
+Security measures
+Our app only works locally and does not have proper security measures in place to actually interface with the UCINetID service. Routes are currently unprotected. Routes need to be protected so that a user cannot simply type in the URL to admin-only pages, such as Edit Event, and access functionality there. Other security vulnerabilities may exist in the application that we are not aware of, so security checks need to be done with extra care due to the fact that this application will be used by UCI students.
+Both routes to API calls and routes to application pages need to be protected. 
+Application page route example: The URL http://localhost:3000/ProgramDashboardPage/:programid can be navigated to while the backend server is running. Any program ID can be inserted into this URL in order to see the program dashboard for the program with that ID. This needs to be blocked when the application is deployed.
+API call route example: The URL http://localhost:3001/users/:ucinetid/programs can be navigated to while the backend server is running. Any ucinetid can be inserted into this URL in order to get the user’s followed programs. This needs to be blocked when the application is deployed.
+Proper security configurations in the AWS RDS instance must be configured before deployment. The database is currently publically accessible for testing purposes - this must be changed once it contains real student data.
 
-//Deploy
-firebase deploy --only hosting
+Dummy data in database must be removed
+There is currently test/dummy data stored in the database for testing purposes. This test data should be removed before deployment.
+
+Storing images in the database
+Currently there is not a way to store images in or retrieve images from the database. This must be implemented for the sake of user profile images and header images for events and programs.
+
+Calendar Widget
+The calendar widget on the student and program dashboards is not functional. It is intended to be intractable so a user can click on a particular date and see the events that are occuring on that day.
+
+Recurring Feature
+While events can be classified as ‘recurring’, the app does not automatically generate recurring events after event creation.
+
+Landing Page Nav Bar
+Need to create navbar on landing page that omits features that require login.
+
+Node module vulnerabilities
+2 moderate severity vulnerabilities in backend
+6 moderate and 6 high severity vulnerabilities in frontend 
+
+
