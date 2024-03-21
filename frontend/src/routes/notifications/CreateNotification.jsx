@@ -77,14 +77,14 @@ const Notification = () => {
         formData.recipients = recipientsData.recipients.value;
         console.log(formData);
 
-        /* try {
-      const response = await axios.post('http://localhost:3001/programs', formData);
+        try {
+      const response = await axios.post('http://localhost:3001/notifications', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
-    }*/
+    }
     };
 
     return (
