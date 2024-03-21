@@ -22,9 +22,7 @@ There is no authentication system in place right now. Currently, a single UCINet
 
 Security measures
 Our app only works locally and does not have proper security measures in place to actually interface with the UCINetID service. Routes are currently unprotected. Routes need to be protected so that a user cannot simply type in the URL to admin-only pages, such as Edit Event, and access functionality there. Other security vulnerabilities may exist in the application that we are not aware of, so security checks need to be done with extra care due to the fact that this application will be used by UCI students.
-Both routes to API calls and routes to application pages need to be protected. 
-Application page route example: The URL http://localhost:3000/ProgramDashboardPage/:programid can be navigated to while the backend server is running. Any program ID can be inserted into this URL in order to see the program dashboard for the program with that ID. This needs to be blocked when the application is deployed.
-API call route example: The URL http://localhost:3001/users/:ucinetid/programs can be navigated to while the backend server is running. Any ucinetid can be inserted into this URL in order to get the user’s followed programs. This needs to be blocked when the application is deployed.
+Both routes to API calls and routes to application pages need to be protected. See hand-off document for examples.
 Proper security configurations in the AWS RDS instance must be configured before deployment. The database is currently publically accessible for testing purposes - this must be changed once it contains real student data.
 
 Dummy data in database must be removed
