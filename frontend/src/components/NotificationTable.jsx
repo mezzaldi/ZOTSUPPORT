@@ -147,7 +147,7 @@ export default function NotificationTable(props) {
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
                                         fontWeight: "bold",
-                                        width: "20rem",
+                                        width: "15rem",
                                     }}
                                 >
                                     {row.title}

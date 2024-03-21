@@ -87,7 +87,8 @@ app.post("/programs", async (req, res) => {
 
             // 2. Add tags associated with the program
             if (tags && Array.isArray(tags) && tags.length > 0) {
-                for (const tagId of tags) { // Assuming tags contain tag IDs
+                for (const tagId of tags) {
+                    // Assuming tags contain tag IDs
                     // Insert into program_tags
                     const programTagInsertQuery =
                         "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)";
@@ -116,7 +117,6 @@ app.post("/programs", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // edit/ PUT endpoint for updating programs
 // PUT endpoint for updating programs
@@ -316,7 +316,7 @@ app.get("/programs/:id", async (req, res) => {
             description: programResult.rows[0].description,
             headerImage: programResult.rows[0].headerimage,
             color: programResult.rows[0].color,
-            tags: tagsResult.rows
+            tags: tagsResult.rows,
         };
 
         res.status(200).json(programDetails);
@@ -713,7 +713,7 @@ app.get("/events/:eventId/administrators", async (req, res) => {
 
 // GET endpoint for retrieving specific events
 app.get("/events/:id", async (req, res) => {
-    const eventId = req.params.id.replace(":","");
+    const eventId = req.params.id.replace(":", "");
 
     try {
         // Connect to the database
@@ -721,8 +721,7 @@ app.get("/events/:id", async (req, res) => {
             // Retrieve the event details from the database based on the event ID
             const eventQuery = `SELECT *
                                 FROM events
-                                WHERE event_id = $1`
-                            
+                                WHERE event_id = $1`;
 
             const eventResult = await pool.query(eventQuery, [eventId]);
             const event = eventResult.rows;
@@ -734,19 +733,18 @@ app.get("/events/:id", async (req, res) => {
 
             const tagsQuery = `SELECT t.tag_name, t.tag_color FROM tags t
                             INNER JOIN eventtags et ON t.tag_id = et.tag_id
-                            WHERE et.event_id = $1`
-        ;
+                            WHERE et.event_id = $1`;
             const tagsResult = await pool.query(tagsQuery, [eventId]);
 
             const programQuery = `SELECT p.program_name FROM programs p
                                 INNER JOIN events e ON p.program_id = e.program_id
-                                WHERE e.event_id = $1`
+                                WHERE e.event_id = $1`;
 
             const programResult = await pool.query(programQuery, [eventId]);
 
             const adminsQuery = `SELECT u.program_name FROM programs p
                                 INNER JOIN events e ON p.program_id = e.program_id
-                                WHERE e.event_id = $1`
+                                WHERE e.event_id = $1`;
 
             const eventDetails = {
                 event_id: eventResult.rows[0].event_id,
@@ -757,9 +755,15 @@ app.get("/events/:id", async (req, res) => {
                 starttime: eventResult.rows[0].starttime,
                 endtime: eventResult.rows[0].endtime,
                 location: eventResult.rows[0].location,
+                requireregistration: eventResult.rows[0].requireregistration,
+                recurring: eventResult.rows[0].recurring,
+                recurringends: eventResult.rows[0].recurringends,
+                receiveregistreenotifications:
+                    eventResult.rows[0].receiveregistreenotifications,
+                enddate: eventResult.rows[0].enddate,
                 program_id: eventResult.rows[0].program_id,
                 program_name: programResult.rows[0].program_name,
-                tags: tagsResult.rows
+                tags: tagsResult.rows,
             };
 
             // Return the event details in the response
@@ -768,7 +772,7 @@ app.get("/events/:id", async (req, res) => {
             // Handle database query errors
             console.error("Error fetching event:", error);
             res.status(500).json({ error: "Internal server error" });
-        } 
+        }
     } catch (error) {
         // Handle database connection errors
         console.error("Error connecting to database:", error);
@@ -1566,15 +1570,21 @@ app.get("/userData/:ucinetid", async (req, res) => {
 
             // Query to fetch program details including its tags and admin email
             const query = `
-        SELECT 
-          u.user_emailaddress, 
-          u.profileimage, 
-          u.firstname, 
-          u.lastname
-        FROM 
-          users u
-        WHERE 
-          u.ucinetid = $1
+            SELECT 
+            u.user_emailaddress AS email, 
+            u.profileimage, 
+            u.firstname, 
+            u.lastname,
+            u.ucinetid,
+            ARRAY_AGG(DISTINCT pa.program_id) as adminPrograms,
+            ARRAY_AGG(DISTINCT sa.program_id) as superAdminPrograms 
+          FROM 
+            users u
+          LEFT JOIN programadmins pa ON pa.ucinetid = u.ucinetid
+          LEFT JOIN programadmins sa ON sa.ucinetid = u.ucinetid AND sa.issuperadmin
+          WHERE 
+            u.ucinetid = $1
+		  GROUP BY u.ucinetid
       `;
             const { rows } = await client.query(query, [ucinetid]);
 
@@ -1586,7 +1596,9 @@ app.get("/userData/:ucinetid", async (req, res) => {
                 return res.status(404).json({ error: "User not found" });
             }
 
-            res.status(200).json(rows);
+            // console.log(rows[0]);
+
+            res.status(200).json(rows[0]);
         } catch (error) {
             // Rollback transaction if any error occurs
             await client.query("ROLLBACK");
@@ -1622,7 +1634,7 @@ app.get("/tags", async (req, res) => {
 
         // Return the upcoming events
         const tags = result.rows;
-        console.log(tags)
+        console.log(tags);
         res.status(200).json(tags);
     } catch (error) {
         console.error("Error fetching tags:", error);

@@ -1,13 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import {
-    AppBar,
-    Toolbar,
-    Typography,
-    Button,
-    Stack,
-    MenuItem,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -19,6 +12,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useContext } from "react";
+import UserContext from "../user/UserContext";
 
 // Have to recreate theme in order to adjust breakpoints so navbar collapses
 // at a bigger width so text on buttons don't wrap
@@ -79,15 +74,16 @@ const navTheme = createTheme({
     },
 });
 
-const Navbar = ({ userData }) => {
-    // Use userData prop to access user information
+const Navbar = () => {
+    // Use userData prop to access user admin status
+    const userData = useContext(UserContext);
+
+    // Determine if the user is an administrator of any program
+    const isAdmin = userData.adminprograms[0] != null ? true : false;
 
     const location = useLocation();
 
     const isLandingPage = location.pathname === "/LandingPage";
-    // Determine if the user is an admin or superadmin
-    const isAdmin =
-        userData?.role === "admin" || userData?.role === "superadmin";
 
     const pages = ["Products", "Pricing", "Blog"];
 
@@ -124,7 +120,7 @@ const Navbar = ({ userData }) => {
                             variant="h2"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            href="/"
                             sx={{
                                 mr: 2,
                                 display: { xs: "none", md: "flex" },
@@ -184,7 +180,7 @@ const Navbar = ({ userData }) => {
                                         </Button>
                                     </MenuItem>
                                 ) : (
-                                    <>
+                                    <div>
                                         <MenuItem>
                                             <Button
                                                 href="/Discover"
@@ -247,7 +243,7 @@ const Navbar = ({ userData }) => {
                                                 </Button>
                                             </MenuItem>
                                         )}
-                                    </>
+                                    </div>
                                 )}
                                 {!isLandingPage && (
                                     <MenuItem>
@@ -268,7 +264,7 @@ const Navbar = ({ userData }) => {
                             variant="h2"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            href="/"
                             sx={{
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
@@ -357,7 +353,10 @@ const Navbar = ({ userData }) => {
                                 </>
                             )}
                             {!isLandingPage && (
-                                <Button sx={{ color: "white" }} href="/UserSetting">
+                                <Button
+                                    sx={{ color: "white" }}
+                                    href="/UserSetting"
+                                >
                                     <img
                                         src="/images/placeholder.jpg"
                                         className="profileImg"

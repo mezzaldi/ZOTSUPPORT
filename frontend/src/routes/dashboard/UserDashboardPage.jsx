@@ -55,7 +55,6 @@ const DashboardPage = () => {
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
-            console.log(res.data);
         };
         getUpcomingEvents();
     }, [userData]);
@@ -85,8 +84,10 @@ const DashboardPage = () => {
                     </div>
                     <div>
                         {upcomingEvents &&
-                            upcomingEvents.map((eventData) => {
-                                return <EventBar data={eventData} />;
+                            upcomingEvents.map((eventData, index) => {
+                                return (
+                                    <EventBar data={eventData} key={index} />
+                                );
                             })}
                     </div>
                 </div>

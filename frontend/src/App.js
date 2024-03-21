@@ -33,14 +33,12 @@ import ViewNotification from "./routes/notifications/ViewNotification";
 import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/program/EditProgramForm";
 
-
-import EditEventForm  from "./routes/EditEventForm";
+import EditEventForm from "./routes/EditEventForm";
 
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
 import UserImg from "./UserImg.jpeg";
-
 
 const primaryTextColor = "#242424";
 
@@ -94,46 +92,41 @@ let globalTheme = createTheme({
 globalTheme = responsiveFontSizes(globalTheme);
 
 const App = () => {
-    // Using single test UCINetID for now
+    // TEST UCINETID - User with this UCINetID will be loaded in from the database.
+    // MUST REPLACE WHEN AUTHENTICATION IS IMPLEMENTED.
+    // Use "5" for test Administrator. Use "1" for test Student.
     const ucinetid = "5";
 
     // load in the user's data from the database based on UCINetID
-    // const [userData2, setUserData] = useState();
-    // useEffect(() => {
-    //     const getUserData = async () => {
-    //         const res = await axios
-    //             .get(`http://localhost:3001/userData/:${ucinetid}`)
-    //             .catch((err) => console.log(err));
+    const [userData, setUserData] = useState();
+    useEffect(() => {
+        const getUserData = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/userData/:${ucinetid}`)
+                .catch((err) => console.log(err));
 
-    //         const userobject = res.data[0];
+            setUserData(res.data);
+        };
+        getUserData();
+    }, [ucinetid]);
 
-    //         setUserData(res.data);
-    //     };
-    //     getUserData();
-    // }, [ucinetid]);
-
-    // userRole could be 'student' 'admin' or 'superadmin'
-    const userData = {
-        role: "superadmin",
-        firstname: "Peter",
-        lastname: "Anteater",
-        program_id: 1,
-        ucinetid: 5,
-        profileimage: UserImg,
-    };
+    // What userData contains:
+    // email
+    // profileimage
+    // firstname
+    // lastname
+    // ucinetid
+    // adminprograms: list of programs the user is an administrator for
+    // superadminprograms: list of programs the user is a super administrator for
 
     return (
         userData && (
             <UserContext.Provider value={userData}>
                 <ThemeProvider theme={globalTheme}>
                     <Router>
-                        {/* {userRole === "student" ? <Navbar /> : <AdminNavbar />} */}
-                        <Navbar userData={userData} />
+                        <Navbar />
                         <Routes>
-                            <Route
-                                path="/"
-                                element={<LandingPage />}
-                            />
+                            <Route path="/" element={<LandingPage />} />
                             <Route path="/SignIn" element={<SignInPage />} />
                             <Route path="/About" element={<AboutUsPage />} />
                             <Route
@@ -194,26 +187,26 @@ const App = () => {
                                 path="/ProgramSelectDashboard"
                                 element={<ProgramSelectDashboard />}
                             />
-                           <Route 
-                                path="/EditProgramForm/:program_id" 
-                                element={<EditProgramForm />} 
+                            <Route
+                                path="/EditProgramForm/:program_id"
+                                element={<EditProgramForm />}
                             />
 
                             <Route
                                 path="/ProgramHomePage"
                                 element={<ProgramHomePage />}
                             />
-                             <Route
+                            <Route
                                 path="/EditEventForm"
                                 element={<EditEventForm />}
                             />
-                            <Route 
-                                path="/EditEventForm/:event_id" 
-                                element={<EditEventForm />} 
+                            <Route
+                                path="/EditEventForm/:event_id"
+                                element={<EditEventForm />}
                             />
-                            <Route 
-                                path="/search-results" 
-                                element={<SearchResultsPage />} 
+                            <Route
+                                path="/search-results"
+                                element={<SearchResultsPage />}
                             />
                         </Routes>
                     </Router>
