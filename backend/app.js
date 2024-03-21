@@ -1347,22 +1347,25 @@ app.delete("/events/:eventId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
 // Edit Event API
+
 app.put('/events/:eventId', async (req, res) => {
+    const moment = require('moment');
     const eventId= req.params.eventId.replace(":", "");
     const {
         eventName,
         location,
-        date,
+        startDate,
+        endDate,
         recurring,
         recurringEndDate,
         admins,
         description,
         headerImage,
         tags,
-        program_id,
+        requireRegistration,
+        receiveRegistrationNotification,
+        program,
     } = req.body;
 
     try {
@@ -1372,14 +1375,25 @@ app.put('/events/:eventId', async (req, res) => {
             await client.query("BEGIN");
 
             // Format date strings using Moment.js
-            const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            const formattedDate = moment(startDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndDate = moment(endDate).format('YYYY-MM-DD HH:mm:ss');
             const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
-            // Update event in events table
+            // Update events table
             const eventUpdateQuery = `
-                UPDATE events
-                SET event_name = $1, description = $2, headerimage = $3, location = $4, date = $5, recurring = $6, recurringends = $7, program_id = $8
-                WHERE event_id = $9`;
+                UPDATE events 
+                SET event_name = $1, 
+                    description = $2, 
+                    headerimage = $3, 
+                    location = $4, 
+                    date = $5, 
+                    recurring = $6, 
+                    recurringends = $7, 
+                    program_id = $8, 
+                    requireRegistration = $9, 
+                    receiveRegistreeNotifications = $10, 
+                    enddate = $11
+                WHERE event_id = $12`;
             const eventUpdateValues = [
                 eventName,
                 description,
@@ -1388,22 +1402,19 @@ app.put('/events/:eventId', async (req, res) => {
                 formattedDate, // Use formatted date value
                 recurring,
                 formattedRecurringEndDate, // Use formatted recurringEndDate value
-                program_id,
-                eventId,
+                program,
+                requireRegistration,
+                receiveRegistrationNotification,
+                formattedEndDate,
+                eventId
             ];
-            await client.query(
-                eventUpdateQuery,
-                eventUpdateValues
-            );
+            await client.query(eventUpdateQuery, eventUpdateValues);
 
-            // Update admins for the event
-            // First, delete existing admins for the event
-            const deleteAdminsQuery = `
-                DELETE FROM eventadmins
-                WHERE event_id = $1`;
+            // Delete existing admins associated with the event
+            const deleteAdminsQuery = "DELETE FROM eventadmins WHERE event_id = $1";
             await client.query(deleteAdminsQuery, [eventId]);
 
-            // Then insert new admins
+            // Insert new admins into eventadmins table
             if (admins && Array.isArray(admins) && admins.length > 0) {
                 for (const admin of admins) {
                     // Ensure that admin is an object with a 'value' property
@@ -1423,17 +1434,14 @@ app.put('/events/:eventId', async (req, res) => {
                 }
             }
 
-            // Update eventtags for the event
-            // For simplicity, you may choose to delete all existing tags and insert the new ones
-            const deleteTagsQuery = `
-                DELETE FROM eventtags
-                WHERE event_id = $1`;
+            // Remove existing tags associated with the event
+            const deleteTagsQuery = "DELETE FROM eventtags WHERE event_id = $1";
             await client.query(deleteTagsQuery, [eventId]);
 
-            // Insert new tags
+            // Insert new tags into eventtags table
             if (tags && Array.isArray(tags) && tags.length > 0) {
                 for (const tagId of tags) {
-                    // Insert into eventtags table
+                    // Insert into eventtags table only if the tag is not already associated
                     const eventTagInsertQuery =
                         "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
                     await client.query(eventTagInsertQuery, [eventId, tagId]);
@@ -1458,6 +1466,7 @@ app.put('/events/:eventId', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
 
 // Cancel Event API
 app.delete("/events/:eventId", async (req, res) => {

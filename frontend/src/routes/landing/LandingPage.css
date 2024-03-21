@@ -1,101 +1,105 @@
-
-
-
 .header {
   background-size: cover;
-  background-position: center;
-  background-image: url('https://bpb-us-e2.wpmucdn.com/sites.uci.edu/dist/e/3784/files/2019/08/ics-4-1024x735.jpg');
+  background-position: center 42%; /* Moves the image up slightly more than before */
   color: #fff;
-  padding-top: 60px;
-  padding-bottom: 60px;
-  height: 400px; 
+  padding-top: 3.75rem; /* 60px */
+  padding-bottom: 3.75rem; /* 60px */
+  height: 25rem; /* 400px */
   position: relative;
 }
 
 .welcome-text-container {
   position: absolute;
-  top: 40px; 
-  left: 10px;
-  text-align: left;  
+  top: 2.5rem; /* 40px / 16px */
+  left: 0.625rem; /* 10px / 16px */
+  text-align: left;
 }
 
 .sign-in-box {
   position: absolute;
-  bottom: -20px; 
+  bottom: -1.25rem; /* -20px / 16px */
   left: 50%;
   transform: translateX(-50%);
-  background-color: white; 
-  padding: 20px; 
-  border-radius: 4px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-around; 
-  width: 70%; 
-  max-width: 600px; 
+  background-color: white;
+  padding: 1.25rem; /* 20px / 16px */
+  border-radius: 0.25rem; /* 4px / 16px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* X, Y, Blur, Color */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 70%;
+  max-width: 37.5rem; /* 600px / 16px */
 }
-
-
 
 .icon-circle {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 20px; 
-  width: 100px; 
-  height: 100px; 
+  margin: 0 auto 1.25rem; /* 20px bottom margin / 16px */
+  width: 6.25rem; /* 100px / 16px */
+  height: 6.25rem; /* 100px / 16px */
   border-radius: 50%;
-  background-color: #2744A6; 
-  color: white; 
+  background-color: #2744A6;
+  color: white;
 }
+
 .body-text {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 100%; 
+  height: 100%;
 }
-
 
 .info-bullets {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; 
+  gap: 1.875rem; /* 30px / 16px */
 }
 
 .bullet {
   text-align: center;
-  max-width: 300px; 
+  max-width: 18.75rem; /* 300px / 16px */
 }
 
-.image-box {
-  display: block;
-  max-width: 90%; 
-  margin: 20px auto;
-  padding: 0;
-  border-radius: 10px;
-  overflow: hidden; 
-  height: 600px; 
+.student-image-box {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 18.75rem; /* 300px / 16px */
 }
 
-.image-box img {
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
+.student-image-box img {
+  position: relative;
+  top: -13.67rem; /* Adjusted for -76% movement, could need fine-tuning */
+  width: 100%;
+  height: auto;
 }
 
+.logo-image-box {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 22.5rem; /* 360px / 16px */
+}
+
+.logo-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
 
 .section-divider {
-  border: none; 
-  height: 2px; 
-  width: 20%; 
-  background-color: #333; 
-  margin: 20px auto; 
+  border: none;
+  height: 0.125rem; /* 2px / 16px */
+  width: 20%; /* Maintained percentage */
+  background-color: #333;
+  margin: 1.25rem auto; /* 20px / 16px */
 }
 
-
-@media (max-width: 768px) {
+@media (max-width: 48rem) { /* 768px / 16px */
   .info-bullets {
     flex-direction: column;
   }

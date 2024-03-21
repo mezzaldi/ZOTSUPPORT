@@ -6,12 +6,6 @@ import axios from 'axios';
 
 const EditProgramForm = () => {
   const { program_id } = useParams();
-  console.log("program_id:", program_id);
-
-  const programColors = [
-    { value: '#C41E3A', label: "Red" },
-    { value: '#11007B', label: "Blue" }
-  ];
 
   const [formData, setFormData] = useState({
     programName: '',
@@ -19,13 +13,24 @@ const EditProgramForm = () => {
     description: ''
   });
 
-  const [tagData, setTagData] = useState({
-    tags: []
+  const programColors = [
+    { value: '#C41E3A', label: 'Red' },
+    { value: '#11007B', label: 'Blue' },
+    // Add more color options as needed
+  ];
+  
+  const [colorData, setColorData] = useState({
+    color: programColors[0] 
   });
 
-  const [colorData, setColorData] = useState({
-    color: programColors[0] // Default color
-  });
+  const [levelTags, setLevelTags] = useState([]);
+  const [subjectTags, setSubjectTags] = useState([]);
+  const [eventTypeTags, setEventTypeTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagData, setTagData] = useState({
+    tags: [],
+});
+
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -39,13 +44,7 @@ const EditProgramForm = () => {
           description: programData.description
         });
 
-        setColorData({ color: programColors.find(color => color.value === programData.color) });
-        setTagData({
-          tags: programData.tags.map(tag => ({
-            value: tag,
-            label: allTags.find(category => category.options.some(option => option.value === tag)).options.find(option => option.value === tag).label
-          }))
-        });
+        // You might want to set selected tags and color here if they're part of programData
       } catch (error) {
         console.error('Error fetching program:', error);
       }
@@ -53,6 +52,36 @@ const EditProgramForm = () => {
 
     fetchProgram();
   }, [program_id]);
+
+  useEffect(() => {
+    const getTags = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3001/tags`);
+        const fetchedTags = res.data;
+
+        const newLevelTags = [];
+        const newSubjectTags = [];
+        const newEventTypeTags = [];
+
+        fetchedTags.forEach(tag => {
+          if (tag.tag_category === "Level") {
+            newLevelTags.push({ value: tag.tag_id, label: tag.tag_name, color: tag.tag_color });
+          } else if (tag.tag_category === "Subject") {
+            newSubjectTags.push({ value: tag.tag_id, label: tag.tag_name, color: tag.tag_color });
+          } else if (tag.tag_category === "Event Type") {
+            newEventTypeTags.push({ value: tag.tag_id, label: tag.tag_name, color: tag.tag_color });
+          }
+        });
+
+        setLevelTags(newLevelTags);
+        setSubjectTags(newSubjectTags);
+        setEventTypeTags(newEventTypeTags);
+      } catch (err) {
+        console.error('Error fetching tags:', err);
+      }
+    };
+    getTags();
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,32 +99,33 @@ const EditProgramForm = () => {
     }
   };
 
-  const handleTagInputChange = (e) => {
-    setTagData({ tags: e });
-  };
-
-  const handleColorInputChange = (e) => {
-    setColorData({ color: e });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    tagData.tags.push({ value: 21, label: "Learning Support Program" });
 
-    const putData = {
-      name: formData.programName,
-      description: formData.description,
-      headerImage: formData.headerImage,
-      color: colorData.color.value,
-      tags: tagData.tags.map(tag => tag.value)
+    const postData = {
+        name: formData.programName,
+        description: formData.description,
+        headerImage: formData.headerImage,
+        color: colorData.color.value,
+        tags: tagData.tags.map((tag) => String(tag.value)),
     };
 
+    console.log(postData);
+
     try {
-      const response = await axios.put(`http://localhost:3001/programs/${program_id}`, putData);
-      console.log('Program updated successfully:', response.data);
+      const response = await axios.put(
+        `http://localhost:3001/programs/${program_id}`,
+        postData
+    );
+    
+        console.log("Program updated successfully:", response.data);
+        // You can handle the success response accordingly
     } catch (error) {
-      console.error('Error updating program:', error);
+        console.error("Error updating program:", error);
+        // Handle the error appropriately
     }
-  };
+};
 
   const handleDelete = async () => {
     try {
@@ -106,40 +136,32 @@ const EditProgramForm = () => {
     }
   };
 
-  const levelTags = [
-    { value: '1', label: "Undergraduate", color: "#11007B" },
-    { value: '2', label: "Graduate", color: "#11007B" }
-  ];
-
-  const subjectTags = [
-    { value: '3', label: "Art", color: "#80CEAC" },
-    { value: '4', label: "Biology", color: "#80CEAC" }
-  ];
-
   const allTags = [
     {
       label: "Level",
-      options: levelTags
+      options: levelTags,
     },
     {
       label: "Subject",
-      options: subjectTags
-    }
+      options: subjectTags,
+    },
+    {
+      label: "Event Types",
+      options: eventTypeTags,
+    },
   ];
 
   const tagStyles = {
-    option: (styles, { data }) => {
-      return {
-        ...styles,
-        color: data.color
-      };
-    }
+    option: (styles, { data }) => ({
+      ...styles,
+      color: data.color,
+    }),
   };
 
   return (
     <div className='h2Container'>
       <form onSubmit={handleSubmit}>
-        <Grid container align-items='center' paddingBottom='3rem' columnSpacing={2} rowSpacing={6}>
+        <Grid container alignItems='center' paddingBottom='3rem' columnSpacing={2} rowSpacing={6}>
           <Grid item xs={3}>
             <Typography variant="h2">Program Name:</Typography>
           </Grid>
@@ -151,7 +173,7 @@ const EditProgramForm = () => {
             <Typography variant="h2">Description:</Typography>
           </Grid>
           <Grid item xs={9}>
-            <TextField fullWidth multiline rows={10} label="Description of program" name="description" value={formData.description} onChange={handleInputChange} />
+            <TextField fullWidth multiline rows={4} label="Description" name="description" value={formData.description} onChange={handleInputChange} />
           </Grid>
 
           <Grid item xs={3}>
@@ -162,37 +184,52 @@ const EditProgramForm = () => {
               Upload Image
               <input type="file" accept="image/*" hidden onChange={handleImageChange} />
             </Button>
-            {formData.headerImage && <Typography>Image uploaded successfully!</Typography>}
+            {formData.headerImage && <img src={formData.headerImage} alt="Uploaded" style={{ maxWidth: '100%', maxHeight: '300px', marginTop: '10px' }} />}
           </Grid>
 
           <Grid item xs={3}>
             <Typography variant="h2">Color:</Typography>
           </Grid>
           <Grid item xs={9}>
-            <Select className="tagContainer" value={colorData.color} onChange={handleColorInputChange} options={programColors}></Select>
+            <Select
+              className="colorSelector"
+              value={colorData.color}
+              onChange={(selectedOption) => setColorData({ color: selectedOption })}
+              options={programColors}
+            />
           </Grid>
 
           <Grid item xs={3}>
             <Typography variant="h2">Tags:</Typography>
           </Grid>
           <Grid item xs={9}>
-            <Select isMulti className="tagContainer" value={tagData.tags} onChange={handleTagInputChange} options={allTags} styles={tagStyles}></Select>
-          </Grid>
-
-        </Grid>
-
-        <Grid container justifyContent="center" spacing={2}>
-          <Grid item>
-            <Button variant="contained" type="submit">Update program</Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" color="error" onClick={handleDelete}>Delete program</Button>
+            <Select
+              isMulti
+              className="tagSelector"
+              value={selectedTags}
+              onChange={setSelectedTags}
+              options={allTags}
+              styles={tagStyles}
+            />
           </Grid>
         </Grid>
 
+        <Grid container justifyContent="center" spacing={2} marginTop="20px">
+          <Grid item>
+            <Button variant="contained" color="primary" type="submit">
+              Update Program
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="error" onClick={handleDelete}>
+              Delete Program
+            </Button>
+          </Grid>
+        </Grid>
       </form>
     </div>
   );
 };
 
 export default EditProgramForm;
+
