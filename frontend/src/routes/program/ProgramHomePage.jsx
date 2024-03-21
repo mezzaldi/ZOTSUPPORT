@@ -10,9 +10,10 @@ const ProgramHomePage = () => {
     let { program_id } = useParams();
     program_id = program_id.replace(":", "");
 
-    console.log("CREATED PROGRAM PAGE");
-
     const userData = useContext(UserContext);
+    const userInfo = {
+        ucinetid: userData.ucinetid
+    }
     const [program, setProgram] = useState();
 
     useEffect(() => {
@@ -35,10 +36,25 @@ const ProgramHomePage = () => {
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
-            console.log(res.data)
         };
         getUpcomingEvents();
     }, [userData]);
+
+    // Add user to program followers
+    const handleAddFollowChange  = async (e) => {
+        try {
+            const response = await axios.post(
+                `http://localhost:3001/programs/:${program_id}/followers`, userInfo);
+            console.log("Follower added successfully:", response.data);
+            // You can handle the success response accordingly
+        } catch (error) {
+            console.error("Follower not added to program:", error);
+            // Handle the error appropriately
+        }
+
+    };
+
+
 
 
     return (
@@ -73,12 +89,9 @@ const ProgramHomePage = () => {
                         )}
 
                         {userData.role === "student" && (
-                            <Button variant="contained">Follow</Button>
+                            <Button variant="contained" onClick={handleAddFollowChange}>Follow</Button>
                         )}
 
-                        {userData.role === "student" && (
-                            <Button variant="contained">Follow</Button>
-                        )}
                     </Box>
                     <Typography variant="body1">
                         {program.description}
