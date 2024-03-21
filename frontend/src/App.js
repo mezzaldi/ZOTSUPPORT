@@ -95,7 +95,7 @@ const App = () => {
     // TEST UCINETID - User with this UCINetID will be loaded in from the database.
     // MUST REPLACE WHEN AUTHENTICATION IS IMPLEMENTED.
     // Use "5" for test Administrator. Use "1" for test Student.
-    const ucinetid = "5";
+    const ucinetid = "1";
 
     // load in the user's data from the database based on UCINetID
     const [userData, setUserData] = useState();

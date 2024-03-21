@@ -133,7 +133,7 @@ const ProgramHomePage = () => {
                         }}
                     >
                         <Typography variant="h1">{program.name}</Typography>
-                        {isSuperAdmin && (
+                        {(isSuperAdmin || isAdmin) && (
                             <Box>
                                 <Link to={`/EditProgramForm/${program_id}`}>
                                     <Button variant="contained">Edit</Button>
@@ -141,19 +141,11 @@ const ProgramHomePage = () => {
                             </Box>
                         )}
 
-                        {isAdmin && (
-                            <Box>
-                                <Link to={`/EditProgramForm/${program_id}`}>
-                                    <Button variant="contained">Edit</Button>
-                                </Link>
-                            </Box>
-                        )}
-
-                        {!isFollower && (
+                        { (!isFollower && !isAdmin && !isSuperAdmin) && (
                             <Button variant="contained" onClick={handleAddFollowChange}>Follow</Button>
                         )}
 
-                        {isFollower && (
+                        {(isFollower && !isAdmin && !isSuperAdmin) && (
                             <Button variant="contained" onClick={handleUnfollowChange}>UnFollow</Button>
                         )}
 
