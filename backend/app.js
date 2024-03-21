@@ -535,13 +535,16 @@ app.post('/events', async (req, res) => {
     const {
         eventName,
         location,
-        date,
+        startDate,
+        endDate,
         recurring,
         recurringEndDate,
         admins,
         description,
         headerImage,
         tags,
+        requireRegistration,
+        receiveRegistrationNotification,
         program,
     } = req.body;
 
@@ -552,13 +555,14 @@ app.post('/events', async (req, res) => {
             await client.query("BEGIN");
 
             // Format date strings using Moment.js
-            const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            const formattedDate = moment(startDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndDate = moment(endDate).format('YYYY-MM-DD HH:mm:ss');
             const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
             // Insert into events table
             const eventInsertQuery = `
-                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id, requireRegistration, receiveRegistreeNotifications, enddate)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING event_id`;
             const eventInsertValues = [
                 eventName,
@@ -569,6 +573,9 @@ app.post('/events', async (req, res) => {
                 recurring,
                 formattedRecurringEndDate, // Use formatted recurringEndDate value
                 program,
+                requireRegistration,
+                receiveRegistrationNotification,
+                formattedEndDate
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
@@ -772,8 +779,7 @@ app.get("/events/:id", async (req, res) => {
                 description: eventResult.rows[0].description,
                 headerImage: eventResult.rows[0].headerimage,
                 date: eventResult.rows[0].date,
-                starttime: eventResult.rows[0].starttime,
-                endtime: eventResult.rows[0].endtime,
+                endDate: eventResult.rows[0].enddate,
                 location: eventResult.rows[0].location,
                 requireregistration: eventResult.rows[0].requireregistration,
                 recurring: eventResult.rows[0].recurring,

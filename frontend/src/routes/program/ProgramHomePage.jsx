@@ -8,9 +8,12 @@ import LongEventCard from "../../components/LongEventCard";
 
 const ProgramHomePage = () => {
     let { program_id } = useParams();
-    program_id = parseInt(program_id.replace(":", ""));
+    program_id = program_id.replace(":", "");
 
     const userData = useContext(UserContext);
+    const userInfo = {
+        ucinetid: userData.ucinetid
+    }
     const [program, setProgram] = useState();
 
     // Check if the user is a super administrator for this program
@@ -45,6 +48,23 @@ const ProgramHomePage = () => {
         getUpcomingEvents();
     }, [userData]);
 
+    // Add user to program followers
+    const handleAddFollowChange  = async (e) => {
+        try {
+            const response = await axios.post(
+                `http://localhost:3001/programs/:${program_id}/followers`, userInfo);
+            console.log("Follower added successfully:", response.data);
+            // You can handle the success response accordingly
+        } catch (error) {
+            console.error("Follower not added to program:", error);
+            // Handle the error appropriately
+        }
+
+    };
+
+
+
+
     return (
         <div className="pageContent">
             {program && (
@@ -74,9 +94,10 @@ const ProgramHomePage = () => {
                             </Box>
                         )}
 
-                        {!isAdmin && (
-                            <Button variant="contained">Follow</Button>
+                        {userData.role === "student" && (
+                            <Button variant="contained" onClick={handleAddFollowChange}>Follow</Button>
                         )}
+
                     </Box>
                     <Typography variant="body1">
                         {program.description}

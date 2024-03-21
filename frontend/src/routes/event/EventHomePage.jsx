@@ -130,13 +130,13 @@ const EventHomePage = () => {
 
                     <div className="h2Container">
                         <Typography variant="h2">
-                            Start Time: {event.starttime}
+                            Start: {new Date(event.date).toString()}
                         </Typography>
                     </div>
 
                     <div className="h2Container">
                         <Typography variant="h2">
-                            End Time: {event.endtime}
+                            End: {new Date(event.endDate).toString()}
                         </Typography>
                     </div>
 
