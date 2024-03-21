@@ -140,7 +140,7 @@ const ProgramHomePage = () => {
                         )}
 
                         {(isFollower && !isAdmin && !isSuperAdmin) && (
-                            <Button variant="contained" onClick={handleUnfollowChange}>UnFollow</Button>
+                            <Button variant="contained" onClick={handleUnfollowChange}>Unfollow</Button>
                         )}
 
                     </Box>
