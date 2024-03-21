@@ -36,6 +36,7 @@ app.get("/test", async (req, res) => {
     }
 });
 
+
 // Get the logged in user's followed programs
 app.get("/followedPrograms/:ucinetid", async (req, res) => {
     const ucinetid = req.params.ucinetid.replace(":", "");
@@ -1512,42 +1513,42 @@ app.post("/admins/add/:email", async (req, res) => {
 });
 
 // Add Student to Program's Followers Endpoint
-app.post("/programs/:programId/followers", async (req, res) => {
-    const programId = req.params.programId;
-    const { ucinetid } = req.body;
+app.post("/programs/:programId/followers/:ucinetid", async (req, res) => {
+    const programId = req.params.programId.replace(":", "");
+    const ucinetid = req.params.ucinetid.replace(":", "");
 
     try {
-        // Check if the program exists
-        const programExistsQuery =
-            "SELECT * FROM programs WHERE program_id = $1";
-        const programExistsResult = await pool.query(programExistsQuery, [
-            programId,
-        ]);
-        if (programExistsResult.rows.length === 0) {
-            return res.status(404).json({ error: "Program not found" });
-        }
+        // // Check if the program exists
+        // const programExistsQuery =
+        //     "SELECT * FROM programs WHERE program_id = $1";
+        // const programExistsResult = await pool.query(programExistsQuery, [
+        //     programId,
+        // ]);
+        // if (programExistsResult.rows.length === 0) {
+        //     return res.status(404).json({ error: "Program not found" });
+        // }
 
-        // Check if the student exists
-        const studentExistsQuery = "SELECT * FROM users WHERE ucinetid = $1";
-        const studentExistsResult = await pool.query(studentExistsQuery, [
-            ucinetid,
-        ]);
-        if (studentExistsResult.rows.length === 0) {
-            return res.status(404).json({ error: "Student not found" });
-        }
+        // // Check if the student exists
+        // const studentExistsQuery = "SELECT * FROM users WHERE ucinetid = $1";
+        // const studentExistsResult = await pool.query(studentExistsQuery, [
+        //     ucinetid,
+        // ]);
+        // if (studentExistsResult.rows.length === 0) {
+        //     return res.status(404).json({ error: "Student not found" });
+        // }
 
-        // Check if the student is already a follower of the program
-        const isFollowingQuery =
-            "SELECT * FROM programfollowers WHERE program_id = $1 AND ucinetid = $2";
-        const isFollowingResult = await pool.query(isFollowingQuery, [
-            programId,
-            ucinetid,
-        ]);
-        if (isFollowingResult.rows.length > 0) {
-            return res.status(400).json({
-                error: "Student is already a follower of the program",
-            });
-        }
+        // // Check if the student is already a follower of the program
+        // const isFollowingQuery =
+        //     "SELECT * FROM programfollowers WHERE program_id = $1 AND ucinetid = $2";
+        // const isFollowingResult = await pool.query(isFollowingQuery, [
+        //     programId,
+        //     ucinetid,
+        // ]);
+        // if (isFollowingResult.rows.length > 0) {
+        //     return res.status(400).json({
+        //         error: "Student is already a follower of the program",
+        //     });
+        // }
 
         // Add the student to the program's followers
         const addFollowerQuery =
@@ -1562,6 +1563,29 @@ app.post("/programs/:programId/followers", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+//Remove follower from program followers
+app.delete("/programs/:programId/remove/followers/:ucinetid", async (req, res) => {
+    const programId = req.params.programId.replace(":", "");
+    const ucinetid = req.params.ucinetid.replace(":", "");
+    console.log(ucinetid)
+    console.log(programId)
+
+    try {
+        // Delete the student from the database
+    const deleteFollowerQuery = `
+      DELETE FROM programfollowers
+      WHERE program_id = $1
+      AND ucinetid = $2
+    `;
+        await pool.query(deleteFollowerQuery, [programId, ucinetid]);
+
+        res.status(200).json({ message: "Unfollowed successfully" });
+    } catch (error) {
+        console.error("Error unfollowing:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 // Get Program Followers Endpoint
 app.get("/programs/:programId/followers", async (req, res) => {

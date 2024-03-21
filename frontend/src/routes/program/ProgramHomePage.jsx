@@ -14,6 +14,7 @@ const ProgramHomePage = () => {
     const userInfo = {
         ucinetid: userData.ucinetid
     }
+    console.log("This is the ucinetid:", userInfo)
     const [program, setProgram] = useState();
 
     // Check if the user is a super administrator for this program
@@ -22,7 +23,10 @@ const ProgramHomePage = () => {
         : false;
 
     // Check if the user is a regular administrator for this program
-    const isAdmin = userData.adminprograms.includes(program_id) ? true : false;
+    const isAdmin = userData.adminprograms.includes(parseInt(program_id)) ? true : false;
+    console.log("program:", program_id)
+    console.log("userprograms:", userData.adminprograms)
+    console.log(isAdmin)
 
     useEffect(() => {
         const getProgram = async () => {
@@ -48,19 +52,62 @@ const ProgramHomePage = () => {
         getUpcomingEvents();
     }, [userData]);
 
+    //Check if user is following program
+    const [followedPrograms, setFollowedPrograms] = useState();
+    useEffect(() => {
+        const getFollowedPrograms = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/followedPrograms/:${userData.ucinetid}`
+                )
+                .catch((err) => console.log(err));
+            setFollowedPrograms(res.data);
+        };
+        getFollowedPrograms();
+    }, [userData]);
+
+    let followedIDs = []
+    { followedPrograms &&
+        followedPrograms.forEach((program) => followedIDs.push(program.program_id))
+    }
+
+    let isFollower = followedIDs.includes(parseInt(program_id));
+    
+
+
     // Add user to program followers
     const handleAddFollowChange  = async (e) => {
         try {
             const response = await axios.post(
-                `http://localhost:3001/programs/:${program_id}/followers`, userInfo);
+                `http://localhost:3001/programs/:${program_id}/followers/:${userData.ucinetid}`);
             console.log("Follower added successfully:", response.data);
             // You can handle the success response accordingly
         } catch (error) {
             console.error("Follower not added to program:", error);
             // Handle the error appropriately
         }
+        
+        isFollower = true
+        window.location.reload(false);
 
     };
+
+    const handleUnfollowChange = async (e) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:3001/programs/:${program_id}/remove/followers/:${userData.ucinetid}`);
+            console.log("Follower deleted successfully:", response.data);
+            // You can handle the success response accordingly
+        } catch (error) {
+            console.error("Follower not removed from program:", error);
+            // Handle the error appropriately
+        }
+       isFollower = false
+       window.location.reload(false);
+
+
+        
+    }
 
 
 
@@ -94,8 +141,20 @@ const ProgramHomePage = () => {
                             </Box>
                         )}
 
-                        {userData.role === "student" && (
+                        {isAdmin && (
+                            <Box>
+                                <Link to={`/EditProgramForm/${program_id}`}>
+                                    <Button variant="contained">Edit</Button>
+                                </Link>
+                            </Box>
+                        )}
+
+                        {!isFollower && (
                             <Button variant="contained" onClick={handleAddFollowChange}>Follow</Button>
+                        )}
+
+                        {isFollower && (
+                            <Button variant="contained" onClick={handleUnfollowChange}>UnFollow</Button>
                         )}
 
                     </Box>
