@@ -159,7 +159,10 @@ const EditProgramForm = () => {
   };
 
   return (
-    <div className='h2Container'>
+    <div className='pageContent'>
+      <div className="h1Container">
+                <Typography variant="h1">Edit Program</Typography>
+            </div>
       <form onSubmit={handleSubmit}>
         <Grid container alignItems='center' paddingBottom='3rem' columnSpacing={2} rowSpacing={6}>
           <Grid item xs={3}>

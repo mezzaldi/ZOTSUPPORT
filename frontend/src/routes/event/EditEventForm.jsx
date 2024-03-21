@@ -290,7 +290,12 @@ const EditEventForm = () => {
     }
 
     return (
-        <div className="h2Container">
+        <div className="pageContent">
+            
+            <div className="h1Container">
+                <Typography variant="h1">Edit Event</Typography>
+            </div>
+
             <form onSubmit={handleSubmit}>
                 <Grid
                     container

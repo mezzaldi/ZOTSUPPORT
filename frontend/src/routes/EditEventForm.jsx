@@ -119,7 +119,7 @@ const EditEventForm = () => {
   };
 
   return (
-    <div style={{ marginTop: '2rem', padding: '0 1.25rem' }}>
+    <div className="pageContent">
       <form onSubmit={handleSubmit}>
         <Grid container alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: '2rem' }}>
           <Grid item xs={12} sm={6}>
