@@ -1332,78 +1332,126 @@ app.delete("/events/:eventId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-// Update Event API
-app.put("/events/:eventId", async (req, res) => {
-    const eventId = req.params.eventId;
+// Edit Event API
+
+app.put('/events/:eventId', async (req, res) => {
+    const moment = require('moment');
+    const eventId= req.params.eventId.replace(":", "");
     const {
-        name,
+        eventName,
         location,
-        date,
-        start_time,
-        end_time,
+        startDate,
+        endDate,
         recurring,
-        recurring_ends,
+        recurringEndDate,
+        admins,
         description,
-        headerimage,
+        headerImage,
         tags,
+        requireRegistration,
+        receiveRegistrationNotification,
+        program,
     } = req.body;
 
     try {
-        // Update the event in the database
-        const updateEventQuery = `
-      UPDATE events
-      SET
-        event_name = $1,
-        location = $2,
-        starttime = $3,
-        endtime = $4,
-        recurring = $5,
-        recurringends = $6,
-        description = $7,
-        headerimage = $8
-      WHERE
-        event_id = $9
-    `;
-        await pool.query(updateEventQuery, [
-            name,
-            location,
-            date + " " + start_time,
-            date + " " + end_time,
-            recurring,
-            recurring_ends,
-            description,
-            headerimage,
-            eventId,
-        ]);
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
 
-        // Remove existing tags associated with the event
-        const removeTagsQuery = `
-      DELETE FROM eventtags
-      WHERE event_id = $1
-    `;
-        await pool.query(removeTagsQuery, [eventId]);
+            // Format date strings using Moment.js
+            const formattedDate = moment(startDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndDate = moment(endDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
-        // Insert new tags for the event
-        if (tags && Array.isArray(tags) && tags.length > 0) {
-            for (const tagName of tags) {
-                // Fetch tag_id for the current tag name
-                const tagQuery = "SELECT tag_id FROM tags WHERE tag_name = $1";
-                const tagResult = await pool.query(tagQuery, [tagName]);
-                const tagId = tagResult.rows[0].tag_id;
+            // Update events table
+            const eventUpdateQuery = `
+                UPDATE events 
+                SET event_name = $1, 
+                    description = $2, 
+                    headerimage = $3, 
+                    location = $4, 
+                    date = $5, 
+                    recurring = $6, 
+                    recurringends = $7, 
+                    program_id = $8, 
+                    requireRegistration = $9, 
+                    receiveRegistreeNotifications = $10, 
+                    enddate = $11
+                WHERE event_id = $12`;
+            const eventUpdateValues = [
+                eventName,
+                description,
+                headerImage,
+                location,
+                formattedDate, // Use formatted date value
+                recurring,
+                formattedRecurringEndDate, // Use formatted recurringEndDate value
+                program,
+                requireRegistration,
+                receiveRegistrationNotification,
+                formattedEndDate,
+                eventId
+            ];
+            await client.query(eventUpdateQuery, eventUpdateValues);
 
-                // Insert into eventtags table
-                const eventTagInsertQuery =
-                    "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
-                await pool.query(eventTagInsertQuery, [eventId, tagId]);
+            // Delete existing admins associated with the event
+            const deleteAdminsQuery = "DELETE FROM eventadmins WHERE event_id = $1";
+            await client.query(deleteAdminsQuery, [eventId]);
+
+            // Insert new admins into eventadmins table
+            if (admins && Array.isArray(admins) && admins.length > 0) {
+                for (const admin of admins) {
+                    // Ensure that admin is an object with a 'value' property
+                    if (typeof admin !== 'object' || !admin.value) {
+                        console.error(`Invalid admin data: ${admin}`);
+                        continue; // Skip to the next admin
+                    }
+                    const ucinetid = admin.value;
+
+                    // Insert into eventadmins table
+                    const eventAdminsInsertQuery =
+                        "INSERT INTO eventadmins (event_id, ucinetid) VALUES ($1, $2)";
+                    await client.query(eventAdminsInsertQuery, [
+                        eventId,
+                        ucinetid,
+                    ]);
+                }
             }
-        }
 
-        res.status(200).json({ message: "Event updated successfully" });
+            // Remove existing tags associated with the event
+            const deleteTagsQuery = "DELETE FROM eventtags WHERE event_id = $1";
+            await client.query(deleteTagsQuery, [eventId]);
+
+            // Insert new tags into eventtags table
+            if (tags && Array.isArray(tags) && tags.length > 0) {
+                for (const tagId of tags) {
+                    // Insert into eventtags table only if the tag is not already associated
+                    const eventTagInsertQuery =
+                        "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
+                    await client.query(eventTagInsertQuery, [eventId, tagId]);
+                }
+            }
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            res.status(200).json({ message: "Event updated successfully" });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            console.error("Error updating event:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-        console.error("Error updating event:", error);
+        console.error("Error connecting to database:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
 
 // Cancel Event API
 app.delete("/events/:eventId", async (req, res) => {

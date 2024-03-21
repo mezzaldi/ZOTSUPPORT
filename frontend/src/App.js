@@ -34,7 +34,7 @@ import ProgramSelectDashboard from "./routes/dashboard/ProgramSelectDashboard";
 import EditProgramForm from "./routes/program/EditProgramForm";
 
 
-import EditEventForm  from "./routes/EditEventForm";
+import EditEventForm  from "./routes/event/EditEventForm";
 
 import { useEffect } from "react";
 import axios from "axios";

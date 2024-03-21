@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired, faBell, faComments } from '@fortawesome/free-solid-svg-icons';
 import { Typography, Button, Grid, Box, Container } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
-import Logo from '../Logo.png';
+import Logo from '../logo.png';
 import Student from '../students.jpg';
 
 

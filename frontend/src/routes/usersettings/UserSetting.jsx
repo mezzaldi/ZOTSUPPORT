@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import './UserSetting.css';
+import '../../styles.scss'; 
 import { Typography, Button } from "@mui/material";
 
 const UserSetting = () => {
@@ -31,56 +31,33 @@ const UserSetting = () => {
     window.location.href = "/LandingPage"; 
   };
 
-  const handleDarkModeToggle = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const handleColorBlindModeToggle = () => {
-    setColorBlindMode(!colorBlindMode);
-  };
-
-  const handleHighContrastModeToggle = () => {
-    setHighContrastMode(!highContrastMode);
-  };
-
-  const handleUpcomingEventsChange = () => setUpcomingEvents(!upcomingEvents);
-  const handleWeeklySummaryChange = () => setWeeklySummary(!weeklySummary);
-  const handleForwardEmailChange = () => setForwardEmail(!forwardEmail);
-  const handleNewMessagesChange = () => setNewMessages(!newMessages);
-  const handleNewEventsChange = () => setNewEvents(!newEvents);
-
-  const bodyClass = [
-    darkMode ? 'dark-mode' : '',
-    colorBlindMode ? 'colorblind-mode' : '',
-    highContrastMode ? 'high-contrast' : '',
-  ].join(' ');
-
   return (
-    <div className={`settings-container ${bodyClass}`}>
-      <div className="settings-header">
+    <div className="pageContent">
+      <div className="h1Container">
         <Typography variant="h4">Settings</Typography>
       </div>
 
-      <div className="settings-profile">
-        <div className="settings-avatar">
-          <img src={userProfilePicture} alt="Profile" className="avatar-image" />
+      <div className="cardContainer settings-profile">
+        <div className="card">
+          <img src={userProfilePicture} alt="Profile" className="profileImg" />
           <input
             ref={fileInputRef}
             type="file"
+            hidden
             onChange={handleProfilePictureChange}
-            style={{ display: 'none' }}
           />
           <Typography
             variant="body1"
             component="span"
             onClick={handleClickChangePhoto}
+            className="cardText"
             style={{ cursor: 'pointer', textDecoration: 'underline', color: '#0E1C4C', marginLeft: '20px' }}
           >
             Change profile photo
           </Typography>
         </div>
         <div className="settings-info">
-          <Typography variant="body1" className="user-name">
+          <Typography variant="body1">
             Logged in as Peter Anteater
           </Typography>
           <Button variant="contained" color="primary" onClick={handleLogout}>
@@ -89,62 +66,69 @@ const UserSetting = () => {
         </div>
       </div>
 
-      <div className="settings-notifications">
-        <Typography variant="h5">Notifications</Typography>
-        <div>
+      <div className="tableContainer settings-notifications">
+        <div className="h2Container">
+          <Typography variant="h5">Notifications</Typography>
+        </div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={upcomingEvents} onChange={handleUpcomingEventsChange} /> Upcoming events by my learning program
+            <input type="checkbox" checked={upcomingEvents} onChange={() => setUpcomingEvents(!upcomingEvents)} /> Upcoming events by my learning program
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={weeklySummary} onChange={handleWeeklySummaryChange} /> Program weekly summary
+            <input type="checkbox" checked={weeklySummary} onChange={() => setWeeklySummary(!weeklySummary)} /> Program weekly summary
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={forwardEmail} onChange={handleForwardEmailChange} /> Forward notifications to email
+            <input type="checkbox" checked={forwardEmail} onChange={() => setForwardEmail(!forwardEmail)} /> Forward notifications to email
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={newMessages} onChange={handleNewMessagesChange} /> New messages from learning programs
+            <input type="checkbox" checked={newMessages} onChange={() => setNewMessages(!newMessages)} /> New messages from learning programs
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={newEvents} onChange={handleNewEventsChange} /> New events posted by learning programs I follow
+            <input type="checkbox" checked={newEvents} onChange={() => setNewEvents(!newEvents)} /> New events posted by learning programs I follow
           </Typography>
         </div>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" className="upcomingEventBar">
           Get Email Updates
         </Button>
       </div>
 
       <div className="settings-accessibility">
-        <Typography variant="h5">Accessibility</Typography>
-        <div>
-          <Typography component="label">
-            <input type="checkbox" checked={darkMode} onChange={handleDarkModeToggle} /> Dark mode
+        <div className="h2Container">
+          <Typography variant="h5">Accessibility</Typography>
+        </div>
+        <div className="checkboxContainer">
+        <Typography component="label">
+            <input type="checkbox" checked={darkMode} onChange={() => setDarkMode(!darkMode)} /> Dark mode
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={colorBlindMode} onChange={handleColorBlindModeToggle} /> Colorblind mode
+            <input type="checkbox" checked={colorBlindMode} onChange={() => setColorBlindMode(!colorBlindMode)} /> Colorblind mode
           </Typography>
         </div>
-        <div>
+        <div className="checkboxContainer">
           <Typography component="label">
-            <input type="checkbox" checked={highContrastMode} onChange={handleHighContrastModeToggle} /> High contrast text
+            <input type="checkbox" checked={highContrastMode} onChange={() => setHighContrastMode(!highContrastMode)} /> High contrast text
           </Typography>
         </div>
       </div>
 
-      <Button variant="contained" color="primary" className="btn-save-changes">
-        Save Changes
-      </Button>
+      <div className="formQuestion">
+        <Button variant="contained" color="primary" className="btn-save-changes">
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 }
-
 export default UserSetting;
+
+         

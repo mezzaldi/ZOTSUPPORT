@@ -1,299 +1,481 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button, Grid, Checkbox, FormControlLabel } from '@mui/material';
-import Select from 'react-select';
-import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Typography } from "@mui/material";
+import { TextField } from "@mui/material";
+import { Button } from "@mui/material";
+import Select from "react-select";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
+import { Grid } from "@mui/material";
+import dayjs from "dayjs";
+import Checkbox from "@mui/material/Checkbox";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const EditEventForm = ({ existingEventData }) => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    eventName: '',
-    location: '',
-    description: '',
-    startDate: dayjs(),
-    endDate: dayjs(),
-    recurringEndDate: dayjs(),
-    tags: [],
-    admins: [],
-    recurring: 'None',
-    requireRegistration: false,
-    receiveRegistrationNotification: false
-  });
+const EditEventForm = () => {
+    let { event_id } = useParams();
 
-  useEffect(() => {
-    if (existingEventData) {
-      setFormData({
-        eventName: existingEventData.eventName || '',
-        location: existingEventData.location || '',
-        description: existingEventData.description || '',
-        startDate: existingEventData.startDate ? dayjs(existingEventData.startDate) : dayjs(),
-        endDate: existingEventData.endDate ? dayjs(existingEventData.endDate) : dayjs(),
-        recurringEndDate: existingEventData.recurringEndDate ? dayjs(existingEventData.recurringEndDate) : dayjs(),
-        tags: existingEventData.tags || [],
-        admins: existingEventData.admins || [],
-        recurring: existingEventData.recurring || 'None',
-        requireRegistration: existingEventData.requireRegistration || false
-      });
+    const [program_id, setProgramId] = useState(null);
+
+    useEffect(() => {
+        const fetchEventDetails = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/events/${event_id}`);
+                const { program_id } = response.data;
+                setProgramId(program_id);  // Assuming the response includes program_id
+            } catch (error) {
+                console.error('Error fetching event details:', error);
+            }
+        };
+
+        fetchEventDetails();
+    }, [event_id]);
+
+    const [formData, setFormData] = useState({
+        eventName: "",
+        location: "",
+        description: "",
+        headerImage: "",
+        startDate: new Date(),
+        endDate: new Date(),
+        recurringEndDate: new Date(),
+
+    });
+
+    const [tagData, setTagData] = useState({
+        tags: [],
+    });
+
+    const [adminData, setAdminData] = useState({
+        admins: [],
+    });
+
+    const [startData, setStartData] = useState({
+        startDate: dayjs().toDate(),
+    });
+
+    const [endData, setEndData] = useState({
+        endDate: dayjs().toDate(),
+    });
+
+    const [recurringData, setRecurringData] = useState({
+        recurring: "None",
+    });
+
+    const [recurringEndData, setRecurringEndData] = useState({
+        recurringEndDate: dayjs().toDate(),
+    });
+
+    const [checkboxData, setCheckboxData] = useState({
+        requireRegistration: [false],
+        receiveRegistrationNotification: [false],
+    });
+
+    //Check if the event is recurring or not. If so, render recurringEnd question. If not
+    //hide it.
+
+    let isRecurring = false;
+
+    if (
+        recurringData.recurring.value === "Monthly" ||
+        recurringData.recurring.value === "Weekly"
+    ) {
+        isRecurring = true;
+    } else {
+        isRecurring = false;
     }
-  }, [existingEventData]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleCheckboxChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.checked });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.put(`/api/events/${existingEventData.id}`, formData);
-      console.log('Event updated successfully:', response.data);
-      navigate('/EventDashboard'); 
-    } catch (error) {
-      console.error('Failed to update event:', error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await axios.get('/api/tags');
-        const tags = response.data.map(tag => ({ value: tag.tag_id, label: tag.tag_name }));
-        setTagOptions(tags);
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
+    //This will update the input of program name, admin email, header image, description,
+    //registration requirement, and registration notifications on change
+    const handleInputChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const fetchAdmins = async () => {
-      try {
-        const response = await axios.get('/api/admins');
-        const admins = response.data.map(admin => ({ value: admin.ucinetid, label: admin.ucinetid }));
-        setAdminOptions(admins);
-      } catch (error) {
-        console.error('Error fetching admins:', error);
-      }
+    //This will update the input of tags on change
+    const handleTagInputChange = (e) => {
+        setTagData({ tags: e });
     };
 
-    fetchTags();
-    fetchAdmins();
-  }, []);
+    //This will update the input of admin on change
+    const handleAdminInputChange = (e) => {
+        setAdminData({ admins: e });
+    };
 
-  const [tagOptions, setTagOptions] = useState([]);
-  const [adminOptions, setAdminOptions] = useState([]);
+    //This will update the input of start date on change
+    const handleStartInputChange = (e) => {
+        setStartData({ date: e.toDate() });
+    };
 
-  const recurringOptions = [
-    { value: 'None', label: 'None' },
-    { value: 'Daily', label: 'Daily' },
-    { value: 'Weekly', label: 'Weekly' },
-    { value: 'Monthly', label: 'Monthly' }
-  ];
+    //This will update the input of end date on change
+    const handleEndInputChange = (e) => {
+        setEndData({ date: e.toDate() });
+    };
 
-  // Define a custom style object for the Select components
-  const customSelectStyles = {
-    control: (provided) => ({
-      ...provided,
-      fontFamily: 'Open Sans, sans-serif',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      fontFamily: 'Open Sans, sans-serif',
-    }),
-    option: (provided) => ({
-      ...provided,
-      fontFamily: 'Open Sans, sans-serif',
-    }),
-  };
+    //This will update the input of recurring on change
+    const handleRecurringInputChange = (e) => {
+        setRecurringData({ recurring: e });
+    };
 
-  const handleCancel = () => {
-    navigate('/EventDashboard'); // Or wherever you want to redirect to
-  };
+    //This will update the input of recurring end date on change
+    const handleRecurringEndInputChange = (e) => {
+        setRecurringEndData({ date: e.toDate() });
+    };
 
-  return (
-    <div style={{ marginTop: '2rem', padding: '0 1.25rem' }}>
-      <form onSubmit={handleSubmit}>
-        <Grid container alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: '2rem' }}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="h4">Edit Event</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} display="flex" justifyContent="flex-end">
-            <Button variant="contained" onClick={handleCancel} color="error">
-              Cancel Event
-            </Button>
-          </Grid>
-        </Grid>
+    //This will update the input of require registration and receive reg notif on change
+    const handleCheckboxInputChange = (e) => {
+        setCheckboxData({
+            ...checkboxData,
+            [e.target.name]: [e.target.checked],
+        });
+    };
 
-        <Grid container direction="column" spacing={3}>
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Event Name:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                required
-                fullWidth
-                label="Event Name"
-                name="eventName"
-                value={formData.eventName}
-                onChange={handleInputChange}
-              />
-            </Grid>
-          </Grid>
+    //Input information from tags, recurring, color, admins, registration require, receive registration notif
+    // and start end dates are concatenated with the rest of the form and logged in the console
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        // Iterate through chosen tags and store just the value
+        const finalEventTags = [];
+        tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
+        formData.tags = finalEventTags;
+        formData.admins = adminData.admins;
+        formData.program = program_id;
+    
+        // Assign start date
+        if (typeof startData.startDate === "undefined") {
+            formData.startDate = startData.date;
+        } else {
+            formData.startDate = startData.startDate;
+        }
+    
+        // Assign end date
+        if (typeof endData.endDate === "undefined") {
+            formData.endDate = endData.date;
+        } else {
+            formData.endDate = endData.endDate;
+        }
+    
+        // Assign recurring end date
+        if (typeof recurringEndData.recurringEndDate === "undefined") {
+            formData.recurringEndDate = recurringEndData.date;
+        } else {
+            formData.recurringEndDate = recurringEndData.recurringEndDate;
+        }
+    
+        formData.recurring = recurringData.recurring.value;
+    
+        formData.requireRegistration = checkboxData.requireRegistration[0];
+        formData.receiveRegistrationNotification = checkboxData.receiveRegistrationNotification[0];
+    
+        try {
+            const response = await axios.put(`http://localhost:3001/events/${event_id}`, formData);
+            console.log('Event updated successfully:', response.data);
+            // Handle the success response accordingly
+        } catch (error) {
+            console.error('Error updating event:', error);
+            // Handle the error appropriately
+        }
+    };
+    
+    
 
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Location:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                fullWidth
-                label="Location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-              />
-            </Grid>
-          </Grid>
+    const recurringOptions = [
+        //recurring options
+        { value: "None", label: "None" },
+        { value: "Weekly", label: "Weekly" },
+        { value: "Monthly", label: "Monthly" },
+    ];
 
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Start Date:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  label="Start Date"
-                  value={formData.startDate}
-                  onChange={(newValue) => setFormData({ ...formData, startDate: newValue })}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
+    // Get tags from database
+    const [tags, setTags] = useState();
+    useEffect(() => {
+        console.log("useeffect tags");
+        const getTags = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/tags`)
+                .catch((err) => console.log(err));
+            setTags(await res.data);
+        };
+        getTags();
+    }, []);
 
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">End Date:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  label="End Date"
-                  value={formData.endDate}
-                  onChange={(newValue) => setFormData({ ...formData, endDate: newValue })}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
+    //All the different tag categories
+    let levelTags = [];
+    let subjectTags = [];
+    let eventTypeTags = [];
 
-          <Grid item container spacing={2} alignItems="flex-start">
-            <Grid item xs={3}>
-              <Typography variant="h6">Description:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-            </Grid>
-          </Grid>
-
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Tags:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Select
-                isMulti
-                options={tagOptions}
-                value={formData.tags.map(tag => ({ value: tag, label: tag }))}
-                onChange={(selected) => setFormData({ ...formData, tags: selected.map(s => s.value) })}
-                styles={customSelectStyles} // Apply the custom styles here
-              />
-            </Grid>
-          </Grid>
-
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Admins:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Select
-                isMulti
-                options={adminOptions}
-                value={formData.admins.map(admin => ({ value: admin, label: admin }))}
-                onChange={(selected) => setFormData({ ...formData, admins: selected.map(s => s.value) })}
-                styles={customSelectStyles} // Apply the custom styles here
-              />
-            </Grid>
-          </Grid>
-
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="h6">Recurring:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Select
-                options={recurringOptions}
-                value={recurringOptions.find(option => option.value === formData.recurring)}
-                onChange={(selected) => setFormData({ ...formData, recurring: selected.value })}
-              />
-            </Grid>
-          </Grid>
-
-          {formData.recurring !== 'None' && (
-            <Grid item container spacing={2} alignItems="center">
-              <Grid item xs={3}>
-                <Typography variant="h6">Recurring End Date:</Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    label="Recurring End Date"
-                    value={formData.recurringEndDate}
-                    onChange={(newValue) => setFormData({ ...formData, recurringEndDate: newValue })}
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                    disabled={formData.recurring === 'None'}
-                  />
-                </LocalizationProvider>
-              </Grid>
-            </Grid>
-          )}
-
-          <Grid item container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.requireRegistration}
-                    onChange={handleCheckboxChange}
-                    name="requireRegistration"
-                  />
+    // Load tag data into menu options under the correct category
+    {
+        tags &&
+            tags.map((tag) => {
+                if (tag.tag_category === "Level") {
+                    levelTags.push({
+                        value: tag.tag_id,
+                        label: tag.tag_name,
+                        color: tag.tag_color,
+                    });
                 }
-                label="Require Registration"
-              />
-            </Grid>
-          </Grid>
 
-          <Grid container spacing={2} justifyContent="center" style={{ marginTop: '2rem' }}>
-            <Button variant="contained" type="submit">Update Event</Button>
-          </Grid>
-        </Grid>
-      </form>
-    </div>
-  );
+                if (tag.tag_category === "Subject") {
+                    subjectTags.push({
+                        value: tag.tag_id,
+                        label: tag.tag_name,
+                        color: tag.tag_color,
+                    });
+                }
+
+                if (tag.tag_category === "Event Type") {
+                    eventTypeTags.push({
+                        value: tag.tag_id,
+                        label: tag.tag_name,
+                        color: tag.tag_color,
+                    });
+                }
+            });
+    }
+
+    //Gather all the categories of tags under one list
+    const allTags = [
+        {
+            label: "Level",
+            options: levelTags,
+        },
+
+        {
+            label: "Subject",
+            options: subjectTags,
+        },
+
+        {
+            label: "Event Types",
+            options: eventTypeTags,
+        },
+    ];
+
+    //styling tags so they correspond to assigned color
+    const tagStyles = {
+        option: (styles, { data }) => {
+            return {
+                ...styles,
+                color: data.color,
+            };
+        },
+    };
+
+    // Get admin from database
+    const [admins, setAdmins] = useState();
+    useEffect(() => {
+        console.log("useeffect admin");
+        const getAdmins = async () => {
+            const res = await axios
+                .get(`http://localhost:3001/programs/:1/administrators`)
+                .catch((err) => console.log(err));
+            setAdmins(await res.data);
+        };
+        getAdmins();
+        console.log(admins);
+    }, []);
+
+    const eventAdmins = [];
+
+    {
+        admins &&
+            admins.map((admin) => {
+                eventAdmins.push({
+                    value: admin.ucinetid,
+                    label: admin.firstname + " " + admin.lastname,
+                });
+            });
+    }
+
+    return (
+        <div className="h2Container">
+            <form onSubmit={handleSubmit}>
+                <Grid
+                    container
+                    align-items="center"
+                    paddingBottom="3rem"
+                    columnSpacing={2}
+                    rowSpacing={6}
+                >
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Event Name:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <TextField
+                            required
+                            fullWidth
+                            label="Name"
+                            type="text"
+                            name="eventName"
+                            value={formData.eventmName}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Location:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <TextField
+                            fullWidth
+                            label="Location"
+                            type="text"
+                            name="location"
+                            value={formData.location}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Start:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                label="Start Date"
+                                defaultValue={dayjs()}
+                                minDate={dayjs()}
+                                onChange={handleStartInputChange}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">End:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                label="End Date"
+                                minDate={dayjs(startData.date)}
+                                onChange={handleEndInputChange}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Description:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={10}
+                            label="Description of program"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Header Image:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <Button variant="outlined" component="label">
+                            Upload Image
+                            <input
+                                type="file"
+                                hidden
+                                onChange={handleInputChange}
+                                value={formData.headerImage}
+                            />
+                        </Button>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Assigned Admins:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <Select
+                            isMulti
+                            className="tagContainer"
+                            value={adminData.tags}
+                            onChange={handleAdminInputChange}
+                            options={eventAdmins}
+                        ></Select>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Tags:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <Select
+                            isMulti
+                            className="tagContainer"
+                            value={tagData.tags}
+                            onChange={handleTagInputChange}
+                            options={allTags}
+                            styles={tagStyles}
+                        ></Select>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Recurring:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <Select
+                            className="tagContainer"
+                            value={recurringData.recurring}
+                            onChange={handleRecurringInputChange}
+                            options={recurringOptions}
+                        ></Select>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <Typography variant="h2">Recurring Ends On:</Typography>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Recurring End Date"
+                                defaultValue={dayjs()}
+                                minDate={dayjs()}
+                                onChange={handleRecurringEndInputChange}
+                                disabled={!isRecurring}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid item>
+                        <div className="checkboxContainer">
+                            <Checkbox
+                                name={"requireRegistration"}
+                                value={checkboxData.requireRegistration}
+                                onChange={handleCheckboxInputChange}
+                            />
+                            <Typography variant="h3">
+                                Require registration?
+                            </Typography>
+                        </div>
+                        <div className="checkboxContainer">
+                            <Checkbox
+                                name={"receiveRegistrationNotification"}
+                                value={
+                                    checkboxData.receiveRegistrationNotification
+                                }
+                                onChange={handleCheckboxInputChange}
+                            />
+                            <Typography variant="h3">
+                                Would you like to receive registration
+                                notifications?
+                            </Typography>
+                        </div>
+                    </Grid>
+                </Grid>
+
+                <Grid container justifyContent="center">
+                    <Grid item>
+                        <Button variant="contained" type="submit">
+                            Publish new program page
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+        </div>
+    );
 };
 
 export default EditEventForm;

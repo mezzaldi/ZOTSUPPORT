@@ -46,7 +46,6 @@ const ProgramEventsPage = () => {
         setSearchTerm(event.target.value);
     };
 
-    // Filter events based on the search term
     const filterEvents = (events) => {
         if (!events) return [];
         return events.filter((event) =>
