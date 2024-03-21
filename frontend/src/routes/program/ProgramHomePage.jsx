@@ -11,10 +11,7 @@ const ProgramHomePage = () => {
     program_id = program_id.replace(":", "");
 
     const userData = useContext(UserContext);
-    const userInfo = {
-        ucinetid: userData.ucinetid
-    }
-    console.log("This is the ucinetid:", userInfo)
+  
     const [program, setProgram] = useState();
 
     // Check if the user is a super administrator for this program
@@ -24,9 +21,6 @@ const ProgramHomePage = () => {
 
     // Check if the user is a regular administrator for this program
     const isAdmin = userData.adminprograms.includes(parseInt(program_id)) ? true : false;
-    console.log("program:", program_id)
-    console.log("userprograms:", userData.adminprograms)
-    console.log(isAdmin)
 
     useEffect(() => {
         const getProgram = async () => {
@@ -133,7 +127,7 @@ const ProgramHomePage = () => {
                         }}
                     >
                         <Typography variant="h1">{program.name}</Typography>
-                        {(isSuperAdmin || isAdmin) && (
+                        {(isSuperAdmin) && (
                             <Box>
                                 <Link to={`/EditProgramForm/${program_id}`}>
                                     <Button variant="contained">Edit</Button>
