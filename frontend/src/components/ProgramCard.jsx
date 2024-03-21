@@ -35,11 +35,6 @@ const ProgramCard = (props) => {
                 </div>
             </CardContent>
 
-            <CardActions>
-                <Button size="small" variant="outlined" color="primary">
-                    Unfollow
-                </Button>
-            </CardActions>
         </Card>
     );
 };

@@ -37,11 +37,6 @@ const EventCard = (props) => {
                 </div>
             </CardContent>
 
-            <CardActions>
-                <Button size="small" variant="outlined" color="primary">
-                    Register
-                </Button>
-            </CardActions>
         </Card>
     );
 };
