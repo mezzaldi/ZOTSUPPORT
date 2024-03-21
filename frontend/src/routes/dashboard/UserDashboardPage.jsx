@@ -86,7 +86,7 @@ const DashboardPage = () => {
                         {upcomingEvents &&
                             upcomingEvents.map((eventData, index) => {
                                 return (
-                                    <EventBar data={eventData} key={index} />
+                                    <EventBar data={eventData} event_id={eventData.event_id} key={eventData.event_id} />
                                 );
                             })}
                     </div>
