@@ -57,6 +57,63 @@ const EventHomePage = () => {
         }
     }, [event]);
 
+    // Get user's upcoming events they are registered for
+    const [registeredEvents, setRegisteredEvents] = useState();
+    useEffect(() => {
+        const getRegisteredEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/users/:${userData.ucinetid}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setRegisteredEvents(res.data);
+        };
+        getRegisteredEvents();
+    }, [userData]);
+
+    let registeredIDs = []
+    { registeredEvents &&
+        registeredEvents.forEach((event) => registeredIDs.push(event.event_id))
+    }
+
+    let isRegistered = registeredIDs.includes(parseInt(event_id));
+    console.log("Registered Events: ", registeredIDs)
+    console.log(isRegistered)
+
+    const handleAddRegisterChange  = async (e) => {
+        try {
+            const response = await axios.post(
+                `http://localhost:3001/events/:${event_id}/register/:${userData.ucinetid}`);
+            console.log("Registered successfully:", response.data);
+            // You can handle the success response accordingly
+        } catch (error) {
+            console.error("User not registered:", error);
+            // Handle the error appropriately
+        }
+        
+        isRegistered = true
+        window.location.reload(false);
+
+
+    };
+
+    const handleUnRegisterChange  = async (e) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:3001/events/:${event_id}/unregister/:${userData.ucinetid}`);
+            console.log("Unregistered successfully:", response.data);
+            // You can handle the success response accordingly
+        } catch (error) {
+            console.error("User is still registered:", error);
+            // Handle the error appropriately
+        }
+        
+        isRegistered = false
+        window.location.reload(false);
+
+
+    };
+
     return (
         <div class="pageContent">
             {event && (
@@ -118,10 +175,17 @@ const EventHomePage = () => {
                                     </Button>
                                 )}
 
-                                {!isAdmin &&
+                                {(!isAdmin && !isRegistered) &&
                                     event.requireregistration === true && (
-                                        <Button variant="contained">
+                                        <Button variant="contained" onClick={handleAddRegisterChange}>
                                             Register
+                                        </Button>
+                                    )}
+                                
+                                {(!isAdmin && isRegistered) &&
+                                    event.requireregistration === true && (
+                                        <Button variant="contained" onClick={handleUnRegisterChange}>
+                                            Unregister
                                         </Button>
                                     )}
                             </div>
