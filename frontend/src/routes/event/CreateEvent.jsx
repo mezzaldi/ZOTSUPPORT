@@ -11,8 +11,12 @@ import { Grid } from "@mui/material";
 import dayjs from "dayjs";
 import Checkbox from "@mui/material/Checkbox";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const Event = () => {
+    let { program_id } = useParams();
+    program_id = program_id.replace(":", "");
+
     const [formData, setFormData] = useState({
         eventName: "",
         location: "",
@@ -118,7 +122,7 @@ const Event = () => {
         tagData.tags.push({ value: "20", label: "Event" }); //Event tag added automatically here.
         //iterate through chosen tags and store just the value
         const finalEventTags = [];
-        tagData.tags.forEach((tag) => finalEventTags.push(tag.label));
+        tagData.tags.forEach((tag) => finalEventTags.push(tag.value));
         formData.tags = finalEventTags;
         formData.admins = adminData.admins;
 
@@ -144,18 +148,19 @@ const Event = () => {
         formData.requireRegistration = checkboxData.requireRegistration[0];
         formData.receiveRegistrationNotification =
             checkboxData.receiveRegistrationNotification[0];
+        formData.program = program_id
         console.log(formData);
 
         //back-end to front-end connection here, in progress
 
-        /* try {
-      const response = await axios.post('http://localhost:3001/programs', formData);
+        try {
+      const response = await axios.post('http://localhost:3001/events', formData);
       console.log('Program created successfully:', response.data);
       // You can handle the success response accordingly
     } catch (error) {
       console.error('Error creating program:', error);
       // Handle the error appropriately
-    }*/
+    }
     };
 
     const recurringOptions = [

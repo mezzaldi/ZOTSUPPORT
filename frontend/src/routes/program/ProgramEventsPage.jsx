@@ -5,6 +5,7 @@ import { Box, Button, IconButton, InputBase, Paper, Tab, Tabs } from "@mui/mater
 import SearchIcon from "@mui/icons-material/Search";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const ProgramEventsPage = () => {
     let { program_id } = useParams();
@@ -69,7 +70,9 @@ const ProgramEventsPage = () => {
                     <Tab label="Upcoming events" value={1} />
                     <Tab label="Previous events" value={2} />
                 </Tabs>
-                <Button variant="contained">+ New event</Button>
+                <Link to={`/CreateNewEvent/:${program_id}`}> 
+                    <Button variant="contained">+ New event</Button>
+                </Link>
             </Box>
 
             <Box sx={{ display: "flex", flexDirection: "row", marginTop: "1.5rem", marginBottom: "1.5rem" }}>

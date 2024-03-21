@@ -1,16 +1,55 @@
 import React, { useState } from "react";
 import { Typography, TextField, Button, Grid } from "@mui/material";
 import Select from "react-select";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
 
 const Notification = () => {
+
+    let { program_id } = useParams();
+    program_id = program_id.replace(":", "");
+
+    // Get upcoming events
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    useEffect(() => {
+        const getUpcomingEvents = async () => {
+            const res = await axios
+                .get(
+                    `http://localhost:3001/programs/:${program_id}/events/upcoming`
+                )
+                .catch((err) => console.log(err));
+            setUpcomingEvents(res.data);
+            console.log(res.data)
+        };
+        getUpcomingEvents();
+    }, []);
+
     const recipientOptions = [
         { value: "programFollowers", label: "All Followers" },
-
-        //load in the last 3 most recent events
-        { value: "1", label: "Workshop" },
-        { value: "2", label: "Peer Tutoring" },
-        { value: "3", label: "Academic Coaching" },
     ];
+
+    //load in the last 3 most recent upcoming events
+    { upcomingEvents &&
+        upcomingEvents.map((event) => {
+            if (upcomingEvents.length >= 4) {
+                for(let i = 0; i < 3; i++){
+                    recipientOptions.push({
+                        value: event.event_id,
+                        label: event.event_name
+                    })
+                }
+            }
+            else {
+                recipientOptions.push({
+                    value: event.event_id,
+                    label: event.event_name
+                })
+            }
+
+        })
+    
+    }
 
     const [formData, setFormData] = useState({
         title: "",

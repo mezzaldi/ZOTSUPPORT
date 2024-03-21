@@ -134,12 +134,12 @@ const App = () => {
                                 element={<CreateNewProgramPage />}
                             />
                             <Route
-                                path="/CreateNewEvent"
+                                path="/CreateNewEvent/:program_id"
                                 element={<CreateNewEventPage />}
                             />
 
                             <Route
-                                path="/CreateNewNotification"
+                                path="/CreateNewNotification/:program_id"
                                 element={<CreateNewNotificationPage />}
                             />
 

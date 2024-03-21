@@ -124,17 +124,8 @@ app.put("/programs/:programId", async (req, res) => {
     const programId = req.params.programId.replace(":", "");
     const { name, description, headerImage, color, tags } = req.body;
 
-    // Define a mapping for tag values to labels
-    // const tagValueToLabel = {
-    //     "1": "Undergraduate",
-    //     "2": "Graduate",
-    //     "3": "Art",
-    //     "4": "Biology",
-    //     // Add more mappings as needed
-    // };
-
     // Validate input data
-    if (!name || !description) {
+    if (!name || !description || !programId) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -145,41 +136,22 @@ app.put("/programs/:programId", async (req, res) => {
             await client.query("BEGIN");
 
             // 1. Update the program entry
-            const programUpdateQuery = `
-                UPDATE programs 
-                SET program_name = $1, 
-                    description = $2, 
-                    headerimage = $3, 
-                    color = $4
-                WHERE program_id = $5`;
-            const programUpdateValues = [
-                name,
-                description,
-                headerImage,
-                color,
-                programId,
-            ];
-            await client.query(programUpdateQuery, programUpdateValues);
+            const programUpdateQuery =
+                "UPDATE programs SET program_name = $1, description = $2, headerimage = $3, color = $4 WHERE program_id = $5";
+            const programUpdateValues = [name, description, headerImage, color, programId];
+            await client.query(
+                programUpdateQuery,
+                programUpdateValues
+            );
 
-            // 2. Delete existing program tags
-            const deleteTagsQuery = `
-                DELETE FROM program_tags 
-                WHERE program_id = $1`;
+            // 2. Delete existing tags associated with the program
+            const deleteTagsQuery =
+                "DELETE FROM program_tags WHERE program_id = $1";
             await client.query(deleteTagsQuery, [programId]);
 
-            // 3. Filter out unwanted tags and convert tag values to labels
-            const parsedTags = tags.filter((tag) => tag !== "21"); // Remove tag "21"
-            // .map(tag => tagValueToLabel[tag] || tag); // Convert tag values to labels using the mapping
-
-            // 4. Add only valid tags associated with the program
-            if (parsedTags.length > 0) {
-                for (const tagName of parsedTags) {
-                    // Fetch tag_id for the current tag name
-                    const tagQuery =
-                        "SELECT tag_id FROM tags WHERE tag_name = $1";
-                    const tagResult = await client.query(tagQuery, [tagName]);
-                    const tagId = tagResult.rows[0].tag_id;
-
+            // 3. Add updated tags associated with the program
+            if (tags && Array.isArray(tags) && tags.length > 0) {
+                for (const tagId of tags) { // Assuming tags contain tag IDs
                     // Insert into program_tags
                     const programTagInsertQuery =
                         "INSERT INTO program_tags (program_id, tag_id) VALUES ($1, $2)";
@@ -197,13 +169,14 @@ app.put("/programs/:programId", async (req, res) => {
         } catch (error) {
             // Rollback transaction if any error occurs
             await client.query("ROLLBACK");
-            throw error;
+            console.error("Error updating program:", error);
+            res.status(500).json({ error: "Internal server error" });
         } finally {
             // Release the client back to the pool
             client.release();
         }
     } catch (error) {
-        console.error("Error updating program:", error);
+        console.error("Error connecting to database:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -534,21 +507,22 @@ app.get("/programs", async (req, res) => {
     }
 });
 
-//Creates event for specific program
-app.post("/events", async (req, res) => {
+// Creates event for specific program
+const moment = require('moment'); // Import Moment.js library
+
+// Creates event for specific program
+app.post('/events', async (req, res) => {
     const {
-        name,
+        eventName,
         location,
         date,
-        start_time,
-        end_time,
         recurring,
-        recurring_ends,
-        user_emailaddress,
+        recurringEndDate,
+        admins,
         description,
-        headerimage,
+        headerImage,
         tags,
-        program_id,
+        program,
     } = req.body;
 
     try {
@@ -557,26 +531,24 @@ app.post("/events", async (req, res) => {
         try {
             await client.query("BEGIN");
 
-            // Convert recurring array to string
-            const recurringString = recurring.join(","); // Assuming recurring is an array of strings
+            // Format date strings using Moment.js
+            const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
             // Insert into events table
             const eventInsertQuery = `
-                INSERT INTO events (event_name, description, headerimage, location, starttime, endtime, recurring, recurringends, requireregistration, receiveregistreenotifications, program_id)
-                VALUES ($1, $2, $3, $4, $5, $6, ARRAY[$7], $8, $9, $10, $11)
+                INSERT INTO events (event_name, description, headerimage, location, date, recurring, recurringends, program_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 RETURNING event_id`;
             const eventInsertValues = [
-                name,
+                eventName,
                 description,
-                headerimage,
+                headerImage,
                 location,
-                date + " " + start_time,
-                date + " " + end_time,
-                recurringString,
-                recurring_ends,
-                "false",
-                "false",
-                program_id,
+                formattedDate, // Use formatted date value
+                recurring,
+                formattedRecurringEndDate, // Use formatted recurringEndDate value
+                program,
             ];
             const eventInsertResult = await client.query(
                 eventInsertQuery,
@@ -584,31 +556,41 @@ app.post("/events", async (req, res) => {
             );
             const eventId = eventInsertResult.rows[0].event_id;
 
-            // Fetch ucinetid for the specified user_emailaddress
-            const userQuery = "SELECT ucinetid FROM users WHERE firstname = $1";
-            const userResult = await client.query(userQuery, [
-                user_emailaddress,
-            ]);
-            const ucinetid = userResult.rows[0].ucinetid;
+            // Insert admins into eventadmins table
+            if (admins && Array.isArray(admins) && admins.length > 0) {
+                for (const admin of admins) {
+                    // Ensure that admin is an object with a 'value' property
+                    if (typeof admin !== 'object' || !admin.value) {
+                        console.error(`Invalid admin data: ${admin}`);
+                        continue; // Skip to the next admin
+                    }
+                    const ucinetid = admin.value;
 
-            // Insert into eventadmins table
-            const eventAdminsInsertQuery =
-                "INSERT INTO eventadmins (event_id, ucinetid) VALUES ($1, $2)";
-            await client.query(eventAdminsInsertQuery, [eventId, ucinetid]);
+                    // Insert into eventadmins table
+                    const eventAdminsInsertQuery =
+                        "INSERT INTO eventadmins (event_id, ucinetid) VALUES ($1, $2)";
+                    await client.query(eventAdminsInsertQuery, [
+                        eventId,
+                        ucinetid,
+                    ]);
+                }
+            }
 
-            // Insert tags into eventtags table
             if (tags && Array.isArray(tags) && tags.length > 0) {
-                for (const tagName of tags) {
-                    // Fetch tag_id for the current tag name
-                    const tagQuery =
-                        "SELECT tag_id FROM tags WHERE tag_name = $1";
-                    const tagResult = await client.query(tagQuery, [tagName]);
-                    const tagId = tagResult.rows[0].tag_id;
+                for (const tagId of tags) {
+                    // Check if the tag is already associated with the event
+                    const tagExistsQuery = `
+                        SELECT COUNT(*) FROM eventtags
+                        WHERE event_id = $1 AND tag_id = $2`;
+                    const tagExistsResult = await client.query(tagExistsQuery, [eventId, tagId]);
+                    const tagCount = parseInt(tagExistsResult.rows[0].count);
 
-                    // Insert into eventtags table
-                    const eventTagInsertQuery =
-                        "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
-                    await client.query(eventTagInsertQuery, [eventId, tagId]);
+                    if (tagCount === 0) {
+                        // Insert into eventtags table only if the tag is not already associated
+                        const eventTagInsertQuery =
+                            "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
+                        await client.query(eventTagInsertQuery, [eventId, tagId]);
+                    }
                 }
             }
 
@@ -630,7 +612,6 @@ app.post("/events", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 // GET endpoint to fetch top 10 most popular upcoming events from all programs
 app.get("/popular-upcoming-events", async (req, res) => {
     try {
@@ -1316,75 +1297,114 @@ app.delete("/events/:eventId", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-// Update Event API
-app.put("/events/:eventId", async (req, res) => {
-    const eventId = req.params.eventId;
+
+
+// Edit Event API
+app.put('/events/:eventId', async (req, res) => {
+    const eventId= req.params.eventId.replace(":", "");
     const {
-        name,
+        eventName,
         location,
         date,
-        start_time,
-        end_time,
         recurring,
-        recurring_ends,
+        recurringEndDate,
+        admins,
         description,
-        headerimage,
+        headerImage,
         tags,
+        program_id,
     } = req.body;
 
     try {
-        // Update the event in the database
-        const updateEventQuery = `
-      UPDATE events
-      SET
-        event_name = $1,
-        location = $2,
-        starttime = $3,
-        endtime = $4,
-        recurring = $5,
-        recurringends = $6,
-        description = $7,
-        headerimage = $8
-      WHERE
-        event_id = $9
-    `;
-        await pool.query(updateEventQuery, [
-            name,
-            location,
-            date + " " + start_time,
-            date + " " + end_time,
-            recurring,
-            recurring_ends,
-            description,
-            headerimage,
-            eventId,
-        ]);
+        // Start a transaction
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
 
-        // Remove existing tags associated with the event
-        const removeTagsQuery = `
-      DELETE FROM eventtags
-      WHERE event_id = $1
-    `;
-        await pool.query(removeTagsQuery, [eventId]);
+            // Format date strings using Moment.js
+            const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            const formattedRecurringEndDate = moment(recurringEndDate).format('YYYY-MM-DD HH:mm:ss');
 
-        // Insert new tags for the event
-        if (tags && Array.isArray(tags) && tags.length > 0) {
-            for (const tagName of tags) {
-                // Fetch tag_id for the current tag name
-                const tagQuery = "SELECT tag_id FROM tags WHERE tag_name = $1";
-                const tagResult = await pool.query(tagQuery, [tagName]);
-                const tagId = tagResult.rows[0].tag_id;
+            // Update event in events table
+            const eventUpdateQuery = `
+                UPDATE events
+                SET event_name = $1, description = $2, headerimage = $3, location = $4, date = $5, recurring = $6, recurringends = $7, program_id = $8
+                WHERE event_id = $9`;
+            const eventUpdateValues = [
+                eventName,
+                description,
+                headerImage,
+                location,
+                formattedDate, // Use formatted date value
+                recurring,
+                formattedRecurringEndDate, // Use formatted recurringEndDate value
+                program_id,
+                eventId,
+            ];
+            await client.query(
+                eventUpdateQuery,
+                eventUpdateValues
+            );
 
-                // Insert into eventtags table
-                const eventTagInsertQuery =
-                    "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
-                await pool.query(eventTagInsertQuery, [eventId, tagId]);
+            // Update admins for the event
+            // First, delete existing admins for the event
+            const deleteAdminsQuery = `
+                DELETE FROM eventadmins
+                WHERE event_id = $1`;
+            await client.query(deleteAdminsQuery, [eventId]);
+
+            // Then insert new admins
+            if (admins && Array.isArray(admins) && admins.length > 0) {
+                for (const admin of admins) {
+                    // Ensure that admin is an object with a 'value' property
+                    if (typeof admin !== 'object' || !admin.value) {
+                        console.error(`Invalid admin data: ${admin}`);
+                        continue; // Skip to the next admin
+                    }
+                    const ucinetid = admin.value;
+
+                    // Insert into eventadmins table
+                    const eventAdminsInsertQuery =
+                        "INSERT INTO eventadmins (event_id, ucinetid) VALUES ($1, $2)";
+                    await client.query(eventAdminsInsertQuery, [
+                        eventId,
+                        ucinetid,
+                    ]);
+                }
             }
-        }
 
-        res.status(200).json({ message: "Event updated successfully" });
+            // Update eventtags for the event
+            // For simplicity, you may choose to delete all existing tags and insert the new ones
+            const deleteTagsQuery = `
+                DELETE FROM eventtags
+                WHERE event_id = $1`;
+            await client.query(deleteTagsQuery, [eventId]);
+
+            // Insert new tags
+            if (tags && Array.isArray(tags) && tags.length > 0) {
+                for (const tagId of tags) {
+                    // Insert into eventtags table
+                    const eventTagInsertQuery =
+                        "INSERT INTO eventtags (event_id, tag_id) VALUES ($1, $2)";
+                    await client.query(eventTagInsertQuery, [eventId, tagId]);
+                }
+            }
+
+            // Commit the transaction
+            await client.query("COMMIT");
+
+            res.status(200).json({ message: "Event updated successfully" });
+        } catch (error) {
+            // Rollback transaction if any error occurs
+            await client.query("ROLLBACK");
+            console.error("Error updating event:", error);
+            res.status(500).json({ error: "Internal server error" });
+        } finally {
+            // Release the client back to the pool
+            client.release();
+        }
     } catch (error) {
-        console.error("Error updating event:", error);
+        console.error("Error connecting to database:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
