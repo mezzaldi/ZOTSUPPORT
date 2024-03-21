@@ -469,7 +469,7 @@ const EditEventForm = () => {
                 <Grid container justifyContent="center">
                     <Grid item>
                         <Button variant="contained" type="submit">
-                            Publish new program page
+                            Update Event
                         </Button>
                     </Grid>
                 </Grid>
