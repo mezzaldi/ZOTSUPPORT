@@ -22,6 +22,7 @@ const EventHomePage = () => {
 
     const userData = useContext(UserContext);
 
+    // Get data for this event
     const [event, setEvent] = useState();
     useEffect(() => {
         const getEvent = async () => {
@@ -33,6 +34,7 @@ const EventHomePage = () => {
         getEvent();
     }, [event_id]);
 
+    // Get list of admins for this event
     const [admins, setAdmins] = useState();
     useEffect(() => {
         const getAdmins = async () => {
@@ -40,12 +42,20 @@ const EventHomePage = () => {
                 .get(`http://localhost:3001/events/:${event_id}/administrators`)
                 .catch((err) => console.log(err));
             setAdmins(res.data);
-            console.log(res.data);
         };
         getAdmins();
     }, [event_id]);
 
-    console.log(event);
+    // check if the user is an admin for the program that is hosting this event
+    const [isAdmin, setIsAdmin] = useState();
+    useEffect(() => {
+        if (event) {
+            const sa = userData.adminprograms.includes(event.program_id)
+                ? true
+                : false;
+            setIsAdmin(sa);
+        }
+    }, [event]);
 
     return (
         <div class="pageContent">
@@ -94,11 +104,21 @@ const EventHomePage = () => {
                                     View Program Page
                                 </Button>
 
-                                {userData.role === "superadmin" && (
-                                    <Button variant="contained" onClick={() => navigate(`/EditEventForm/${event_id}`, { state: { event } })}>Edit</Button>
+                                {isAdmin && (
+                                    <Button
+                                        variant="contained"
+                                        onClick={() =>
+                                            navigate(
+                                                `/EditEventForm/${event_id}`,
+                                                { state: { event } }
+                                            )
+                                        }
+                                    >
+                                        Edit
+                                    </Button>
                                 )}
 
-                                {userData.role === "student" &&
+                                {!isAdmin &&
                                     event.requireregistration === true && (
                                         <Button variant="contained">
                                             Register

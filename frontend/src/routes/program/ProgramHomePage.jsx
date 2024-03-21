@@ -8,12 +8,18 @@ import LongEventCard from "../../components/LongEventCard";
 
 const ProgramHomePage = () => {
     let { program_id } = useParams();
-    program_id = program_id.replace(":", "");
-
-    console.log("CREATED PROGRAM PAGE");
+    program_id = parseInt(program_id.replace(":", ""));
 
     const userData = useContext(UserContext);
     const [program, setProgram] = useState();
+
+    // Check if the user is a super administrator for this program
+    const isSuperAdmin = userData.superadminprograms.includes(program_id)
+        ? true
+        : false;
+
+    // Check if the user is a regular administrator for this program
+    const isAdmin = userData.adminprograms.includes(program_id) ? true : false;
 
     useEffect(() => {
         const getProgram = async () => {
@@ -35,11 +41,9 @@ const ProgramHomePage = () => {
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
-            console.log(res.data)
         };
         getUpcomingEvents();
     }, [userData]);
-
 
     return (
         <div className="pageContent">
@@ -61,22 +65,16 @@ const ProgramHomePage = () => {
                             paddingBottom: "2rem",
                         }}
                     >
-                        <Typography variant="h1">
-                            {program.name}
-                        </Typography>
-                        {userData.role === "superadmin" && (
+                        <Typography variant="h1">{program.name}</Typography>
+                        {isSuperAdmin && (
                             <Box>
                                 <Link to={`/EditProgramForm/${program_id}`}>
-                                     <Button variant="contained">Edit</Button>
-                             </Link>
+                                    <Button variant="contained">Edit</Button>
+                                </Link>
                             </Box>
                         )}
 
-                        {userData.role === "student" && (
-                            <Button variant="contained">Follow</Button>
-                        )}
-
-                        {userData.role === "student" && (
+                        {!isAdmin && (
                             <Button variant="contained">Follow</Button>
                         )}
                     </Box>
@@ -89,26 +87,32 @@ const ProgramHomePage = () => {
                         spacing={1}
                         sx={{ marginTop: "1rem" }}
                     >
-                
-                        {program.tags && (
-                            program.tags.map(tag => 
-                                <Chip label={tag.tag_name}
-                                sx={{ backgroundColor: tag.tag_color, color: "white" }} />
-                            )
-                        )}
+                        {program.tags &&
+                            program.tags.map((tag) => (
+                                <Chip
+                                    label={tag.tag_name}
+                                    sx={{
+                                        backgroundColor: tag.tag_color,
+                                        color: "white",
+                                    }}
+                                />
+                            ))}
                     </Stack>
-                    <Typography variant="h2" sx={{ marginTop: "3rem", marginBottom: "2rem" }}>
+                    <Typography
+                        variant="h2"
+                        sx={{ marginTop: "3rem", marginBottom: "2rem" }}
+                    >
                         Upcoming events
                     </Typography>
                     <Box>
-                        {upcomingEvents && (
-                            upcomingEvents.map(event =>
-                                <LongEventCard data={event} event_id={event.event_id}/>
-                            )
-                        )}
+                        {upcomingEvents &&
+                            upcomingEvents.map((event) => (
+                                <LongEventCard
+                                    data={event}
+                                    event_id={event.event_id}
+                                />
+                            ))}
                     </Box>
-            
-
                 </div>
             )}
         </div>

@@ -19,8 +19,13 @@ import { useParams } from "react-router-dom";
 
 const ProgramDashboardPage = () => {
     let { program_id } = useParams();
-    program_id = program_id.replace(":", "");
+    program_id = parseInt(program_id.replace(":", ""));
     const userData = useContext(UserContext);
+
+    // Check if the user is a super administrator for this program
+    const isSuperAdmin = userData.superadminprograms.includes(program_id)
+        ? true
+        : false;
 
     const [program, setProgram] = useState();
     useEffect(() => {
@@ -39,7 +44,7 @@ const ProgramDashboardPage = () => {
         const getAdmins = async () => {
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/:${userData.program_id}/administrators`
+                    `http://localhost:3001/programs/:${program_id}/administrators`
                 )
                 .catch((err) => console.log(err));
             setAdmins(res.data);
@@ -56,7 +61,7 @@ const ProgramDashboardPage = () => {
             }
             const res = await axios
                 .get(
-                    `http://localhost:3001/programs/${program.programId}/events/upcoming`
+                    `http://localhost:3001/programs/${program_id}/events/upcoming`
                 )
                 .catch((err) => console.log(err));
             setUpcomingEvents(res.data);
@@ -172,25 +177,21 @@ const ProgramDashboardPage = () => {
                         </Grid>
                     </div>
 
-                    {/* Program admin table only shownt to admin or superadmin */}
-                    {(userData.role === "admin" ||
-                        userData.role === "superadmin") && (
-                        <div>
-                            <div className="h2Container">
-                                <Typography variant="h2">
-                                    Program administrators
-                                </Typography>
-                            </div>
-                            <div className="tableContainer">
-                                {admins && (
-                                    <AdminTable rowsPerPage={5} data={admins} />
-                                )}
-                            </div>
+                    <div>
+                        <div className="h2Container">
+                            <Typography variant="h2">
+                                Program administrators
+                            </Typography>
                         </div>
-                    )}
+                        <div className="tableContainer">
+                            {admins && (
+                                <AdminTable rowsPerPage={5} data={admins} />
+                            )}
+                        </div>
+                    </div>
 
                     {/* Buttons to change admins only shown to superadmin */}
-                    {userData.role === "superadmin" && (
+                    {isSuperAdmin && (
                         <div>
                             <AddAdminModal />
                             <RemoveAdminModal />
